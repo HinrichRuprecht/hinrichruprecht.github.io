@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
        "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -7,7 +7,8 @@
 <meta name="description" content="Exercises in Basic Arithmetics" />
 <meta name="copyright" content="H. Ruprecht" />
 <meta name="license" content="GNU General Public License v2 or later"/>
-<link rel="shortcut icon" href="icon.png"/>
+<link rel="shortcut icon" href="icon.png"/> 
+<!-- icon.png has white background, while AdamRiese.ico is transparent -->
 </head>
 <body>
 <style>
@@ -31,8 +32,16 @@
       td.nobox {
 	border-collapse:collapse; 
 	}
+      td.xbox {
+	border-collapse:collapse; 
+	font-size:25%;
+	}
       td.result {
 	border:2px ridge;
+	}
+      td.xresult {
+	border-collapse:collapse; 
+	font-size:25%;
 	}
       td.carry {
         border:1px solid;
@@ -41,44 +50,44 @@
 	font-size:75%;
 	height: 80%;
 	}
-      td.nocarry {
+      td.xcarry {
         overflow:hidden;
         vertical-align:top;
-	font-size:75%;
+	font-size:25%;
 	height: 80%;
 	}
       button {
 	/* height:8%;
 	width:8%; */
 	font-size:180%;
-	vertical-align:center;
 	}
       button2 {
 	/* height:8%;
 	width:8%; */
 	font-size:120%;
-	vertical-align:center;
 	}
     </style>
-<h1><span id="title"></span><img src="icon.png" height=43></h1>
-<span id='debug'></span><br>
-<button type="button" onclick="JavaScript:m='a';new_()">+</button>&nbsp;
-<button type="button" onclick="JavaScript:m='s';new_()">-</button>&nbsp;
-<button type="button" onclick="JavaScript:m='m';new_()">*</button>&nbsp;
-<button type="button" onclick="JavaScript:m='d';new_()">:</button>&nbsp;
+<h1><span id="title"></span>
+<img id="icon" src="AdamRiese.ico" height=43 onclick="javascript:Finish();"></h1>
+<span id="Total"></span><span id='debug'></span><br>
+<button type="button" onclick="JavaScript:m='+';new_()">+</button>&nbsp;
+<button type="button" onclick="JavaScript:m='-';new_()">-</button>&nbsp;
+<button type="button" onclick="JavaScript:m='*';new_()">*</button>&nbsp;
+<button type="button" onclick="JavaScript:m=':';new_()">:</button>&nbsp;
 <br><br>
 <button type="button" onclick="JavaScript:nCols--;new_()">&lt;</button>&nbsp;
 <button type="button" onclick="JavaScript:nCols++;new_()">&gt;</button>&nbsp;
 <button type="button2" onclick="JavaScript:nRows--;new_()">&or;</button>&nbsp;
 <button type="button2" onclick="JavaScript:nRows++;new_()">&and;</button>&nbsp;
-
+<span id="emoticon" style="font-size:large;"></span>
 <span id="calculate" style="font-size:large; font-family:monospace;"></span>
 <br>
 <a href='javascript:help_()'><span id="help"></span></a>&nbsp;&nbsp;
 <br>
 <span id='dialog'></span>&nbsp;&nbsp;
+
 <script type="text/javascript">
-var cellsize=10;
+var cellsize=10, fontSize=10;
 var colours=new Array("white","lime","yellow","red","aqua","fuchsia","blue");
 var language=navigator["language"];
 if (!language) language=navigator["userLanguage"];
@@ -87,8 +96,22 @@ var sep=".", hint="H";
 if (language="de") sep=",";
 var trans=new Array();
 var values=new Array();
-var result, carry;
-var debg=0, show_opt=0; var tst=0; var curr_id=-1; var result; var m;
+var resultIds;
+var result, carry, n_correct, n_wrong, total_correct=0, total_wrong=0;
+var nextEmo=new Array(0,0,0); var nextEmoTotal=new Array(0,0,0);
+var emoticons=new Array();
+    emoticons[0]=new Array // bad
+	(0x1F620,0x1F621,0x1F622,0x1F623,0x1F625,0x1F628,0x1F629,0x1F62A
+	,0x1F62B,0x1F62D,0x1F630,0x1F631,0x1F632,0x1F633,0x1F61E);
+    emoticons[1]=new Array // neutral
+	(0x1F610,0x1F613,0x1F614,0x1F616,0x1F618,0x1F61A
+	,0x1F61C,0x1F61D,0x1F635,0x1F636);
+    emoticons[2]=new Array // good
+	(0x1F601,0x1F602,0x1F603,0x1F604,0x1F605,0x1F606,0x1F606,0x1F607
+	,0x1F608,0x1F609,0x1F60A,0x1F60B,0x1F60C,0x1F60D,0x1F60E,0x1F60F
+	,0x1F637,0x1F638,0x1F639,0x1F63A,0x1F63B,0x1F63C,0x1F63D,0x1F63E
+	,0x1F63F,0x1F640);
+var debg=0, show_opt=0; var tst=0; var curr_id=-1; var m, prevM;
 var results=new Array(); 
 var maxId=-1;
 var nRows=1, nCols=3;
@@ -130,6 +153,7 @@ function int_trans() {
     trans['de-klick to select field']
 	="ggf. vorher ins gewünschte Feld klicken";
     trans['de-show next part of result']="zeigt nächsten Ergebnisteil";
+    //trans['de-Klick Adam Riese to exit']="Ende mit Klick auf Adam Riese";
     } // int_trans()
 
 function help_(str) {
@@ -144,6 +168,7 @@ function help_(str) {
 	str+="<br>"+_('input field has yellow background');
 	str+="<br>("+_('klick to select field')+").";
 	str+="<br>"+hint+" : "+_('show next part of result');
+	//str+="<br>"+_('Klick Adam Riese to exit');
 	}
     else str=_(str);
     document.getElementById('dialog').innerHTML=str;
@@ -154,19 +179,13 @@ function alrt(str) {
     } // alrt()
 
 function read_params(searchstr) { // interpret parameters from url
-    var src='&'+searchstr.substr(1)+'&';
-    var p1=src.indexOf('m=');
-    var p2=src.indexOf('&',p1);
-    if (p1>=0) { p1+=2; m=src.substr(p1,p2-p1); }
-    var regexp=/\&l\=([^\&]+)\&/;
-    var par=regexp.exec(src);
-    if (par) language=par[1];
-    regexp=/\&m\=([^\&]+)\&/;
-    par=regexp.exec(src);
-    if (par) m=par[1];
+    var regexp, par, src='&'+searchstr.substr(1)+'&';
+    regexp=/\&l\=([^\&]+)\&/; par=regexp.exec(src); if (par) language=par[1];
+    regexp=/\&m\=([^\&]+)\&/; par=regexp.exec(src); if (par) m=par[1];
+    regexp=/\&t\=([^\&]+)\&/; par=regexp.exec(src); if (par) debg=par[1];
     } // read_params()
 
-function debg_() {
+function debg_() { // currently not used
     var str="Debug ";
     debg=1-debg; // toggle debg variable to be used for debug
     tst++; if (tst>3) tst=0; // 
@@ -174,6 +193,40 @@ function debg_() {
     if (tst>0) str+=", test on";
     alrt(str);
     } // debg_
+
+function set_emoticon(correct) {
+    var emoticon, n, color, grade;
+    if (correct<0) { grade=1; color="aqua"; }
+    else {
+	if (correct>0) 
+	    { n_correct++; total_correct++; grade=2; } 
+	else { n_wrong++; total_wrong++; grade=0; }
+	color=getColor(n_correct,n_wrong);
+	document.getElementById('icon').style.backgroundColor
+	    =getColor(total_correct,total_wrong);
+	}
+    emoticon=getEmoticon(grade,nextEmo);
+    document.getElementById('emoticon').innerHTML=emoticon;
+    document.getElementById('emoticon').style.backgroundColor=color;
+    }
+
+function getEmoticon(grade,next) { // 0=bad, 1=neutral, 2=good
+    var emo, i;
+    emo=emoticons[grade][next[grade]];
+    next[grade]++; if (next[grade]>=emoticons[grade].length) next[grade]=0;
+    return "&#x"+emo.toString(16)+";";
+    }
+function getColor(good,bad) {
+    var red, green, blue="00";
+    green=Math.floor(255*good/(good+bad));
+    red=255-green;
+    if (good<bad) { red=255; }
+    else if (good==bad) { red=255; green=255; }
+    else { green=255; }
+    red=red.toString(16); if (red.length==1) red="0"+red;
+    green=green.toString(16); if (green.length==1) green="0"+green;
+    return "#"+red+green+blue;
+    } 
 
 function write_row(cols,value,style_,Ids) { // 
     // Ids() : hide value and store digits in results() for comparison
@@ -197,7 +250,8 @@ function write_row(cols,value,style_,Ids) { //
 	    value=tmp+value; 
 	    }
     str='';tmp=''; iId=0;
-    str+='<tr>'; l1=-1; 
+    str+='<tr>'; 
+    l1=-1; 
     for (l=0; l<cols; l++) {
 	digit=value.substr(l,1);
 	if (Ids!=undefined && digit!=' ' && debg==0 && l>=hide) {
@@ -206,18 +260,20 @@ function write_row(cols,value,style_,Ids) { //
 	    results[id]=digit;
 	    l1=l;
 	    str=str+'<td class="'+style_+'" '+'id="r'+id
-	       +'" onclick="JavaScript:highlight('+id+','+colorH+",''"+')">'; 
+	       +'" onclick="JavaScript:highlight('+id+','+colorH+')">'; 
 	    str=str+'<span id="s'+id+'">&nbsp;</span>'; 
 	    }
 	else { 
-	    if (style_!=undefined) { str+='<td class="no'+style_+'">'; }
+	    if (style_!=undefined) {
+		tmp=(digit!=' '? "no" : "x"); 
+		str+='<td class="'+tmp+style_+'">'; }
 	    else { str=str+'<td>'; }
 	    if (buttons>0) { 
 		str=str+'<button type="button" class="button2" '
 		    +'onclick="JavaScript:change('+"'"+digit+"'"+')">'
 		    +digit+'</button>';
 		}
-	    else { str=str+digit; }
+	    else if (digit!=' ') { str=str+digit; }
 	    str=str+'</td>';
 	    }
 	}
@@ -227,10 +283,10 @@ function write_row(cols,value,style_,Ids) { //
     } // write_row()
 
 function change(iCh) {
-    var curr_val="", check_, col, next_id, len_;
+    var curr_val, check_, col, next_id, len_, correct=1, i, j;
     curr_val=iCh; // curr_val+
     if (curr_id>maxId) return;
-    if (curr_val==hint) curr_val=results[curr_id];
+    if (curr_val==hint) { curr_val=results[curr_id]; correct=-1; }
     // check result/carry + highlight next element
      // ignore carry, if next result digit is correct:
     if (curr_val!=results[curr_id] && carry!="" && curr_id%2==0 
@@ -238,21 +294,39 @@ function change(iCh) {
 	highlight(curr_id,0);
 	curr_id++; 
 	}
-    document.getElementById('s'+curr_id).innerHTML=curr_val;
-    if (curr_val!=results[curr_id]) { highlight(curr_id,3); }
+    // document.getElementById('s'+curr_id).innerHTML=curr_val;
+    if (curr_val!=results[curr_id]) 
+	{ highlight(curr_id,3,curr_val); correct=0; }
     else {
-	highlight(curr_id,1); 
+	highlight(curr_id,1,curr_val); 
+	if (m==':' && curr_val!=sep) { // show previous sub-results smaller
+	    i=0;
+	    while (i<=resultIds.length && resultIds[i]!=curr_id) i++;
+	    if (i<=resultIds.length) {
+		if (i>0 && resultIds[i]==resultIds[i-1]+1) i--; // i-1:sep
+		j=(i<=0? 0 : resultIds[i-1])+1;
+		while (j<resultIds[i]) {
+		  if (document.getElementById('r'+j))
+		      { document.getElementById('r'+j).style.fontSize="small"; }
+		  j++; 
+		  }
+		}
+	    }
 	curr_id++;
 	while (curr_id<=maxId && !document.getElementById('r'+curr_id)) 
 	    curr_id++;
 	if (curr_id<=maxId)  highlight(curr_id,2);
 	}
+    //if (correct>=0) 
+    set_emoticon(correct);
     }
 
 function highlight(id,colour,val) {
     var col=colours[colour];
     var col0=colours[0];
     //alrt("h"+curr_id);
+    if (!document.getElementById('s'+id) ||
+	document.getElementById('s'+id).innerHTML==results[id]) return;
     if (curr_id>=0 && document.getElementById('r'+curr_id)) {
 	document.getElementById('r'+curr_id).style.backgroundColor=col0;
 	}
@@ -261,7 +335,7 @@ function highlight(id,colour,val) {
 	document.getElementById('r'+curr_id).style.backgroundColor=col;
 	if (val!=undefined) document.getElementById('s'+curr_id).innerHTML=val;
 	}
-    } // highlight()
+    } // highlight
 
 function subtraktion () {
     var i, j, x, sum=0, minu, tmp, tmp2, f, str="", Ids=new Array();
@@ -300,9 +374,9 @@ function subtraktion () {
     for (j=0; j<carry.length; j++) { Ids[j]=2*(carry.length-j); }
     carry="         ".substr(0,nCols-carry.length)+carry; // nCols+1 ???
     str+=write_row(nCols,carry,"carry",Ids); // carry
-    for (j=0; j<result.length; j++) { Ids[j]=2*(result.length-j)-1; }
+    for (j=0; j<result.length; j++) { resultIds[j]=2*(result.length-j)-1; }
     result="         ".substr(0,nCols+1-result.length)+result;
-    str+=write_row(nCols+1,result,"box",Ids); // result
+    str+=write_row(nCols+1,result,"box",resultIds); // result
     maxId=2*result.length-1;
     return str;
     } // subtraktion
@@ -340,9 +414,9 @@ function addition () {
     for (j=0; j<carry.length; j++) { Ids[j]=2*(carry.length-j); }
     carry="         ".substr(0,nCols-carry.length)+carry; // nCols+1 ???
     str+=write_row(nCols,carry,"carry",Ids); // carry
-    for (j=0; j<result.length; j++) { Ids[j]=2*(result.length-j)-1; }
+    for (j=0; j<result.length; j++) { resultIds[j]=2*(result.length-j)-1; }
     result="         ".substr(0,nCols+1-result.length)+result;
-    str+=write_row(nCols+1,result,"box",Ids); // result
+    str+=write_row(nCols+1,result,"box",resultIds); // result
     maxId=2*result.length-1;
     return str;
     } // addition
@@ -378,16 +452,16 @@ function multiplikation () {
 	}
     if (col2>1) {
 	result=""+sum;
-	for (j=result.length-1; j>=0; j--) { maxId++; Ids[j]=maxId; }
+	for (j=result.length-1; j>=0; j--) { maxId++; resultIds[j]=maxId; }
 	result="         ".substr(0,col1+col2+1-result.length)+result;
-	str+=write_row(result.length,result,"result",Ids);
+	str+=write_row(result.length,result,"result",resultIds);
 	}
     return str;
     } // multiplikation
 
 function division () {
     var hide, result="", res1, keyb, minu, tmp, tmp2, l1, str, col1,col2, j,
-	iRes, Ids=new Array(), IdsRes=new Array();;
+	iRes, Ids=new Array(), msg="", iRow;
     if (nCols<1) { nCols=1; }
     if (nRows<1) { nRows=1; }
     var max=Math.pow(10,nCols);
@@ -414,7 +488,8 @@ function division () {
 	res1=Math.floor(val/val2);
 	result+=res1;
 	maxId++;
-	IdsRes[iRes]=maxId; 
+	resultIds[iRes]=maxId; 
+	msg+=maxId+"="+res1+" ";
 	iRes++;
 	tmp=res1*val2;
 	val-=tmp;
@@ -429,18 +504,20 @@ function division () {
 	tmp2="       ".substr(0,l1+1-tmp2.length)+tmp2;
 	str+=write_row(tmp2.length,tmp2,"result",Ids);
 	if (l1==col1 && val>0) 
-	    { result+=sep; maxId++; IdsRes[iRes]=maxId; iRes++; }
+	    { result+=sep; maxId++; resultIds[iRes]=maxId; iRes++; }
 	l1++;
 	}
     result="         ".substr(0,col1+col2+1-result.length)+result;
-    str=write_row(-hide,result,"box",IdsRes)+str;
-    //alrt(str);
+    str=write_row(-hide,result,"result",resultIds)+str;
+    //alrt(msg);
     return str;
     } // division
 
 function write_table (calc,addKeys) {
     if (addKeys==undefined) addKeys="";
     var tab, str="", n, x; var border=0;
+    var keyboard=write_row(0,"k0123456789"+addKeys);
+    if (m==':') str+="<br>"+keyboard;
     tab='<table border="0" cellpadding="0" cellspacing="0">';
     str+=tab;
     str+=calc;
@@ -448,7 +525,7 @@ function write_table (calc,addKeys) {
     //str+=write_row(0,"k01234");    // keyboard
     //str+='<br>';
     //str+=write_row(0,"k56789"+addKeys);    // keyboard
-    str+=write_row(0,"k0123456789"+addKeys);    // keyboard
+    if (m!=':') str+=keyboard;
     document.getElementById("calculate").innerHTML =str;
     curr_id=-1;
     highlight(1,2);
@@ -456,14 +533,50 @@ function write_table (calc,addKeys) {
     }
 
 function new_ () {
-    var calc=""; var tmp="";
-    carry="";
-    if (m=='s') { calc=subtraktion(); }
-    else if (m=='a') { calc=addition(); }
-    else if (m=='m') { calc=multiplikation(); }
-    else if (m=='d') { calc=division(); tmp=sep; }
+    var calc="", tmp, size, color, grade;
+    if (n_correct!=undefined) {
+	n_wrong+=check_result();
+	color=getColor(n_correct,n_wrong);
+	tmp=Math.floor((n_correct+n_wrong)/4);
+	if (n_correct>n_wrong+tmp) { grade=2; }
+	else if (n_correct>n_wrong-tmp) { grade=0; }
+	else { grade=1; }
+	size=Math.floor(fontSize/2)+n_correct;
+	if (size>fontSize) size=fontSize;
+	tmp="<span style='background-color:"+color+"; font-size:"+size+"pt;'>"
+	    +prevM+getEmoticon(grade,nextEmoTotal)
+	    +"</span>";
+	// alrt(color);
+	document.getElementById('Total').innerHTML+=tmp;
+	}
+    carry=""; n_correct=0; n_wrong=0; tmp=""; 
+    resultIds=new Array();
+    if (m=='-') { calc=subtraktion(); }
+    else if (m=='*') { calc=multiplikation(); }
+    else if (m==':') { calc=division(); tmp=sep; }
+    else { calc=addition(); }
+    prevM=m;
     tmp+=hint; // show next part of result
     write_table(calc,tmp);
+    }
+
+function check_result() {
+    var i, id, cnt=0, msg="";
+    // ??? results sometimes has undefined elements (too many resultIds)
+    for (i=0; i<=resultIds.length; i++) {
+	id=resultIds[i];
+	if (carry!="" && id%2==0) continue;
+	if (results[id]==undefined) break;
+	if (!document.getElementById('s'+id) ||
+	    results[id]!=document.getElementById('s'+id).innerHTML) {
+	    msg+=i+":"+id+":";
+	    if (document.getElementById('s'+id)) { cnt++; }
+	    else { msg+"!"; }
+	    msg+=results[id]+" ";
+	    }
+	}
+    //if (msg!="") alrt(msg+" res="+result);
+    return cnt;
     }
 
 function changeStyle (styleId,attr,val) {
@@ -489,18 +602,41 @@ function changeStyle (styleId,attr,val) {
 
 function mobile_ () {
     if (userAgent.match(/Android|Mobile/)) {
-	changeStyle("html","font-size","20pt");
+	fontSize=20;
+	changeStyle("html","font-size",""+fontSize+"pt");
 	changeStyle("td","font-size","35pt");
 	}
     }
 
+function Finish() { 
+    // window.close() does not work in current browsers and in PhoneGap app
+    if (typeof navigator.app !== 'undefined') {
+            navigator.app.clearHistory();
+	    navigator.app.exitApp(); // exit app
+	    }
+    else if(navigator.device) { navigator.device.exitApp(); }
+    window.history.back();
+    //else { window.close(); } // usually not working 
+    }
+
 int_trans(); // preset variables for translated text messages
 if (window.location.search != "") { read_params(window.location.search); }
-else m='s';
+else m='-';
 document.getElementById('title').innerHTML
     =_('Exercises in')+" "+_('Basic Arithmetic Operations');
 document.getElementById('help').innerHTML=_('Help');
 mobile_();
+if (debg>0) {
+    msg="";
+    for (i=0; i<=2; i++) {
+	for (j=0; j<emoticons[i].length; j++) {
+	    emo=emoticons[i][j]; 
+	    msg+=(emo==undefined?"?"+i+j:"&#x"+emo.toString(16)+";");
+	    }
+	msg+="<br>";
+	}
+    alrt(msg);
+    }
 new_();
 //debg_();
 </script>
