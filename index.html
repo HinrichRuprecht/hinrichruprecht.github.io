@@ -1,26 +1,81 @@
-<!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="UTF-8">
-    <title>Hinrichruprecht.GitHub.io by HinrichRuprecht</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-  </head>
-  <body>
-    <section class="page-header">
-      <h1 class="project-name">Hinrichruprecht.GitHub.io</h1>
-      <h2 class="project-tagline">Main page of Hinrich Ruprecht</h2>
-    </section>
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+       "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Basic Arithmetics</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="description" content="Exercises in Basic Arithmetics" />
+<meta name="copyright" content="H. Ruprecht" />
+<meta name="license" content="GNU General Public License v2 or later"/>
+<link rel="shortcut icon" href="icon.png"/> 
+<!-- icon.png has white background, while AdamRiese.ico is transparent 
+     to allow background colours -->
+</head>
+<body>
+<style>
+      html{font-size:10pt}
+      table { border-collapse:collapse; }
+      td {
+        border:none;
+        overflow:hidden;
+        vertical-align:top;
+	text-align: center;
+	font-size:15pt;
+	width: 1.2em;
+	height: 1.2em;
+	}
+      td.box {
+        border:1px solid;
+	border-collapse:collapse; 
+	}
+      td.nobox { border-collapse:collapse; }
+      td.xbox {
+	border-collapse:collapse; 
+	font-size:25%;
+	}
+      td.result { border:2px ridge; }
+      td.xresult {
+	border-collapse:collapse; 
+	font-size:25%;
+	}
+      td.carry {
+        border:1px solid;
+	text-align: right;
+	border-collapse:collapse; 
+	font-size:75%;
+	height: 80%;
+	}
+      td.xcarry {
+        overflow:hidden;
+        vertical-align:top;
+	font-size:25%;
+	height: 80%;
+	}
+      .b1 { font-size:180%; }
+      .b2 { font-size:120%; }
+      .b3 { font-size:100%; }
+    </style>
+<h1><span id="title"></span>
+<img id="icon" src="AdamRiese.ico" height=43></h1>
+<span id="Total"></span><span id='debug'></span><br>
+<button class="b1" id="op0">&plus;</button>&nbsp;
+<button class="b1" id="op1">&minus;</button>&nbsp;
+<button class="b1" id="op2">&times;</button>&nbsp;
+<button class="b1" id="op3">&divide;</button>&nbsp;
+&nbsp;<span id="emoticon" style="font-size:large;"></span>&nbsp;
+<button class="b2" id="ch0">&lt;</button>&nbsp;
+<button class="b2" id="ch1">&gt;</button>&nbsp;
+<button class="b2" id="ch2">&or;</button>&nbsp;
+<button class="b2" id="ch3">&and;</button>&nbsp;
+<br>
+<span id="keyboard1" style="font-size:large; font-family:monospace;"></span>
 
-    <section class="main-content">
-Rechnen / Basic Arithmetics 
-    <br>&nbsp;&nbsp;
-<a id="Call" class="anchor" href="Rechnen/index.html" aria-hidden="true">Rechnen/index.html</a>
-    <br>&nbsp;&nbsp;
-    <a id="App" class="anchor" href="https://github.com/HinrichRuprecht/Rechnen/releases/latest">Download source or Android app</a>
-    </section>
-  </body>
+<span id="calculate" style="font-size:large; font-family:monospace;"></span>
+
+<span id="keyboard2" style="font-size:large; font-family:monospace;"></span>
+<br><button class="b3" id="help">help</button>&nbsp;
+<br>
+<span id='dialog'></span>&nbsp;&nbsp;
+<script src="basicarithmetics.js"></script>
+</body>
 </html>
