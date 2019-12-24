@@ -1,0 +1,28 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 2.0//EN">
+<html>
+<head>
+<title>notify</title>
+</head>
+<body>
+<script language="JavaScript">
+
+var request = require("request");
+
+var options = {
+  method: 'POST',
+  url: 'https://api.sendinblue.com/v3/smtp/email',
+  headers: {accept: 'application/json', 'content-type': 'application/json'},
+  body: '{"sender":{"email":"hinrichruprecht@aim.com"},"to":[{"email":"fewo-ruprecht@t-online.de"}],"replyTo":{"email":"hinrichruprecht@aim.com"},"templateId":2}'
+};
+
+request(options, function (error, response, body) {
+  if (error) throw new Error(error);
+
+  console.log(body);
+});
+</script>
+
+
+</body>
+</html>
+
