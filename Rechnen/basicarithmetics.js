@@ -1,11 +1,17 @@
 // javascript sources for Basic Arithmetics
+"use strict";
 var cellsize=10, fontSize=10;
 var colours=new Array("white","lime","yellow","red","aqua","fuchsia","blue");
 var language=navigator["language"];
 if (!language) language=navigator["userLanguage"];
 language=(language? language.substr(0,2).toLowerCase() : "en");
 var sep=".", hint="H";
-var keyboard;
+var ops=new Array('&plus;','&minus;','&times;','&divide;');
+var mode=0; // 0= add-sub..., 1= mult. table, 2= mental arithmetic
+var modeStr=new Array("&plus;&minus;&times;&divide;","1&times;1","&#129504;");
+var modeHelp=new Array("paper arithmetic","multiplication table",
+		       "mental arithmetic");
+var keyboard; var xMult=0, xMultId;
 if (language="de") sep=",";
 var trans=new Array();
 var values=new Array();
@@ -28,7 +34,8 @@ var emoticons=new Array();
 var debg=0, show_opt=0; var tst=0; var curr_id=-1; var m, prevM;
 var results=new Array(); 
 var maxId=-1;
-var nRows=1, nCols=3;
+var nRows0=1, nCols0=3; // used in mode=0
+var nRows=1, nCols=1;
 var browser=navigator.appName;
 var userAgent=navigator.userAgent;
 var ie=0; 
@@ -37,20 +44,97 @@ if (browser.indexOf("Microsoft")>=0) {
     colours[0]="silver"; // inner border lines sometimes not visible
     }
 
+function showButtons() {
+    var str1="", str2="";
+    if (mode==0 || mode==2) {
+	str1='<button class="b1" id="op0">&plus;</button>&nbsp;'
+	    +'<button class="b1" id="op1">&minus;</button>&nbsp;'
+	    +'<button class="b1" id="op2">&times;</button>&nbsp;'
+	    +'<button class="b1" id="op3">&divide;</button>&nbsp;';
+	}
+    if (mode==0) {
+	str2='<button class="b2" id="ch0">&lt;</button>&nbsp;'
+	    +'<button class="b2" id="ch1">&gt;</button>&nbsp;'
+	    +'<button class="b2" id="ch2">&or;</button>&nbsp;'
+	    +'<button class="b2" id="ch3">&and;</button>&nbsp;';
+	}
+    document.getElementById('buttons1').innerHTML=str1;
+    document.getElementById('buttons2').innerHTML=str2;
+    } // showButtons
+
+function setMode(id) {
+    var str, kb, keys_, tmp, i;
+    mode=parseInt(id.substr(2));
+    showButtons(mode);
+    str="";
+    for (i=0; i<modeStr.length; i++) {
+	if (i!=mode) str+='<button class="b3" id="mo'+i+'"><b>'
+			+modeStr[i]+'</b></button>&nbsp;';
+	}
+    document.getElementById('changeMode').innerHTML=str;
+    if (mode!=0) {
+	document.getElementById('keyboard1').innerHTML="";
+	document.getElementById('keyboard2').innerHTML="";
+	document.getElementById('Total').innerHTML="";
+	document.getElementById('calculate').innerHTML="";
+	}
+    nRows=1; nCols=1;
+    switch (mode) {
+	case 1: 
+	    kb="keyboard1";
+	    keys_="23456789";
+	    tmp=write_row(0,"k"+keys_,"kbx");
+	    document.getElementById(kb).innerHTML
+		='<table>'
+		    +'<tr><td><b>1&nbsp;&times;&nbsp;</b></td>'
+		    +tmp.substr(4) // w/o <tr>
+		+'</table>';
+	    xMult=0;
+	    break;
+	case 0:
+	    nRows=nRows0; nCols=nCols0;
+	case 2: // nRows/nCols set above to 1
+	    m=(m==undefined ? 1 : parseInt(m));
+	    if (isNaN(m) || m<0 || m>3) m=1; // start with minus
+	    new_("op"+m);
+	    break;
+	}
+    help_("");
+    setOnClick("img, button, td");
+    } // setMode
+
+function checkX(id) {
+    var curr_val,col;
+    curr_val=document.getElementById(id).innerHTML;
+    if (mode==1) { col=((curr_val%xMult)==0 ? 1 : 3); }
+    else { // mode=2
+	col=(curr_val==result ? 1 : 3); 
+	}
+    document.getElementById(id).style.backgroundColor=colours[col];
+    set_emoticon(col==1);
+    if (col==1 && mode==2) setTimeout("new100()",1000);
+    }
+
 function setOnClick(selectors) {
   // Set click actions given element types:
     var bId = document.querySelectorAll(selectors);
     var i, id, fct, idClass;
+    var msg=""+selectors+": ";
     for (i = 0; i < bId.length; i++) {
 	id=bId[i].id;
+	msg+=id+" ";
 	idClass=id.substr(0,2);
 	if (idClass=='he') { fct=function() { help_() }; }
+	else if (idClass=='mo') { fct=function() { setMode(this.id) }; }
 	else if (idClass=='ic') { fct=function() { Finish() }; }
 	else if (idClass=='kb') { fct=function() { change(this.id) }; }
 	else if (idClass=='op') { fct=function() { new_(this.id) }; }
 	else if (idClass=='rs') { fct=function() { highlight(this.id) }; }
+	else if (idClass=='rx') { fct=function() { checkX(this.id) }; }
+	//else if (idClass=='1x') { fct=function() { show1x(this.id) }; }
 	if (fct!=undefined) bId[i].onclick=fct;
 	}
+    //alert(msg);
     }
 
 function _(word) {
@@ -63,6 +147,9 @@ function _(word) {
     } // _()
 
 function int_trans() {
+    trans['de-'+modeHelp[0]]="Rechnen wie auf Papier";
+    trans['de-'+modeHelp[1]]="Ein-mal-Eins";
+    trans['de-'+modeHelp[2]]="Kopfrechnen";
     trans['de-Help']="Hilfe";
     trans['de-Exercises in']="Übungen in";
     trans['de-Upper buttons']="Oberste Buttons";
@@ -85,11 +172,25 @@ function int_trans() {
     trans['de-show next part of result']="zeigt nächsten Ergebnisteil";
     trans['de-Klick Adam Riese logo twice to exit']
 	="Ende mit 2* Klick auf Adam Riese-Logo";
+    trans['de-Klick on factor for multiplication table']
+	="Klick auf Faktor für 1-mal-1-Tabelle";
+    trans['de-then click on multiple of chosen factor']
+	="dann auf Vielfaches des gewählten Faktors";
+    trans['de-Klick on result of given exercise']
+	="Klick auf Ergebnis der Aufgabe";
     } // int_trans()
 
 function help_(str) {
-    if (str==undefined) {
-	str=_('Upper buttons')+" : "+_('Basic Arithmetic Operations');
+  if (str==undefined) {
+    str="";
+    for (i=0; i<modeStr.length; i++) {
+	if (i!=mode) str+=modeStr[i]+' &rarr; '+_(modeHelp[i])+'<br>';
+	}
+    str+='-------------<br>';
+    str+='<b>'+_(modeHelp[mode])+'</b><br>';
+    switch (mode) {
+      case 0:
+	str+=_('Upper buttons')+" : "+_('Basic Arithmetic Operations');
 	str+="<br>< : "+_('less digits')+", > : "+_('more digits');
 	str+="<br>&or; : "+_('less rows')+",  &and; : "+_('more rows');
 	str+=" ("+_('or digits of 2nd value')+")";
@@ -100,10 +201,20 @@ function help_(str) {
 	str+="<br>("+_('klick to select field')+").";
 	str+="<br>"+hint+" : "+_('show next part of result');
 	str+="<br>"+_('Klick Adam Riese logo twice to exit');
-	}
-    else str=_(str);
-    document.getElementById('dialog').innerHTML=str;
-    } // help_()
+	break;
+      case 1:
+	str+=_('Klick on factor for multiplication table');
+	str+="<br>"+_('then click on multiple of chosen factor');
+        break;
+      case 2:
+	str+=_('Klick on result of given exercise');
+	break;
+      }
+    }
+  else str=_(str);
+  if (document.getElementById('dialog').innerHTML != "") str="";
+  document.getElementById('dialog').innerHTML=str;
+  } // help_()
 
 function alrt(str) {
     document.getElementById('debug').innerHTML+=str+" ";
@@ -166,11 +277,11 @@ function write_row(cols,value,style_,Ids) { //
     value=""+value;
     if (cols==undefined || cols==0) cols=value.length;
     
-    var str, len, l, l1, id, iId, tab, tmp, buttons=0, digit, hide=0;
+    var str, len, l, l1, id, iId, tab, tmp, buttons=0, digit, hide=0, id_;
     if (cols<0) { hide=-cols; cols=value.length; }
 
 	if (value.substr(0,1).toLowerCase()=="k")
-	    { buttons=1; value=value.substr(1); cols=value.length; }
+	    { buttons=1; value=value.substr(1); cols--; }
 	else {
 	    len=value.length;
 	    if (value.substr(0,1).match(/[\-\+]/)) 
@@ -184,26 +295,23 @@ function write_row(cols,value,style_,Ids) { //
     l1=-1; 
     for (l=0; l<cols; l++) {
 	digit=value.substr(l,1);
-	if (Ids!=undefined && digit!=' ' && debg==0 && l>=hide) {
-	    id=Ids[iId];
-	    iId++;
-	    results[id]=digit;
+	if ((Ids!=undefined || buttons>0) && digit!=' ' && debg<=0 && l>=hide) {
+	    if (buttons>0) { id_=style_.substr(0,3)+l; }
+	    else { 
+		id=Ids[iId]; iId++; results[id]=digit; id_="rs"+id; 
+		}
 	    l1=l;
-	    str+='<td class="'+style_+'" '+'id="rs'+id+'">';
-	    str+='<span id="s'+id+'">&nbsp;</span></td>'; 
+	    str+='<td class="'+style_.substr(0,2)+'" '+'id="'+id_+'">';
+	    str+=(buttons==0? '<span id="s'+id+'">&nbsp;</span>' : digit);
+	    str+='</td>'; 
 	    }
 	else { 
 	    if (style_!=undefined) {
 		tmp=(digit!=' '? "no" : "x"); 
-		str+='<td class="'+tmp+style_+'">'; }
+		str+='<td class="'+tmp+style_.substr(0,2)+'">'; }
 	    else { str=str+'<td>'; }
-	    if (buttons>0) { 
-		str=str+'<button class="b2"'
-		   +' id="kb'+digit+'">'
-		   +digit+'</button>';
-		}
-	    else if (digit!=' ') { str=str+digit; }
-	    str=str+'</td>';
+	    if (digit!=' ') { str+=digit; }
+	    str+='</td>';
 	    }
 	}
     str=str+'</tr>';
@@ -212,9 +320,18 @@ function write_row(cols,value,style_,Ids) { //
     } // write_row()
 
 function change(id) {
-    var curr_val, check_, col, len_, correct=1, i, j;
-    iCh=id.substr(2);
-    curr_val=iCh; // curr_val+
+    var curr_val, check_, col, len_, correct=1, i, j, tmp;
+    curr_val=document.getElementById(id).innerHTML; 
+    if (mode>0) { // 1x1
+	if (xMult>0) {
+	    document.getElementById(xMultId).style.backgroundColor=colours[0];
+	    }
+	document.getElementById(id).style.backgroundColor=colours[2];
+	xMult=curr_val;
+	xMultId=id;
+	show100(curr_val);
+	return;
+	}
     if (curr_id>maxId) return;
     if (curr_val==hint) { curr_val=results[curr_id]; correct=-1; }
     // check result/carry + highlight next element
@@ -292,6 +409,7 @@ function subtraktion () {
     minu=sum+result; 
     values[0]=minu;
     str=write_row(nCols+1,values[0])+str;
+    if (mode==2) return str;
     carry=0; f=1;
     for (j=0; j<nCols; j++) {
 	tmp=carry_sum[j]-minu%10;
@@ -332,6 +450,7 @@ function addition () {
 	    }
 	}
     result=sum;
+    if (mode==2) return str;
     carry=0; f=1;
     for (j=0; j<nCols; j++) {
 	tmp=carry_sum[j]-sum%10;
@@ -359,9 +478,9 @@ function multiplikation () {
     if (nCols<1) { nCols=1; }
     if (nRows<1) { nRows=1; }
     var max=Math.pow(10,nCols);
-    val1=Math.floor(Math.random()*Math.pow(10,nCols));
+    var val1=Math.floor(Math.random()*Math.pow(10,nCols));
     if (val1<2) val1=9-val1;
-    val2=Math.floor(Math.random()*Math.pow(10,nRows));
+    var val2=Math.floor(Math.random()*Math.pow(10,nRows));
     if (val2<2) val2=9-val2;
     val2=""+val2;
     tmp=""+val1;
@@ -382,6 +501,7 @@ function multiplikation () {
 	x="         ".substr(0,col1+i+2-x.length)+x;
 	str+=write_row(col1+i+2,x,"box",Ids);
 	}
+    if (mode==2) return str;
     if (col2>1) {
 	result=""+sum;
 	for (j=result.length-1; j>=0; j--) { maxId++; resultIds[j]=maxId; }
@@ -397,9 +517,9 @@ function division () {
     if (nCols<1) { nCols=1; }
     if (nRows<1) { nRows=1; }
     var max=Math.pow(10,nCols);
-    val1=Math.floor(Math.random()*Math.pow(10,nCols));
+    var val1=Math.floor(Math.random()*Math.pow(10,nCols));
     if (val1<2) val1=9-val1;
-    val2=Math.floor(Math.random()*Math.pow(10,nRows));
+    var val2=Math.floor(Math.random()*Math.pow(10,nRows));
     if (val2<2) val2=9-val2;
     // problems if result <1 (0.xxx):
     if (val1<val2) { tmp=val1; val1=val2; val2=tmp; } 
@@ -410,8 +530,8 @@ function division () {
     result=""+val1+":"+val2+"=";
     hide=result.length;
     str="";
-    nachKomma=2; if (col1<col2) nachKomma=col2-col1+2;
-    val=val1.substr(0,col2); l1=col2;
+    var nachKomma=2; if (col1<col2) nachKomma=col2-col1+2;
+    var val=val1.substr(0,col2); l1=col2;
     if (parseInt(val)<val2) { val+=val1.substr(l1,1); l1++; }
     val=parseInt(val);
     //alrt("v="+val+" l1="+l1+" c1="+col1+" c2="+col2);
@@ -421,6 +541,8 @@ function division () {
 	result+=res1;
 	maxId++;
 	resultIds[iRes]=maxId; 
+	// don't show parts for next intermediate result:
+	if (l1==col1+nachKomma) break; 
 	msg+=maxId+"="+res1+" ";
 	iRes++;
 	tmp=res1*val2;
@@ -462,8 +584,38 @@ function write_table(calc) {
     // alert(" r="+result);
     }
 
+function new100() { // result must be below 100
+  var val1, val2, tmp;
+  do {
+    switch (m) {
+	case "0": // +
+	    val1=Math.floor(Math.random()*100)+1;
+	    val2=Math.floor(Math.random()*100)+1;
+	    result=val1+val2;
+	    break;
+	case "1": // -
+	    val1=Math.floor(Math.random()*150)+1;
+	    val2=Math.floor(Math.random()*100)+1;
+	    if (val2>val1) { tmp=val1; val1=val2; val2=tmp; }
+	    result=val1-val2;
+	    break;
+	default: // * /
+	    val1=Math.floor(Math.random()*10)+1;
+	    val2=Math.floor(Math.random()*100/val1)+1;
+	    result=val1*val2;
+	    if (m==3) // /
+		{ tmp=val1; val1=result; result=tmp; }
+	    break;
+	}
+    } while (result<0 || result>=100 || (val1==val2 && (m==1 || m==3))
+	    || val1==1 || val2==1 || val1==10 || val2==10);
+  document.getElementById('keyboard1').innerHTML
+	='<p class="ex">'+val1+'&nbsp;'+ops[m]+'&nbsp;'+val2+'</p>';
+  show100();
+  } // new100
+
 function new_ (m_) {
-    var calc="", tmp, size, colour, grade, kb, nokb;
+    var calc="", tmp, size, colour, grade, keys_, kb, nokb;
     if (m_==undefined) { m_=m; } 
     else { // m=m_; 
 	tmp=m_.substr(2);
@@ -477,6 +629,7 @@ function new_ (m_) {
 	      }
 	    }
 	}
+    if (mode==2) { new100(); return; }
     if (n_correct!=undefined && n_correct==0 && n_wrong==0) n_correct=undefined;
     if (n_correct!=undefined) {
 	n_wrong+=check_result();
@@ -492,25 +645,31 @@ function new_ (m_) {
 	    +"</span>";
 	// alrt(colour);
 	document.getElementById('Total').innerHTML+=tmp;
+	document.getElementById('debug').innerHTML="";
 	}
     carry=""; n_correct=0; n_wrong=0; tmp=""; kb="keyboard2"; nokb="keyboard1";
     resultIds=new Array();
     requestFinish=0;
+    keys_="0123456789"+hint;
     switch (m) {
       case "1": calc=subtraktion(); break;
       case "2": calc=multiplikation(); break;
       case "3": calc=division();
-	    kb="keyboard1"; nokb="keyboard2";
+	    kb="keyboard1"; nokb="keyboard2"; keys_=sep+keys_;
 	    break;
       default: calc=addition(); break;
       }
     if (debg>0) alrt("m="+m);
     prevM=document.getElementById("op"+m).innerHTML;
-    tmp+=hint; // show next part of result
+    //tmp+=hint; // show next part of result
     write_table(calc);
-    document.getElementById(kb).innerHTML=keyboard;
+    if (mode==0) {
+	document.getElementById(kb).innerHTML=
+	    '<table>'+write_row(0,"k"+keys_,"kb")+'</table>';
+	}
+    else { nokb="keyboard1"; show100(); }
     document.getElementById(nokb).innerHTML="";
-    setOnClick("button, td");
+    setOnClick("td");
     } // new_
 
 function check_result() {
@@ -532,6 +691,20 @@ function check_result() {
     return cnt;
     }
 
+function show100(f) {
+    var str="",i,j, tmp;
+    for (i=0; i<=9; i++) {
+	str+='<tr>';
+	for (j=0; j<=9; j++) {
+	    tmp=i*10+j;
+	    str+='<td class="re" id="rx'+tmp+'">'+tmp+'</td>';
+	    }
+	str+='</tr>';
+	}
+    document.getElementById('keyboard2').innerHTML='<table>'+str+'</table>';
+    setOnClick("td");
+    } // show100
+
 function changeStyle (styleId,attr,val) {
     styleId=styleId.toLowerCase();
     var i=0;
@@ -548,17 +721,20 @@ function changeStyle (styleId,attr,val) {
 	    else j++;
 	    }
 	}
-    if (i>=0) alrt("changeStyle: "+styleId+" not found");
-    else alrt("changeStyle "+styleId);
+    if (i>=0) { alrt("changeStyle: "+styleId+" not found"); }
+    else if (debg>0) alrt("CS "+styleId);
     }
 
 
 function mobile_ () {
-    if (userAgent.match(/Android|Mobile/) || debg==2) {
+    if (userAgent.match(/Android|Mobile/) || Math.abs(debg)==2) {
 	fontSize=20;
 	changeStyle("html","font-size",""+fontSize+"pt");
 	changeStyle("td","font-size","35pt");
+	//if (debg!=0) 
+	  alrt("mobile");
 	}
+    else if (debg>0) alrt("*");
     }
 
 function Finish() { 
@@ -572,31 +748,28 @@ function Finish() {
     else if(navigator.device) { navigator.device.exitApp(); }
     //else if (window.history) { window.history.back(); }
     else { window.close(); } // usually not working 
-    }
+    } // Finish
 
+debg=0;
 int_trans(); // preset variables for translated text messages
 if (window.location.search != "") { read_params(window.location.search); }
 document.getElementById('title').innerHTML
     =_('Exercises in')+" "+_('Basic Arithmetic Operations');
-document.getElementById('help').innerHTML=_('Help');
 mobile_();
-keyboard=write_row(0,"k0123456789"+sep+hint);
-document.getElementById('keyboard2').innerHTML=keyboard;
-setOnClick("img");
-m=(m==undefined ?1 : parseInt(m));
-if (isNaN(m) || m<0 || m>3) m=1; // start with minus
-new_("op"+m);
+document.getElementById('help').innerHTML=_('Help');
+setMode("mo"+mode);
+//showButtons(1);
 //debg_();
   // Show all smileys (only in debug mode):
-    if (debg>0) {
-	for (i=0; i<=2; i++) {
-	  for (j=0; j<emoticons[i].length; j++) {
-	    emo=emoticons[i][j]; 
+    if (debg>2) {
+	var msg="";
+	for (var i=0; i<=2; i++) {
+	  for (var j=0; j<emoticons[i].length; j++) {
+	    var emo=emoticons[i][j]; 
 	    msg+=(emo==undefined?"?"+i+j:"&#x"+emo.toString(16)+";");
 	    }
 	  msg+="<br>";
 	  }
+	for (var k in navigator) { msg+=k+"="+navigator[k]+'&nbsp;'; }
 	alrt(msg);
 	}
-
-
