@@ -10,11 +10,16 @@
 <link rel="shortcut icon" href="icon.png"/> 
 <!-- icon.png has white background, while AdamRiese.ico is transparent 
      to allow background colours -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
 <style>
-      html{font-size:10pt}
+    @viewport { width: device-width ; zoom: 1.0 ; } 
+    table { border-collapse:collapse }
+    @media only screen and (max-width: 480px) {
+       <!-- html {font-size:10pt} -->
       table { border-collapse:collapse; width:100% }
+      }
       td {
         border:none;
         overflow:hidden;
