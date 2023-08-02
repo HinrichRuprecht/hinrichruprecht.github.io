@@ -1,0 +1,2113 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!--  xml:lang="de-DE" lang="de-DE" -->
+<head>
+<title>Family Tree</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="copyright" content="H. Ruprecht" />
+<meta name="license" content="GNU General Public License v2 or later"/>
+<link href="Gramps.ico" rel="Shortcut Icon" />
+<style type="text/css">
+
+/* Standard Tags {{{1
+ */
+ BODY { font-family: "Verdana", "Bitstream Vera Sans", "Arial", "Helvetica", 
+	sans-serif; background-color: #ffffff; font-size: 14px; }
+ A:link { color: #000; text-decoration: underline; }
+ A:hover { background-color: #eee; color: #000; text-decoration: underline; }
+ A:active { background-color: #eee; color: #000; text-decoration: none; }
+ A:visited { color: #333; text-decoration: underline; }
+ DIV { margin: 2px; padding: 2px; }
+ P { }
+ H1 { font-weight: bolder; font-size: 160%; margin: 2px; }
+ H2 { font-weight: bolder; font-style: italic; font-size: 150%; }
+ H3 { font-weight: bold; margin: 0; padding: 10px 0px 10px 0px; }
+ H4 { margin: 1em 0em 0.3em 0em; padding-left: 4px; 
+      border-bottom: 1px solid #999; }
+ H5 { margin-bottom: 0.5em; }
+ H6 { font-style: italic; font-size: 100%; margin: 1.3em 0em 1em 0.8em; }
+ IMG { border: none; }
+ SUP { line-height: 0%; }
+ TABLE { border: none; border-collapse: collapse; }
+ TH { padding: 1px 3em 1px 1px; font-weight: bold; text-align: left; }
+ TD { vertical-align: top; padding: 0; }
+ /*BUTTON { font-size: 50%; } */
+/* Custom {{{1
+ */
+/* main data table */
+ TABLE.infolist { border: 0; /*width: 100%;*/ font-size: 100%; 
+		  margin: 0em 2em 0em 2em; }
+ TABLE.infolist TH { border-bottom: 1px solid #999; }
+ TABLE.infolist TH A { text-decoration: none; }
+ TABLE.infolist TR > TD:first-child { min-width: 6em; }
+ TD.category { padding: 1px 3em 1px 1px; /* Defines spacing between rows */  
+	      /*width: 10%;*/ font-weight: bold; }
+ TD.data { padding: 1px 3em 1px 1px; /* Defines spacing between rows */ 
+	   font-weight: bold; }
+ TD.field { padding: 1px 3em 1px 1px; /* Defines spacing between rows */ 
+	    /*width: 15%;*/ }
+ div#fixedheader {
+	position:fixed;
+	top:0px;
+	left:0px;
+	width:100%;
+	/* padding:10px; */
+	}
+  div#fixedfooter {
+	position:fixed;
+	bottom:0px;
+	left:0px;
+	width:100%;
+	padding:8px;
+	}
+
+/* float left and right */
+ .leftwrap { float: left; margin: 2px 10px 2px 2px; }
+ .rightwrap { float: right; margin: 2px 2px 10px 2px; }
+ .centered { text-align: center; }
+/* navigation links */
+ #navheader { padding: 2px; margin: 2px; border-bottom: 1px solid #999; }
+ .navtitle { font-size:	130%; color: #999; margin: 3px; }
+ .navbyline { float: right; font-size: 100%; margin: 2px; 
+	      padding: 2px 10px 2px 2px; }
+ .nav { margin: 0px 0px 2px 0px; padding: 1px; font-size: 200%; 
+	font-weight: bold; word-spacing: 0.5em; }
+ .BUTTON { font-size: 60%; }
+ .INPUT { font-size: 120%; }
+
+ .box { font-size: 75%; height: 48px; padding-left: 5px; 
+	vertical-align: middle; }
+ .bhline { position: absolute; background-color: #000000; font-size: 0pt; 
+	   z-index: 3; height: 1px; }
+ .bvline { position: absolute; background-color: #000000; font-size: 0pt; 
+	   z-index: 3; width: 1px; }
+ .border { position: absolute; background-color: #000000; font-size: 0pt; 
+	   z-index: 4; width: 160px; height: 50px; }
+ .boxbg  { position: absolute; background-color: #eeeeee; 
+	   z-index: 5; width: 158px; height: 48px; }
+ .shadow { position: absolute; background-color: #999999; 
+	   z-index: 1; width: 158px; height: 48px; }
+ .gvline { position: absolute; background-color: #999999; font-size: 0pt; 
+	   z-index: 1; width: 1px;}
+ .ghline { position: absolute; background-color: #999999; font-size: 0pt; 
+	   z-index: 1; height: 1px;}
+
+/* 1}}}
+ vim:foldmethod=marker
+*/
+</style>
+<script type="text/javascript">
+// ToDo:
+//   -	Translation file format like Gramps-Locale (.po file)
+
+var iTrans=0, iHelp=1, iData=2; // iHelp must be >0 !
+var import_files=new Array("","","");
+var import_frames=new Array();
+import_frames[iTrans]="Trans_Import";
+import_frames[iData]="Data_Import";
+import_frames[iHelp]="helpfile";
+var check_string =new Array();
+check_string[iTrans]="Pedigree";
+check_string[iData]="\\[F\\d+\\]\\,\\[I"
+check_string[iHelp]='\<h4\>';
+var prev_len=(-1,-1,-1); // previous length of import (in progress)
+var max_wait=3000; var min_wait=50; // wait for files to load [msecs]
+var types_=new Array("per","fam","child","place"); // => used in ctxt_type=0,1,2
+var regExpTypes
+    =new Array(/^\[I/,/^\[F[^\,]+\,[^\,]+\,/,/^\[F[^\,]+\,[^\,]+$/,/^\[P/);
+var Head_Lines=new Array();
+Head_Lines[0]='Person,Surname,Given,Call,Suffix,Prefix,Title,Gender,Birth date,'
+    +'Birth place,Birth source,Baptism date,Baptism place,Baptism source,'
+    +'Death date,Death place,Death source,Burial date,Burial place,'
+    +'Burial source,Note';
+Head_Lines[1]='Marriage,Husband,Wife,Date,Place,Source,Note';
+Head_Lines[2]='Family,Child';
+Head_Lines[3]='Place,Title,Name,Type,Latitude,Longitude,Code,Enclosed_by,Date';
+var All_Fields=Head_Lines[0]+","+Head_Lines[1]+","+Head_Lines[2]
+              +","+Head_Lines[3];
+var P_=new Array();
+var dontFollow=new Array(); 
+var dontFollowIcon=new Array("&#9665;"," &#9654;"); 
+	//  Left-pointing Triangle,  Right-pointing Triangle
+	// "&#8854;","&#8853;"); // circled -/+
+var IdFields="Person,Marriage,Husband,Wife,Family,Child,Place"; // ,Place ??
+var idFieldsRegExp=/(Person|Marriage|Husband|Wife|Family|Child|Place|place)/;
+var dateFields="";
+var tst=0; // >0 : debug, =10 : import local file
+var msg="", showFam=1, box_info=17, debug_str="";
+var send_str="";
+var cookies_handled=0;
+var csv_file="";
+var search_str="";
+var email="user@domain";
+var n_form;
+var total_changes=new Array();
+var export_ids=new Array();
+var n_changes=0;
+var n_errors=0;
+var cnt_fnam, cnt_indv;
+var surnames=new Array();
+var surnames_l=new Array();
+var date_;
+var Curr_PId=""; var Curr_FId=""; var nam_1st="";
+var gender="";
+var psplit;
+var lev_n=new Array(); var max_level=5, mid_level=2;
+var box_height=48, box_width=158, gap_height=28, gap_width=42;
+var max_f="", max_p="";
+var Head_Lines_Import=new Array();
+var trans=new Array();
+var path=document.location.pathname;
+var domain=document.domain;
+var language=
+    (navigator["language"])?navigator["language"]:navigator["userLanguage"];
+var g_language="en";
+language=(language)? language.substr(0,2).toLowerCase() : g_language;
+var mobile=-1;
+var help_str=new Array();
+var help_idx=iHelp;
+var data_header=new Array();
+var all_ = new Array(); // 0=Person, 1=Family, 2=Child
+all_[0]=new Object(); all_[1]=new Object(); all_[2]=new Object(); 
+all_[3]=new Object();
+var n_all=(0, 0, 0); 
+var iType="";
+
+String.prototype.splitX =function (sep,del) { 
+    // like split but recognizes ...,"xxx,yyy",... parts
+    if (del==undefined) del='"';
+    var p0=0, p1, part="", l=this.length;
+    var res=new Array();
+    while (p0<l) {
+        while (this.substr(p0,1)==del) { 
+            if (part.length>0) part+=del; // only with DELDEL within DELs
+            p0++;
+            p1=this.indexOf(del,p0);
+            if (p1<0) { part+=this.substr(p0); p0=l; break; } // p1=l;
+            part+=this.substr(p0,p1-p0);
+            p0=p1+1;
+            }
+        p1=this.indexOf(sep,p0);
+        if (p1<0) { part+=this.substr(p0); p0=l; break; } // p1=l;
+        part+=this.substr(p0,p1-p0);
+        res.push(part);
+        p0=p1+1;
+        part="";
+        }
+    res.push(part);
+    return res;
+    } // splitX
+
+function init() {
+    var i,j,tmp,spli_; 
+    var h_=new Array("p","f","c"); 
+
+    import_files[iTrans]=language+"-trans.html";
+    import_files[iHelp]=language+"-help.html";
+
+    email='Hinrich.Ruprecht@t-online.de';date='2021-03-08';
+
+    for (i=0; i<Head_Lines.length; i++) {
+	split_=Head_Lines[i].splitX(",");
+	for (j=0; j<split_.length; j++) {
+	    tmp=h_[i]+"_"+split_[j].replace(" ","").toLowerCase();
+	    P_[tmp]=j;
+	    if (tst>0) debug("P["+tmp+"]="+j);
+	    }
+	}
+    }
+
+function _(word,lang) { // translate
+    var str, tmp, hsplit,i;
+    if (word == undefined) { return ""; }
+    if (lang==undefined) lang=language;
+    var res="";
+    var word_=word.split(",");
+    for (i=0; i<word_.length; i++) {
+	word=word_[i];
+	str=trans[lang+"-"+word];
+	if (str == undefined || str == "") { str=word; }
+	hsplit=str.split("|");
+	str=hsplit[hsplit.length-1];
+	res+=","+str;
+	}
+    return res.substr(1);
+    }
+
+function navheader(ctxt_type) {
+    var str, tmp;
+    if (ctxt_type==undefined) ctxt_type=0;
+    //if (tst>0) debug("navheader");
+    document.getElementById("navby").innerHTML
+        =_(document.getElementById("navby").innerHTML);
+    document.getElementById("navtitle").innerHTML
+        =_(document.getElementById("navtitle").innerHTML);
+    if (csv_file=="" || tst>=10) {
+        // Check for the various File API support.
+        if (!window.File || !window.FileReader || tst==10) {
+          if (tst<10)
+            alert('The File APIs are not fully supported in this browser.'
+              +' Data may only come from the same directory as this html file');
+            //document.getElementById("import").type="button";
+            //document.getElementById("import").onClick="return csv_import()";
+          iType="button";
+          }
+        else { iType="file"; }
+        //if (csv_file=="") csv_file=" ";
+        }
+    str='<input type="'+iType+'" class="BUTTON" id="import"'
+        +' value="'+_("Import")+'"';
+    if (iType!="file") str+=' onClick="return csv_import()"';
+    str+='>';
+    if (tst!=0) debug("Import="+str);
+    if (csv_file=="") {
+        document.getElementById("ImportButton").innerHTML=str;
+        csv_file=" ";
+        }
+    else if (csv_file!="") {
+        if (ctxt_type==0) { tmp='Surnames'; } else { tmp="Abort"; }
+        tmp=_(tmp);
+        str='<input type="button" class="BUTTON" id="surnames"'
+           +' value="'+tmp+'" onClick="return show_surnames(0)">'
+        document.getElementById("NamesButton").innerHTML=_(str);
+        if (ctxt_type==0) {
+            str='<input type="button" class="BUTTON" id="ex"'
+                +' onclick="export_family()" value="'+_('Export')+'">';
+            document.getElementById("ExportButton").innerHTML=str;
+            }
+        str='<input type="button" class="BUTTON" id="prt" '
+            +'onclick="print_()" value="'+_('Print')+'">';
+	document.getElementById("PrintButton").innerHTML=str;
+	console.log(str);
+        document.getElementById("hlp").value=_("Help");
+        }
+    if (csv_file!="" && ctxt_type==0) 
+        document.getElementById("mail").innerHTML =send_str;
+    if (iType=="file") {
+        if (!setFileLoader("import","Data_Import")) debug('navheader='+str);
+        }
+    } // navheader
+
+function setFileLoader (idButton, idArea) {
+    var fileInput = document.getElementById(idButton);
+    var fileDisplayArea = document.getElementById(idArea);
+    if (fileInput==undefined) { 
+        debug(_('Button "'+idButton+'" not defined!')); 
+        return false; 
+        }
+    if (fileDisplayArea==undefined) { 
+        debug(_('Area "'+idArea+'" not defined!')); 
+        return false; 
+        }
+    //fileDisplayArea.innerHTML = "Select File !";
+    if (tst!=0) debug("setFileLoader");
+    try {
+      fileInput.addEventListener('change', function(e) {
+        var file = fileInput.files[0];
+        if (tst>0) debug("Input="+file);
+        var textType = /text.*/;
+	if (file.type.match(textType)) {
+            var reader = new FileReader();
+            reader.onerror = fileErrorHandler;
+            reader.onload = function(e) {
+                debug("data import completed");
+                //fileDisplayArea.innerHTML = reader.result;
+                //debug(reader.result);
+                csv_file=" ";
+                navheader2();
+                hint("");
+                import_action(iData,reader.result);
+                }
+            reader.readAsText(file);	
+            if (tst!=0) debug("import "+file);
+            hint(12);
+            } 
+        else { //fileDisplayArea.innerText = "File not supported!";
+            alert(_('File not supported!'));
+            }
+        });
+        return true;
+      }
+    catch (e) {
+        debug("Error setFileLoader "+e);
+        }
+    // fileInput.focus();
+    return false;
+    } // setFileLoader
+
+function fileErrorHandler(evt) {
+    switch(evt.target.error.code) {
+      case evt.target.error.NOT_FOUND_ERR:
+        alert('File Not Found!');
+        break;
+      case evt.target.error.NOT_READABLE_ERR:
+        alert('File is not readable');
+        break;
+      case evt.target.error.ABORT_ERR:
+        break; // noop
+      default:
+        alert('An error occurred reading this file.');
+    };
+  }
+
+
+function navheader2(ctxt_type) {
+    var str="";
+    document.getElementById("content").innerHTML="";
+    document.getElementById("select").innerHTML="";
+    navheader(ctxt_type);
+    document.getElementById("navheader2").innerHTML=str;//+show_letter(ctxt_type);
+    show_surnames(ctxt_type);
+    document.getElementById("search").focus(); // ???
+    }
+
+function print_() {
+    var tmp="";
+    if (confirm(_('Family tree only'))) {
+	tmp=document.getElementById("content").innerHTML;
+	document.getElementById("content").innerHTML ="";
+	}
+    if (document.getElementById("navheader"))
+	document.getElementById("navheader").innerHTML ="";
+    document.getElementById("navheader2").innerHTML ="";
+    document.getElementById("hint").innerHTML ="";
+    document.getElementById("debug").innerHTML ="";
+    window.print();
+    if (tmp!="") document.getElementById("content").innerHTML =tmp;
+    navheader();
+    }
+
+function Select_Person(sms_,PId) {
+    if (PId==undefined) PId=Curr_PId;
+    if (sms_==0) { navheader2(sms_); } // sms_>0
+    switch (sms_) {
+	case 1:  Add_Family(PId); break;
+	case 2:  Add_Child(PId); break;
+	case 2+P_['f_husband']: Mod_Family(P_['f_husband'],PId); break;
+	case 2+P_['f_wife']: Mod_Family(P_['f_wife'],PId); break;
+	default: show_person(sms_,PId); break;
+	}
+    }
+
+function find_parents(CId) {
+    var FamId, res="";
+    for (FamId in all_[2]) {
+	if (all_[2][FamId].indexOf(CId)>=0) res+=","+FamId;
+	}
+    return res;
+    }
+
+function find_siblings(FamId,PId) {
+    var pos, res;
+    res=all_[2][FamId];
+    if (res==undefined) return "";
+    pos=res.indexOf(PId);
+    if (pos>0) res=res.substr(0,pos-1)+res.substr(pos+PId.length);
+    return res;
+    }
+
+function find_other_siblings(FamInd) {
+    var res=""; var split_, i, j, FamId, FathId, MothId, id_, fi;
+    split_=all_[1][FamInd].splitX(",");
+    FamId=split_[P_['f_marriage']];
+    FathId=split_[P_['f_husband']]; MothId=split_[P_['f_wife']];
+    if (FathId == "") { FathId="xxxx"; }
+    if (MothId == "") { MothId="xxxx"; }
+    for (fi in all_[1]) {
+	split_=all_[1][fi].splitX(",");
+	if (split_[P_['f_marriage']] != FamId
+	    && (split_[P_['f_husband']] == FathId || 
+		split_[P_['f_wife']] == MothId)) {
+	    var tmp=all_[2][split_[P_['f_marriage']]];
+	    if (tmp!=undefined) {
+		split_=tmp.splitX(",");
+		for (j=1; j<split_.length; j++) 
+		    { res=res+","+split_[j]; }
+		}
+	    }
+	}
+    return res;
+    }
+
+function find_families(PId) {
+    var res=""; var split_, fi, tmp;
+
+    for (fi in all_[1]) {
+	split_=all_[1][fi].splitX(",");
+	if (split_[P_['f_husband']] == PId || split_[P_['f_wife']] == PId)
+	    { res=res+","+fi; }
+	}
+    return res;
+    }
+
+function person_name(PId,ref_) { // also sets psplit for the person found !
+    // result is given name and surname
+    // ref_ : >0 : enclosed in <a href ...
+    //	      &8 : add birth and death date
+    //	      &16 : add link to (not) follow descendants/ancestors
+    var pi, res="", tmp, len_, surn, pos;
+    pi=all_[0][PId];
+    //debug(PId+"="+pi);
+    if (pi==undefined) {
+      if (tst>0 && PId!="[]") debug("Person "+PId+" not found ("+ref_+")");
+      return "";
+      }
+    psplit=pi.splitX(",");
+    surn=psplit[P_['p_surname']];
+    //if (surn.match(/^(.*)\,\s+(.*)$/)) { surn=RegExp.$2+" "+RegExp.$1; }
+    pos=surn.indexOf(";"); // , de|du|von replace
+    if (pos>0) { surn=surn.substr(pos+2)+" "+surn.substr(0,pos); }
+    if (psplit[P_['p_prefix']]!="") surn=psplit[P_['p_prefix']]+" "+surn;
+    if (psplit[P_['p_suffix']]!="") surn+=" "+psplit[P_['p_suffix']];
+    res=psplit[P_['p_given']]+" "+surn;
+    if (ref_>0) {
+	len_=res.length;
+	res="<a href='javascript:Curr_PId="+'"'+PId+'";'
+            +"Select_Person("+(ref_&8 ? 0 : ((ref_&7)-1))+")'>"
+	    +res+"</a>";
+	if (ref_&8) { // add birth/death date
+	    tmp=psplit[P_['p_birthdate']];
+	    if (tmp!=undefined && tmp!="")
+		{ res+=" *"+tmp; len_+=tmp.length+1; }
+	    tmp=psplit[P_['p_deathdate']];
+	    if (tmp!=undefined && tmp!="")
+		{ res+=" +"+tmp; len_+=tmp.length+1; }
+	    if (len_>50) { res="<small>"+res+"</small>"; }
+	    }
+	if (ref_&16 && find_parents(PId)!="" && find_families(PId)!="") { 
+	    // add +/- to (not) follow to descendants/ancestors
+	    res+=" <a href='javascript:setDontFollow("+'"'+PId+'"'+")'"
+		+" title='"+(dontFollow[PId]?"":_("do not"))+" "+_("follow")+"'"
+		+' style="text-decoration: none">'
+		+dontFollowIcon[(dontFollow[PId] ? 1 : 0)]+"</a>";
+	    }
+	}
+    return res;
+    }
+
+function setDontFollow(PId) { 
+    // reverse dontFollow[PId] to (not) follow descendants/ancestors
+    dontFollow[PId]=(dontFollow[PId] ? 0 : 1);
+    show_tree(Curr_PId);
+    }
+
+function check_load(idx,cnt) {
+    // check wether import_files[idx] was loaded and contains check_string[idx]
+    if (cnt==undefined) cnt=max_wait/min_wait;
+    var data_="", tmp; var data_len=-1;
+    var fr=import_frames[idx]; 
+    var docFr=document.getElementById(fr);
+    if (docFr==undefined)
+        { debug("Frame "+fr+" undefined"); return; }
+    var src=docFr.src;
+    if (src==undefined || import_files[idx] == "")
+	{ if (tst!=0) debug("undefined "+idx); return; }
+    //if (tst>0) debug("chk "+idx+" "+src);
+    if (src=="") {
+	if (tst>0) debug("Frame file not set for "+fr); 
+	if (idx==iTrans) {
+	    if (language!=g_language) 
+                debug("No translations for "+language+"!");
+	    import_files[idx]="";
+	    setTimeout("import_action("+idx+")",min_wait);
+	    }
+	else { import_file(idx); }
+	return;
+	}
+    var str=check_string[idx];
+    
+    try {
+	//data_=docFr.contentWindow.document.body.innerHTML;
+	if (docFr.contentWindow.document.body.innerHTML)
+	    data_len=docFr.contentWindow.document.body.innerHTML.length;
+	    if (tst>0) debug("load"+idx+" l="+(-data_len));
+	}
+    catch (e) {
+	data_="";
+	if (tst>0) debug("Error loading frame "+fr+": "+e);
+	if (cnt>0) {
+	    if (idx==iTrans && cnt<3) {
+		if (language!=g_language) 
+                    debug("No translations for "+language);
+		import_files[idx]="";
+		setTimeout("import_action("+iTrans+")",min_wait);
+		}
+	    else { setTimeout("check_load("+idx+","+(cnt-1)+")",min_wait); }
+	    return;
+	    }
+	}
+    if (data_len>prev_len[idx]) {
+	if (tst>0) debug("l["+idx+"]="+data_len);
+	prev_len[idx]=data_len;
+	if (tst>0) debug(">"+idx);
+	setTimeout("check_load("+idx+","+cnt+")",min_wait);
+	cnt=max_wait/min_wait; // start new count if loading still has progress
+	return;
+	}
+    cnt--;
+    if (data_len>=0) data_=docFr.contentWindow.document.body.innerHTML;
+    if (cnt<=0 || (str!="" && !data_.match(str))) {
+        if (tst!=0) debug("cnt<0?");
+	if (cnt>0 && !data_.match(/\s404/)) {
+	    setTimeout("check_load("+idx+","+cnt+")",min_wait);
+	    return;
+	    }
+	if (idx>0 || import_files[idx].substr(0,2)!=g_language) {
+	    debug(import_files[idx]+" "+_('not available'));
+	    if (tst>0) debug("l="+data_.length+",cnt="+cnt+",str="+str);
+	    if (navigator.userAgent.match(/Chrome|Safari/)
+		&& src.match(/file\:/i)) {
+		tmp=_("Use Firefox or InternetExplorer for locally stored files");
+		debug(tmp);
+		}
+	    }
+	if (idx==iHelp && import_files[idx].substr(0,2)!=g_language 
+            && data_len<100) { // help file
+	    import_files[idx]=g_language+import_files[idx].substr(2);
+	    import_file(idx);
+	    if (tst>0) debug("Import "+import_files[idx]);
+	    return;
+	    }
+	}
+    else { 
+	if (tst>0) debug("l="+data_.length); 
+	}
+    if (src!="") {
+	if (tst>0) debug("timeout action "+idx);
+	setTimeout("import_action("+idx+")",min_wait);
+	}
+    else { if (tst>0) debug("no src"); }
+    } // check_load
+
+function show_help() {
+    if (!document.getElementById("hlp")) return;
+    var str, data_; var cnt=0;
+    help_idx=-help_idx;
+    if (help_idx>0) { 
+	document.getElementById(import_frames[help_idx]).height=200;
+	//import_file(help_idx,200);
+	str="- ";
+	}
+    else {
+	document.getElementById(import_frames[-help_idx]).height=0;
+	str="+ ";
+	}
+    document.getElementById("hlp").value=str+_('Help');
+    } // show_help
+
+function hint(help_id,hstr) {
+    var str=" "; var hsep="<br />&nbsp;";
+    if (hstr!=undefined) str=hsep+hstr; 
+    var i=help_id;
+    while (help_str[i] != undefined) {
+	str+=hsep+help_str[i];
+	i++;
+	}
+    if (document.getElementById("hint")!=undefined)
+        document.getElementById("hint").innerHTML=
+            "<font color='red'>"+str+"</font>";
+    }
+
+function Field_Data(sms_,field_,val,name_) {
+    var str, tmp, cmd, nam_, val_="", i, fld, msg;
+    if (sms_!=0) { nam_=name_+"_"+n_form; n_form++; }
+    if (sms_<0) {
+	if (name_=="") { return val; } //  || val.charAt(0)=="["
+	if (!document.getElementById(nam_)) {
+	    debug("undef: f="+field_+" v="+val+" n="+nam_);
+	    nam_="";
+	    }
+//	if (field_.charAt(0)==" ") {
+	if (nam_.charAt(0)=="X" && nam_.indexOf("S")>0) {
+	    if (val!="[]" && !document.getElementById(nam_).checked) 
+		{ val_=""; tmp="Not"; }
+	    else { val_=val; tmp=""; }
+	    if (tst>0) debug(tmp+"Checked "+nam_);
+	    }
+	else if (nam_!="") {
+	    val_=document.getElementById(nam_).value;
+	    val_=val_.replace(/^\s*(\S*)\s*$/g,'$1'); // delete blanks
+	    }
+	else { val_=val; }
+	if (val != val_) {
+	    n_changes++; msg="";
+	    if (val_!="" && dateFields.indexOf(field_)>=0) {
+	        if (val_.match(/^(\d+)\.(\d+)\.(\d+)$/)) {
+		    val_=RegExp.$1; if (val_.length==1) { val_="0"+val_; }
+		    tmp=RegExp.$2;
+		    if (tmp.length==1) { tmp="0"+tmp; } val_=tmp+"-"+val_;
+		    tmp=RegExp.$3;
+		    if (tmp.length==2) { tmp="20"+tmp; } val_=tmp+"-"+val_;
+		    }
+		if (!val_.match(/\d\d\d\d\-\d\d\-\d\d$/) &&
+		    !val_.match(/\d\d\d\d\-\d\d$/) &&
+		    !val_.match(/^\d\d\d\d$/)) {
+		    msg=_('Specify dates as')+" "+_('YYYY')+"-..-..";
+		    }
+		}
+	    else if (field_=='Gender' || field_==_('Gender')) {
+		tmp=" male  female  "+_('male')+"  "+_('female')+" ";
+		val_=val_.toLowerCase();
+		if (tmp.indexOf(" "+val_+" ")<0) {
+		    msg=_('acceptable input')+tmp;
+		    }
+		val_=_(val_); // ,"en"
+		}
+	    else if (val_!="" && val_.match(/[\"\;\%]/)) {
+		msg=_('Illegal characters')+' (; " %)';
+		}
+	    if (msg!="") {
+		alert(_(field_)+" : "+msg);
+	    	document.getElementById(nam_).focus();
+		n_errors++;
+		return "";
+	 	}
+	    }
+	str=val_;
+	}
+    else {
+	val_=val; fld=field_;
+	if (field_.toLowerCase()=="gender") val_=_(val_); 
+	if (sms_>0 && name_!="") {
+	    if (field_.charAt(0)==" " || val_=="[]") {
+		tmp=nam_.charAt(0);
+		if (tst>0) debug("Chg"+field_+" v="+val_+" n="+nam_);
+		if (tmp=="n") { cmd="Add_Family()"; } // family w/o spouse
+		else if (tmp=="f") { cmd="navheader2(1)"; } // family
+		else {
+		    cmd="Curr_FId='"+Curr_FId+"';"; // remember current familyid
+		    if (tmp=="c") { cmd+="navheader2(2)"; } // child
+		    else if (tmp=="X") { // Select followed by parameter
+			tmp=nam_.substr(nam_.indexOf("S")+1);
+			cmd+="navheader2("+tmp+")";
+			}
+		    }
+		if (val_=="" || val_=="[]") val_=_("Select");
+		if (tst!=0) debug("Button "+val_+"="+cmd);
+		val_='<input type="button" class="BUTTON" value="'+val_
+		   +'"  onClick="if (!show_person(-1,Curr_PId)) return false;'
+                            +cmd+'">';
+		if (field_.charAt(0)==" ")
+		    fld=field_.charAt(1)+" "+_(field_.substr(2));
+		}
+	    else {
+		if (nam_.indexOf("S")>0) {
+		    val_=val_+'<input type="checkbox" checked="checked"'; 
+		    if (tst>0) debug("Check "+nam_);
+		    }
+		else
+		    { val_='<input type="text" size="60" value="'+val_+'"'; } 
+		val_+=' id="'+nam_+'"/>';
+		if (nam_1st=="") nam_1st=nam_; // remember for focus()
+		//if (tst>0) debug("Input "+nam_);
+		fld=_(field_);
+		}
+	    }
+	else { fld=_(field_); }
+	str='<tr><td class="field">'+fld+'</td>'
+	    +'<td class="data">'+val_+'</td>'
+	    +'</tr>';
+	}
+    return str;
+    } // Field_Data
+
+function start_info(id_,title_,size_,form_) {
+    var str='<div id="content"><h'+size_+'>'+title_+'</h'+size_+'>';
+    if (form_>0) { str+="<form name='"+id_+"'>"; }
+    str+='<table class="infolist">';
+    return str;
+    }
+
+function end_info(form_) {
+    var str;
+    if (form_>1) { return ""; }
+    str='</table></div>';
+    if (form_>0) { str='</form>'+str; }
+    return str;
+    }
+
+function Category_Data_Field(cat,dat,fie) {
+    var str;
+    str='<tr><td class="category">'+cat+'</td>'
+	+'<td class="data">'+dat+'</td>'
+	+'<td class="field">'+fie+'</td></tr>';
+    return str;
+    }
+
+function box_(info,top_,left_) {
+    var str;
+    str='<div class="boxbg" style="top: '+top_+'px; left: '+left_+'px;">'
+	+'<table><tr><td class="box">'+info+'</td></tr></table></div>'
+	+'<div class="shadow" style="top: '+(top_+5)+'px; left: '
+	    +left_+'px;"></div>'
+	+'<div class="border" style="top: '+(top_-1)+'px; left: '
+	    +(left_-1)+'px;"></div>';
+    return str;
+    }
+
+function hline_(top_,left_,gleft_,width_) {
+    var str;
+    str='<div class="bhline" style="top: '+(top_)+'px; '
+	  +'left: '+(left_)+'px; width: '+width_+'px;"></div>'
+	+'<div class="ghline" style="top: '+(top_+5) +'px; '
+	  +'left: '+(left_+gleft_)+'px; width: '+(width_+5-gleft_)
+	  +'px;"></div>';
+    return str;
+    }
+
+function vline_(top_,left_,height_) {
+    var str;
+    if (height_<0) { height_=-height_; top_=top_-height_; }
+    str='<div class="bvline" style="top: '+top_+'px; left: '+left_+'px; '
+	  +'height: '+height_+'px;"></div>'
+	+'<div class="gvline" style="top: '+(top_+5)+'px; '
+	  +'left: '+(left_+5)+'px; height: '+height_+'px;"></div>';
+    return str;
+    }
+
+function show_tree(PId) {
+    var str='<div id="tree"><h4>';
+    var strE='</h4><div style="position: relative;">';
+    var buttons='<a href="javascript:toggle_dates()">'+_('Date')+'</a>';
+    buttons+=' <a href="javascript:max_level++;show_tree(Curr_PId);">'
+		+' + </a>';
+    if (max_level>2) buttons+='/'
+	    +'<a href="javascript:max_level--;'
+	      +'if (max_level-1<mid_level)mid_level--; '
+	      +'show_tree(Curr_PId);"> - </a>';
+	buttons+=_('Generation');
+    var toggleDesc=" (<a id='ansdes' href='"
+		  +"javascript:showFam=1-showFam;show_tree(Curr_PId);"
+		  +"'>";
+    if (showFam==0) { 
+	str+=_('Ancestors')
+	    +toggleDesc
+	    +_('Families')+"</a>)";
+	str+=buttons+strE;
+	str+=show_ancestors(PId); 
+	}
+    else { 
+	str+=_('Families');
+	if (mid_level>0) {
+	    str+=" <a id='ansdes' href='javascript:mid_level--;"
+		+"show_tree(Curr_PId);'><</a> ";
+	    }
+	if (mid_level<max_level-1) { // -1
+	    str+=" <a id='ansdes' href='javascript:mid_level++;"
+		+"show_tree(Curr_PId);'>></a> ";
+	    }
+	str+=toggleDesc
+	    +_('Ancestors')+'</a>)'
+	    +buttons+strE;
+	str+=show_descendants(PId,mid_level); 
+	}
+    document.getElementById("select").innerHTML=str;
+    }
+
+function toggle_dates() {
+    box_info^=8;
+    show_tree(Curr_PId); 
+    }
+
+function toggle_clickAction() {
+    box_info^=16;
+    show_tree(Curr_PId); 
+    }
+    
+function show_ancestors(PId) {
+    var str, pi, i, i2, par, PId_, split_, tmp, top_, left_, level_, top_d;
+    var info, str2;
+    var ancestors=new Array();
+
+    str="";
+    ancestors[1]=PId; i2=2;
+    var maxI=Math.pow(2,max_level), maxI2=maxI/2, maxTop=15*maxI;
+    for (i=1; i<maxI; i++) {
+	PId_=ancestors[i];
+	if (PId_ != "") {
+	    pi=all_[0][PId_];
+	    if (pi==undefined) { info=""; }
+	    else {
+		split_=pi.splitX(",");
+		info=person_name(PId_,box_info);
+		}
+	    left_=6; top_d=maxTop; top_=top_d-20; // top_d=480; 
+	    tmp=1; while (i>=tmp*2) {
+		tmp=tmp*2;
+		left_=left_+190;
+		top_d=top_d/2; top_=top_-top_d;
+		}
+	    tmp2=i % tmp;
+	    top_=top_+tmp2*2*top_d;
+	    str2=box_(info,top_,left_);
+	    if (dontFollow[PId_]) par="";
+	    else par=find_parents(PId_);
+	    if (par!="") {
+		split_=par.splitX(",");
+		par=all_[1][split_[1]]; // only 1st parents
+		}
+	    else { par=",,"; }
+	    split_=par.splitX(",");
+	    ancestors[i2]=split_[P_['f_husband']]; 
+	    ancestors[i2+1]=split_[P_['f_wife']];
+	    if (par != ",," && i<maxI2) {
+		str2=str2+hline_(top_+25,left_+159,0,15);
+		if (split_[P_['f_husband']] != "") {
+		    tmp=top_-(top_d/2)+23; tmp2=left_+174;
+		    str2=str2+hline_(tmp,tmp2,5,15);
+		    str2=str2+vline_(tmp,tmp2,top_d/2);
+		    }
+		if (split_[P_['f_wife']] != "") {
+		    tmp=top_+26; tmp2=left_+174;
+		    str2=str2+vline_(tmp,tmp2,top_d/2);
+		    tmp=tmp+(top_d/2);
+		    str2=str2+hline_(tmp,tmp2,5,15);
+		    }
+		}
+	    str+=str2;
+	    }
+	else { ancestors[i2]=""; ancestors[i2+1]=""; }
+	i2=i2+2;
+	}
+    str+='</div>';
+    str+='<table style="height: 970px; width: 940px;">'
+	    +'<tr><td></td></tr></table>';
+    str+=end_info(0);
+    return str;
+    } // show_ancestors
+
+function show_descendants(PId,level,tgt_spouse,tgt_child,cTop,cLeft) {
+    var info, str, fam_, fi, i, split_, curr_n;
+    var FamId, spouse, children, tmp, cline_top, cline_left, prev_lev;
+    var d_height=box_height+gap_height, d_width=box_width+gap_width;
+    var fsplit_=new Array();
+
+    if (PId=="") { return ""; }
+    if (tgt_spouse==undefined) { tgt_spouse=""; }
+    if (tgt_child==undefined) { tgt_child=""; }
+    if (dontFollow[PId]) fam_="";
+    else fam_=find_families(PId);
+    str="";
+    if (level==mid_level) {
+	for (i=0; i<=max_level; i++) { lev_n[i]=0; }
+	}
+    if (fam_!="") {
+	fsplit_=fam_.splitX(",");
+	tmp=fsplit_[1];
+	if (all_[2][tmp]!=undefined) {
+		if (lev_n[level+1]>lev_n[level])
+		    { lev_n[level]=lev_n[level+1]; }
+		}
+	}
+    if (cTop!=undefined) {
+	tmp=d_height*lev_n[level]+box_height/2;
+	str+=vline_(cTop,cLeft,tmp-cTop);
+	str+=hline_(tmp,cLeft,5,gap_width);
+	}
+
+    if (level<=mid_level && level>0) { str+=_show_par(PId,level,cTop,cLeft); }
+    curr_n=lev_n[level];
+    info=person_name(PId,box_info);
+    str+=box_(info,lev_n[level]*d_height,level*d_width);
+    if (tst>0) debug(PId+"@"+curr_n);
+    lev_n[level]++;
+    for (fi=1; fi<fsplit_.length; fi++) {
+	FamId=fsplit_[fi];
+	split_=all_[1][FamId].splitX(",");
+	spouse=split_[P_['f_husband']];
+	if (spouse==PId) { spouse=split_[P_['f_wife']]; }
+	if (spouse=="") spouse=" ";
+	cline_top=(lev_n[level])*d_height-gap_height/2;
+	cline_left=level*d_width+box_width+gap_width/2;
+	if (tgt_spouse!="") {
+	    if (spouse!=tgt_spouse) { continue; }
+	    if (level>0) { str+=_show_par(tgt_spouse,level,cTop,cLeft); }
+	    }
+	else if (level==mid_level && level>0) 
+		{ str+=_show_par(spouse,level,cTop,cLeft); }
+	tmp=d_height*(lev_n[level]-curr_n);
+	if (spouse==" ") { info="?"; }
+	else { info=person_name(spouse,box_info); }
+	str+=box_(info,lev_n[level]*d_height,level*d_width);
+	if (tst>0) debug("+"+spouse);
+	lev_n[level]++;
+	str+=vline_(curr_n*d_height+gap_height/2,
+		       level*d_width+box_width/2,tmp);
+	if (level<max_level-1) {
+	    children=all_[2][FamId];
+	    if (children==undefined) children="";
+	    if (tgt_child!="") {
+		tmp=all_[0][tgt_child];
+		if (tmp!=undefined) children+=","+tmp;
+		}
+	    if (children != "") {
+		split_=children.splitX(",");
+		if (spouse=="") { tmp=0; } else { tmp=1; }
+		if (level<mid_level && 
+		    lev_n[level+1]<lev_n[level]-1 && split_.length-1<=1+tmp) {
+		    lev_n[level+1]=lev_n[level]-tmp-1;
+		    }
+		else if (lev_n[level+1]<curr_n) lev_n[level+1]=curr_n;
+		prev_lev=lev_n[level+1];
+		for (i=1; i< split_.length; i++) {
+		    if (i==1) {
+			str+=hline_(cline_top,
+				       level*d_width+box_width/2,5,
+				       (box_width+gap_width)/2);
+			}
+		    if (tgt_child=="") {
+			id_=split_[i];
+			str+=show_descendants(id_,level+1,"","",cline_top,cline_left);
+			}
+		    else {
+			tmp=d_height*lev_n[level+1]+box_height/2;
+			str+=vline_(cline_top,cline_left,tmp-cline_top);
+			str+=hline_(tmp,cline_left,5,gap_width);
+			}
+		    }
+		}
+	    }
+	}
+    if (level==mid_level) {
+	str+='</div>';
+	str+='<table style="height: 970px; width: 925px;">'
+		+'<tr><td></td></tr></table>';
+	str+=end_info(0);
+	}
+    return str;
+    } // show_descendants
+
+function _show_par(PId,level,cTop,cLeft) {
+    var fam_,fsplit_,split_, spouse, i, str;
+
+    if (dontFollow[PId]) return "";
+    str="";
+    fam_=find_parents(PId);
+    if (fam_!="") {
+	fsplit_=fam_.splitX(",");
+	fam_=all_[1][fsplit_[1]]; // only 1st parents
+	if (fam_==undefined || fam_=="") 
+	    { debug(PId+" no fam,l="+level); return ""; }
+	split_=fam_.splitX(",");
+	spouse=split_[P_['f_wife']];
+	if (spouse=="") spouse=" ";
+	i=P_['f_husband'];
+	if (split_[i]=="") { i=P_['f_wife']; spouse=""; }
+	str+=show_descendants(split_[i],level-1,spouse,PId,cTop,cLeft);
+	//curr_n=lev_n[level]-1;
+	}
+    return str;
+    }
+
+function Add_Child(PId) {
+    var nchild, split_;
+    if (find_parents(PId)!=""
+	&& !confirm(_('Person is already child of another family')+'.\n'
+		   +_('Continue')+"?"))
+	{ n_errors++; return; }
+    split_=all_[1][Curr_FId].splitX(",");
+    save_(2,split_[0],","+PId,1);
+    show_person(1,Curr_PId);
+    }
+
+function Mod_Family(pos,val) {
+    var split_, tmp;
+    split_=all_[1][Curr_FId].splitX(",");
+    split_[0]="";
+    split_[pos]=val;
+    tmp=split_.join(",");
+    save_(1,Curr_FId,tmp,0);
+    show_person(0,Curr_PId);
+    }
+
+function Add_Family(PId) {
+    var tmp, fam_, i, info, pi; var nfam=all_[1].length;
+    if (PId == undefined) { PId=""; }
+    pi=all_[0][Curr_PId];
+    if (pi==undefined) { debug("Curr="+Curr_PId); return; }
+    psplit=pi.splitX(","); 
+    gender=psplit[P_['p_gender']];
+    tmp=(gender.charAt(0)).toLowerCase(); // gender of current person
+    if (tmp=="m") { info=Curr_PId+","+PId; } else { info=PId+","+Curr_PId; }
+    max_f=increment_(max_f);
+    fam_="["+max_f+"]";
+    for (i=P_['f_wife']; i<Head_Lines[1].length; i++) { info+=","; }
+    save_(1,fam_,","+info,1);
+//    if (PId=="") { show_person(0,Curr_PId); } // -> display mode
+//    else { show_person(1,Curr_PId); } // -> modify mode
+    show_person(1,Curr_PId); // -> modify mode
+    }
+
+function section_(sms_,sect_,name_,size_,vals_,start_,fields,end_) {
+    var i, res, info, val, val_, nam_, fieldName;
+    var fields_=fields.splitX(",");
+    if (sms_>=0 && size_>0)
+	{ res=start_info(sect_,name_,size_,sms_); }
+    else { res=""; } // read form
+    for (i=start_; i<fields_.length; i++) {
+	fieldName=fields_[i];
+	val=vals_[i];
+	if (val==undefined) { val=""; } // continue? don't show empty id
+	if (sms_<0) { res=res+","; }
+	if (fieldName != "" && (sms_!=0 || val!="")) {
+	    nam_=sect_;
+	    if (val!=Curr_PId) {
+		if (val.charAt(0)=="[") {
+                    if (tst>0) debug(sms_+":"+val);
+		    if (sms_!=0 && nam_.charAt(0)=="X") { // only for families!
+			nam_+="S"+(2+i); // select: 3(2+1)=father, 4=mother
+			}
+		    if (sms_>=0) {
+                        if (val.charAt(1)=="I") // Person
+                            { val=person_name(val,1-sms_); }
+                        else if (val.charAt(1)=="P") // Place
+                            { val=getPlace(val); }
+                        else { debug("NoId:"+fieldName+"="+val); }
+                        }
+		    if (sms_>0 && val=="") val="[]";
+		    }
+		val_=Field_Data(sms_,_(fieldName),val,nam_);
+		vals_[i]=val;
+		res=res+val_;
+		}
+	    else { if (sms_<0) { res=res+val; } }
+	    }
+	}
+    if (sms_>=0 && end_>0) { res=res+end_info(sms_); }
+    return res;
+    } // section_
+
+function getPlace(placeId) {
+    var placeInfo=all_[3][placeId];
+    if (placeInfo==undefined) return "?"+placeInfo;
+    var splitP=placeInfo.splitX(",");
+    return splitP[2];
+    } // getPlace
+
+function increment_(id_) {
+    var n,l, res;
+    if (id_.match(/^\[(.*)\]$/)) id_=RegExp.$1;
+    n=id_.charAt(0); l=id_.length-1;
+    res=parseInt(id_.substr(1,10))+1; res=("00000"+res).slice(-l);
+    if (tst>0) debug("incr:"+id_+"="+n+res);
+    return n+res;
+    }
+
+function export_family() {
+    var type_, split_, csplit, line, i, j, tmp, Id_;
+    
+    if (export_ids[0]==undefined) {
+      for (type_=0; type_<4; type_++) {
+	export_ids[type_]=";";
+	if (Curr_PId=="")
+	    for (Id_ in all_[type_]) { export_ids[type_]+=Id_+";"; }
+	}
+      }
+    if (Curr_PId!="") {
+	// find descendants of Curr_PId and ancestors+spouses+siblings
+	hint(0,'Data assembling started (descendants)');
+	export_children_ids(Curr_PId); // includes given PId
+	hint(0,'Data assembling started (ancestors)');
+	export_parent_ids(Curr_PId);
+	hint(0,'Data export started');
+	}
+    var ex_win=window.open("about:blank",_('Pedigree')+"_"+_('Export'));
+    if (data_header[1]!=undefined) 
+        { ex_win.document.write(data_header[1]+"<br>"); }
+    export_ids[2]=export_ids[1]; //
+    for (type_=0; type_<export_ids.length; type_++) {
+	/*    switch (type_) {
+		case 1: line=_(Head_Lines[1]);
+			break;
+		case 2: line=_(Head_Lines[2]);
+			break;
+		default: line=_(Head_Lines[0]);
+		} */
+	split_=export_ids[type_].splitX(";");
+	if (split_.length<=2) continue;
+	line=Head_Lines[type_];
+	ex_win.document.write(line+"<br>");
+	for (i=1; i<split_.length; i++) {
+	    Id_=split_[i];
+	    line=all_[type_][Id_];
+	    if (line==undefined) continue;
+	    if (type_==2) { // child
+		csplit=line.splitX(",");
+		for (j=1; j<csplit.length; j++)
+		    { ex_win.document.write(csplit[0]+","+csplit[j]+"<br>"); }
+		}
+	    else { ex_win.document.write(line+"<br>"); }
+	    }
+	ex_win.document.write("<br>");
+	}
+    ex_win.focus();
+    ex_win.document.close();
+    hint(0);
+    return;
+    }
+
+function add_export (type_, Id_) {
+    //if (tst>0) debug("addex "+type_+":"+Id_); 
+    if (Id_!=undefined && Id_!="" && export_ids[type_].indexOf(";"+Id_+";")<0)
+	{ export_ids[type_]=export_ids[type_]+Id_+";"; return true; }
+    else return false;
+    }
+
+function export_parent_ids (PId) {
+    var fsplit_, fam_id, fam_ids, i, j, k, Id_, split_, csplit, tmp, split2;
+    
+    if (PId=="" || dontFollow[PId]) return;
+    fam_ids=find_parents(PId);
+    fsplit_=fam_ids.splitX(",");
+    for (i=1; i<fsplit_.length; i++) {
+	fam_id=fsplit_[i];
+	//add_export(1,fam_id); // Family id into which PId was born
+	split_=all_[1][fam_id].splitX(",");
+	exportIds(split_);
+	Id_=split_[P_['f_husband']];
+	if (Id_!="") {
+	    //add_export(0,Id_); // Person father
+	    export_parent_ids(Id_); // parents of father
+	    }
+	Id_=split_[P_['f_wife']];
+	if (Id_!="") {
+	    //add_export(0,Id_); // Person mother
+	    export_parent_ids(Id_); // parents of mother
+	    }
+	//add_export(2,fam_id);
+	tmp=find_siblings(fam_id,PId);
+	split_=tmp.splitX(",");
+	exportIds(split_);
+	for (j=1; j<split_.length; j++) {
+	    Id_=split_[j]; // next child of parents (sibling of PId)
+	    //add_export(0,Id_); // Person info of sibling
+	    if (dontFollow[Id_]) fam_ids="";
+	    else fam_ids=find_families(Id_);
+	    csplit=fam_ids.splitX(","); // Families of sibling
+	    for (k=1; k<csplit.length; k++) {
+	        if (!add_export(1,csplit[k])) continue; // already exported
+		split2=all_[1][csplit[k]].splitX(",");
+		exportIds(split2);
+		//add_export(0,split2[P_['f_husband']]); // Spouse 
+		//add_export(0,split2[P_['f_wife']]);
+		}
+	    }
+	}
+    }
+
+function exportIds(infoArr) {
+    var i, j, split_, val;
+    for (i=0; i<infoArr.length; i++) {
+//        split_=infoArr[i].splitX(",");
+//        for (j=0; j<split_.length; j++) {
+//            val=split_[j];
+            val=infoArr[i];
+            if (val.substr(0,2)=="[P") { add_export(3,val); }
+            else if (val.substr(0,2)=="[I") { add_export(0,val); }
+            else if (val.substr(0,2)=="[F") 
+                { add_export(1,val); add_export(2,val); }
+//            }
+        }
+    }
+
+function export_children_ids (PId) {
+    if (PId==undefined || PId=="") return;
+    add_export(0,PId);
+    var fam_ids=find_families(PId);
+    var fsplit_=fam_ids.splitX(",");
+    var i, fi, FamId, split_, children, id_;
+    for (fi=1; fi<fsplit_.length; fi++) {
+	FamId=fsplit_[fi];
+	if (!add_export(1,FamId)) continue; // already included
+	split_=all_[1][FamId].splitX(",");
+	exportIds(split_);
+	//add_export(0,split_[P_['f_husband']]);
+	//add_export(0,split_[P_['f_wife']]);
+	//add_export(2,FamId);
+	children=find_siblings(FamId,PId);
+	if (children==undefined) continue;
+	split_=children.splitX(",");
+	for (i=1; i<split_.length; i++) {
+	    id_=split_[i];
+	    export_children_ids(id_);
+	    }
+	}
+    }
+
+function save_(type_,Id,vals_,new_) {
+    var info, old_, tmp, id_=Id, msg;
+    var pos=vals_.indexOf(",");
+    if (id_=="[NN]") { max_p=increment_(max_p); id_="["+max_p+"]"; }
+    else if (id_=="") { 
+	id_=vals_.substr(0,pos);
+	vals_=vals_.substr(pos);
+	}
+    info=id_+vals_;
+    old_=all_[type_][id_];
+    if (old_==undefined) { new_=1; }
+    else {
+	if (old_.indexOf(vals_)>=0) { debug("Duplicate"+type_+": "+info); }
+	else if (type_==2) { info=old_+vals_; }
+	}
+    all_[type_][id_]=info;
+    if (tst>0) debug("save"+type_+" "+id_+"="+info);
+    // save total_changes as Cookie and in array
+    if (Id!="") { write_cookie(types_[type_]+"_"+id_,info,"2099-12-31"); }
+    if (total_changes.length==0) { // 1st change
+	send_str='<input type="button" class="BUTTON" value="'
+	    +_('Mail')	    +'"  onClick="send_changes()">';
+	document.getElementById("mail").innerHTML =send_str;
+	if (document.cookie=="") {
+	    msg=_('Changes not saved in cookies')+"\n"
+		+_('Send changes before leaving the web page');
+	    }
+	else { msg=_('Send changes before leaving the web page');
+	    }
+	alert(msg);
+	write_cookie("gramps_date",date,"2099-12-31");
+	}
+    if (total_changes[type_] == undefined ) { total_changes[type_]=";"; }
+    if (total_changes[type_].indexOf(";"+id_+";")<0)
+	{ total_changes[type_]+=id_+";"; } // info
+    return id_;
+    } // save_
+
+function write_cookie(cname,cval,cexp) {
+    var ckie, tmp;
+    cval=encodeURI(cval); // avoid character set problems in cookies and mail
+    ckie=cname+'="'+cval+'"';
+    tmp = ckie; // +'; domain="'+domain+'"; path="'+path+'"'; // ;expires='+cexp+'
+    document.cookie=tmp;
+    if (tst>0) { debug("Set cookie="+tmp+"\n"+document.cookie+"\n"); }
+    }
+
+function show_surname(Name,ctxt_type,wildcard) {
+    var str, split_, info, i, isplit, PId_, tmp,pi;
+    var persons=new Array();
+    var name_=Name.toLowerCase();
+    if (wildcard==undefined) { wildcard=0; }
+    hint(16);
+    for (PId_ in all_[0]) {
+	pi=all_[0][PId_];
+	if (wildcard==1) { 
+	    tmp=pi.toLowerCase(); 
+	    if (tmp.search(name_)<0) { continue; }
+	    }
+	split_=pi.splitX(",");
+	if (wildcard!=1) {
+	    tmp=split_[P_['p_surname']].toLowerCase();
+	    if (tmp=="") tmp="_";
+	    if (name_!=tmp) { continue; }
+	    }
+	persons.push(split_[P_['p_surname']]+","+split_[P_['p_given']]+","+PId_);
+	}
+    hint(0);
+    if (tst>0) { debug(name_+"#found="+persons.length); }
+    //navheader2(ctxt_type);
+    str=show_letter(ctxt_type);
+    str+=start_info("surname",Name+" ("+persons.length+")",3,0);
+    str+='<thead><tr><th>'+_('Name')+'</th>'
+		+'<th>'+_('Birth')+'</th>'
+		+'</tr></thead>'
+	+'<tbody>';
+    if (persons.length==1) {
+	split_=persons[0].splitX(",");
+	PId_=split_[2];
+	Select_Person(ctxt_type,PId_);
+	return;
+	}
+    persons.sort();
+    for (i=0; i<persons.length; i++) {
+	split_=persons[i].splitX(",");
+	PId_=split_[2];
+	info=person_name(PId_,1+ctxt_type);
+	str+=Field_Data(0,info,psplit[P_['p_birthdate']],0);
+	}
+    str+='</tbody>'+end_info(0);
+    if (ctxt_type==0) { tmp="content"; } else { tmp="select"; }
+    document.getElementById(tmp).innerHTML =str;
+    } // show_surname
+
+function show_parents_and_siblings(PId) {
+    var parents, psplit_, pi, str, isplit, FamInd, FamId, siblings, tmp;
+    str="";
+    parents=find_parents(PId);
+    if (parents==undefined) { debug("Parents("+PId+") not found"); return ""; }
+    psplit_=parents.splitX(",");
+    for (pi=1; pi<psplit_.length; pi++) {
+	FamInd=psplit_[pi];
+	if (FamInd=="") continue;
+	parents=all_[1][FamInd];
+	if (parents==undefined) 
+	    { debug("Parents("+PId+","+FamInd+") not found"); continue; }
+	str+=start_info('parents',_('Parents'),4,0);
+	isplit=parents.splitX(",");
+	FamId=isplit[P_['f_marriage']]; FathId=isplit[P_['f_husband']]; 
+	MothId=isplit[P_['f_wife']];
+	if (FathId != "")
+	    { str+=Field_Data(0,_('Father'),person_name(FathId,1),0); }
+	if (MothId != "")
+	    { str+=Field_Data(0,_('Mother'),person_name(MothId,1),0); }
+	siblings=find_siblings(FamId,PId);
+	if (siblings != "") {
+	    isplit=siblings.splitX(",");
+	    tmp="";
+	    for (i=1; i< isplit.length; i++)
+		{ tmp=tmp+person_name(isplit[i],1)+"<br />"; }
+	    if (tmp!="") str+=Field_Data(0,_('Siblings'),tmp,0);
+	    }
+	siblings=find_other_siblings(FamInd);
+	if (siblings != "") {
+	    isplit=siblings.splitX(",");
+	    tmp="";
+	    for (i=1; i< isplit.length; i++)
+		{ tmp=tmp+person_name(isplit[i],1)+"<br />"; }
+	    if (tmp!="") str+=Field_Data(0,"("+_('Siblings')+")",tmp,0);
+	    }
+	str+=end_info(0);
+	}
+    return str;
+    }
+
+function show_letter(ctxt_type) {
+    var str="", l, l_;
+    for (l=0; l<surnames_l.length; l++) {
+	l_=surnames_l[l].substr(0,1);
+	//if (l.length==1) { // avoid strange errors (with pl i sta com)
+	    str+="&nbsp;&nbsp;"
+		+"<a href='javascript:show_surnames("+ctxt_type+',"'+l+'");'
+		+"'>"+l_+"</a>";
+	  //  }
+	}
+    str+='&nbsp;&nbsp;<form name="fsearch" '
+	    +'onsubmit="return search_('+ctxt_type+')">';
+    str+='<input class="INPUT" type="text" size="20" name="search" id="search" ';
+    str+='value="'+_('search')+'" ';
+    str+='onclick="this.value=search_str;this.select();true" '; // ?form.search.
+    str+='onsubmit="return search_('+ctxt_type+');">';
+    str+='<input type="submit" name="a" value="'+_("search")+'")>';
+    str+='</form>';
+    if (tst!=0) debug("search="+ctxt_type);
+    return str;
+    }
+
+function search_ (ctxt_type) {
+    search_str=document.getElementById("search").value;
+    document.getElementById("select").innerHTML="";
+    if (search_str!="") { show_surname(search_str,ctxt_type,1); }
+    return false;
+    }
+
+function show_surnames(ctxt_type,l0) {
+    var str, str2, nam, ns, split_, split2, l, l_, tmp;
+    
+    if (ctxt_type!=0) { hint(10); if (tst!=0) debug("ShowPerson:"+ctxt_type); } 
+    else { Curr_PId=""; hint(0); } // clear current PId and hint section
+    if (ctxt_type==0) { 
+	//Curr_PId="";
+	document.getElementById("mod").innerHTML =""; // hide button
+	}
+    cnt_fnam=0; cnt_indv=0;
+    str2='<tbody>';
+    for (l=0; l<surnames_l.length; l++) {
+	if ((l0==undefined || l == l0)) { //l.length==1 && 
+	    split_=surnames_l[l].splitX(",");
+	    for (ns=1; ns<split_.length; ns++) {
+		if (ns==1) { l_=split_[0]; } else { l_="&nbsp;"; }
+		nam=split_[ns];
+		//if (nam=="") nam="_";
+		tmp=surnames[nam];
+		if (tmp==undefined) {
+		    debug("Name "+nam+" not found");
+		    continue;
+		    }
+		split2=tmp.splitX(",");
+		tmp="<a href='javascript:"
+		      +"show_surname("+'"'+nam+'",'+ctxt_type+")'>"
+		    +nam+"</a>";
+		str2=str2+Category_Data_Field(l_,tmp,split2.length-2);
+		cnt_fnam++; cnt_indv+=split2.length-2;
+		}
+	    }
+	}
+    //navheader2(ctxt_type);
+    str=show_letter(ctxt_type);
+    if (ctxt_type==1 || ctxt_type>2) { tmp=_('Spouse'); }
+    else if (ctxt_type==2) { tmp=_('Child'); }
+    else { tmp=_('Surnames'); }
+    str+=start_info("surnames",tmp,3,0);
+    str+='<thead><tr><th>'+_('A...Z')+'</th>'
+		+'<th>'+_('Surname')+' ('+cnt_fnam+')'+'</a></th>'
+		+'<th>'+_('Individuals')+' ('+cnt_indv+')'+'</a></th>'
+		+'</tr></thead>';
+    str+=str2+'</tbody>'+end_info(0);
+    if (ctxt_type==0) { tmp="content"; } else { tmp="select"; }
+    document.getElementById(tmp).innerHTML =str;
+    if (ctxt_type==0) {
+	document.getElementById("select").innerHTML ="";
+	str='<input type="button" class="BUTTON" '
+	+'value="+ '+_('Individual')+'"  onClick="show_person(1,0)">';
+	document.getElementById("newabort").innerHTML =str;
+	document.getElementById("surnames").value=_('Surnames');
+	//document.getElementById("hint").innerHTML ="";
+	}
+    } // show_surnames
+
+function show_person(sms_,PId) { // sms_= -1:save, 1:modify, 0:show
+    var info, str, tmp, i, pi, FamId, FathId, MothId, tmpSpouse, 
+	fi, fsplit_, split_, tmp2, children, startp, new_, id_;
+    if (tst>0 && sms_>0) debug("\nModify "+PId);
+    nam_1st="";
+    if (PId==0 || PId=="[NN]") {
+	tmp=",,,,,,,,,,,,,,,";
+	psplit=tmp.splitX(","); 
+	startp=1;
+	info=_('Individual');
+	new_=1;
+	PId="[NN]";
+	}
+    else {
+	info=person_name(PId,-1);
+	if (info == "") {
+	  document.getElementById("content").innerHTML =_('unknown');
+	  return;
+	  }
+	startp=1; // =P_['p_call']; if surname and given name should not be changed
+	new_=0;
+	}
+    n_form=0; str=""; Curr_PId=PId;
+    if (sms_<0) {
+	n_errors=0; n_changes=0;
+	for (i=1; i<startp; i++) { str+=","+psplit[i]; }  // surname,given
+	}
+    str+=section_(sms_,"person",info,4,psplit,startp,Head_Lines[0],1);
+    if (str=="") { if (tst!=0) debug(PId+" not found"); return false; }
+    if (sms_>=0) {
+	if (sms_==0)      {tmp=_('Modify'); tmp2=1; }
+	else if (sms_==1) { tmp=_('Save new data'); tmp2=-1; }
+	else { tmp=""; tmp2=0; debug("sms="+sms_); } // should not occur
+	if (tmp2!=0)
+	    tmp='<input type="button" class="BUTTON" value="'+tmp
+		+'"  onClick="return show_person('+tmp2+',Curr_PId)">';
+        if (document.getElementById("mod"))
+            { document.getElementById("mod").innerHTML =tmp; }
+        else { if (tst!=0) debug("mod not defined!"); }
+	if (sms_==0) { tmp=_('Surnames'); } else { tmp=_('Abort'); }
+	document.getElementById("surnames").value=tmp;
+	document.getElementById("select").innerHTML="";
+	//hint(0);
+	document.getElementById("hint").innerHTML="";
+	}
+    else if (sms_<0) {
+	if (n_changes>0) {
+	    if (n_errors>0) { return; }
+	    if (new_>0) {
+		if (!str.match(/^\,\w+/)) { alert(_('Name')); return; }
+		}
+	    PId=save_(0,PId,str,new_); 
+	    Curr_PId=PId; 
+	    rebuild_surnames(); // also in case of name changes
+	    }
+	else if (new_>0) { show_surnames(0); return; }
+	}
+    if (new_==0) { fam_=find_families(PId); } else { fam_=""; }
+    if (fam_ != "" || sms_!=0) {
+      str+=section_(sms_,"families",_('Families'),4,split_,999,
+		    Head_Lines[1],0);
+      }
+    fsplit_=fam_.splitX(",");
+    for (fi=1; fi<fsplit_.length; fi++) {
+	    if (sms_<0) { str=""; n_errors=0; n_changes=0; }
+	    n_form=0;
+	    FamInd=fsplit_[fi];
+	    Curr_FId=FamInd;
+	    split_=all_[1][FamInd].splitX(",");
+	    FamId=split_[P_['f_marriage']];
+	    tmpSpouse=P_['f_husband']; 
+	    tmp2="families";
+	    if (split_[P_['f_husband']] == "" || split_[P_['f_wife']] == "") {
+		if (split_[P_['f_wife']] == "") tmpSpouse=P_['f_wife'];
+		split_[tmpSpouse]="[]";
+		tmp2="Family without spouse";
+		}
+	    str+=section_(sms_,"X"+fi,_(tmp2),0,split_,
+			      tmpSpouse,Head_Lines[1],0);
+	    if (str=="") { return false; }
+	    if (sms_<0 && n_changes>0) {
+		if (n_errors>0) { return; }
+		save_(1,FamId,str,0);
+		}
+	    children=all_[2][FamId];
+	    if (children != undefined) {
+		split_=children.splitX(",");
+		tmp2=_('Children');
+		for (i=1; i< split_.length; i++) {
+		    id_=split_[i];
+		    tmp=person_name(id_,1-sms_);
+		    str+=Field_Data(sms_,tmp2,tmp,"");
+		    tmp2="";
+		    }
+		}
+	    if (sms_!=0) { //  button for new child
+		if (sms_>0) str+=Field_Data(sms_," +"+_('Child'),"","child");
+		}
+	    str+=Field_Data(sms_,"","&nbsp;",""); // empty line
+	    }
+    if (sms_!=0) { //  button for new family
+	if (sms_>0) {
+	    str+=Field_Data(sms_," +"+_('Spouse'),"","family");
+	    str+=Field_Data(sms_," +"+_('Family without spouse'),"","n_fam");
+	    }
+	}
+    if (n_errors>0) { return; }
+    if (sms_>=0) {
+	str+=end_info(1-sms_);
+	if (sms_==0) {
+	    str+=show_parents_and_siblings(PId);
+	    show_tree(PId);
+	    }
+	document.getElementById("content").innerHTML =str;
+	}
+    else { show_person(0,PId); }
+    if (nam_1st!="") document.getElementById(nam_1st).focus();
+    return true;
+    } // show_person
+
+function send_changes() {
+    var fields_, type_, j, str, email_link, subj, msg, str2, changes, line;
+    var ind_, tmp, nl, PId_, splt, k;
+    var ID_Names=new Array("Person","Marriage","");
+    str=""; str2="<br />"; nl="%0A";
+    for (type_=0; type_<Head_Lines.length; type_++) { // <total_changes.length
+      //if (total_changes[type_] != undefined) {
+	line="";
+	fields_=_(Head_Lines[type_]);
+//	if (type_==0) { fields_=_(Head_Lines[0]); }
+//	else if (type_==1) { fields_=_(Head_Lines[1]); }
+//	else { fields_=_(Head_Lines[2]); }
+	fields_=fields_.splitX(",");
+	if (fields_[0]=="") { line+=ID_Names[type_]; }
+	else { line+=fields_[0]; }
+	for (j=1; j<fields_.length; j++) {
+	    tmp=fields_[j].lastIndexOf("|")+1;
+	    line+=","+fields_[j].substr(tmp);
+	    }
+	str+=line+nl; str2+=line+"<br />";
+      if (total_changes[type_] != undefined) {
+	changes=total_changes[type_].splitX(";");
+	for (j=0; j<changes.length-1; j++) {
+	    PId_=changes[j];
+	    if (PId_=="") continue;
+	    line=all_[type_][PId_];
+	    if (type_==2) { // child (internally as [fam],[child],[child]...)
+		splt=line.splitX(",");
+		for (k=1; k<splt.length; k++) { 
+		    line=splt[0]+","+splt[k]; 
+		    str+=line+nl;
+		    str2+=decodeURI(line)+"<br />";
+		    }
+		}
+	    else { 
+		line+=nl;
+		str+=line;
+		str2+=decodeURI(line)+"<br />";
+		}
+	    }
+	}
+	str+=nl;
+	str2+="<br />";
+	//}
+      }
+    subj=_('Pedigree');
+    msg=_('Click to create a mail')+".\n";
+    if (navigator.appName!="Netscape") {
+	msg+="    Internet explorer: "
+	    +_('Set [UTF-8 for mailto links] in Extended Options')
+	    +".\n"+_('or')+"\n";
+	}
+    msg+="  "+_('If the data contains special characters')+"\n"
+        +"  "+_('copy the lines at the bottom into your mail')+".\n"
+	+_('Send UTF-8 coded');
+    document.getElementById("select").innerHTML =
+	"<br />"+_('Mail')+": "+email+"<br />"+str2;
+    if (confirm(msg)) {
+	email_link = 'mailto:'+email+'?subject='+subj+'&body='+str;
+	win = window.open(email_link,'emailWindow');
+	if (win && win.open &&!win.closed) win.close();
+	}
+    }
+
+function rebuild_surnames() {
+    var i, nam, nam_, l, split_, PId_, tmp;
+
+    hint(0,_('Rebuilding list of surnames'));
+    surnames_l=new Array();
+    surnames=new Object();
+    l="-"; nam="---";
+    for (PId_ in all_[0]) {
+	split_=all_[0][PId_].splitX(",");
+	nam_=split_[P_['p_surname']];
+	if (nam_ == undefined) { continue; }
+	if (nam_=="") nam_="_";
+	if (nam_ != nam) {
+	    nam=nam_;
+	    l=nam.charAt(0).toUpperCase();
+	    i=0;
+	    while (i<surnames_l.length && surnames_l[i].substr(0,1)!=l) { i++; }
+	    if (i==surnames_l.length) { surnames_l[i]=l+","; }
+	    if (surnames_l[i].indexOf(","+nam+",")<0) surnames_l[i]+=nam+",";
+	    }
+	if (surnames[nam]==undefined) { surnames[nam]=","; }
+	else if (surnames[nam].indexOf(","+PId_+",")>=0) continue;
+	surnames[nam]+=PId_+",";
+	}
+    surnames_l.sort();
+    for (i=0; i<surnames_l.length; i++) {
+	tmp=surnames_l[i]; tmp=tmp.substr(0,tmp.length-1);
+	split_=tmp.splitX(",");
+	split_.sort();
+	surnames_l[i]=split_.join(",");
+	}
+    }
+
+function read_modifications() {
+    var split_,i, assign_, nam_, info, tmp;
+    var ckie=document.cookie; var ask=""; var ckies=""; var msg="";
+    // if (cookies_handled>0) return;
+    cookies_handled=1;
+    if (ckie!="" && ckie.match(/\"/)) {
+	  if (tst>0) { debug("ckie="+ckie+"."); }
+	  tmp=ckie.indexOf("gramps_date=");
+	  if (tmp<0) { ask="N"; }
+	  else {
+	      i=ckie.indexOf('"',tmp+13);
+	      info=ckie.substr(tmp+13,i-tmp-13);
+	      info=decodeURI(info);
+	      if (info=="") { return; }
+	      if (info!=date) { ask="N"; }
+	      }
+	  split_=ckie.splitX(";");
+	  for (i=0; i<split_.length; i++) {
+		nam_=split_[i].match(/(per|fam|child)_\[[\d\w]+\]/);
+		if (!nam_ || ckies.indexOf(nam_[0]+",")>=0) {
+		    msg+=" skipped="+split_[i].substr(0,12); 
+		    if (!nam_) { msg+="!"; } else { msg+=">"+nam_[0]; }
+		    continue; 
+		    }
+		ckies=ckies+nam_[0]+",";
+		if (split_[i].match(/\"/)) {
+		    tmp=split_[i].indexOf("=");
+		    info=split_[i].substr(tmp+2,split_[i].length-tmp-3);
+		    info=decodeURI(info);
+		    if (info=="") { continue; }
+		    if (ask!="y") {
+		        if (ask=="N") {
+			    tmp=_('Data was written with another version')
+			      +".\n"+_('Click Abort if unsure')+".\n\n";
+			    }
+			else { tmp=""; }
+			tmp=tmp+_('Load modifications from cookies');
+			if (confirm(tmp+"?")) { ask="y"; } else { ask="n"; }
+			if (ask=="n") { break; }
+			}
+		    nam_[0]=nam_[0].substr(0,3);
+		    if (nam_[0]=="per") {
+			tmp=save_(0,"",info,0);
+			if ("["+max_p+"]"<tmp)
+			    { max_p=tmp.substr(1,tmp.length-2); }
+			}
+		    else if (nam_[0]=="fam") {
+			tmp=save_(1,"",info,0);
+			if ("["+max_f+"]"<tmp)
+			    { max_f=tmp.substr(1,tmp.length-2); }
+			}
+		    else { save_(2,"",info,1); }
+		    }
+		}
+	  if (ask=="n" &&
+	      confirm(_('Delete previous modifications (stored in cookies)'))) {
+	      write_cookie("gramps_date","","1970-01-02");
+	      split_=ckie.splitX(";");
+	      for (i=0; i<split_.length; i++) {
+		  nam_=split_[i].match(/(per|fam|child)_\[[\d\w]+\]/);
+		  if (nam_) { write_cookie(nam_[0],"","1970-01-02"); }
+		  }
+	      }
+	  }
+    else if (navigator.cookieEnabled == false) {
+	alert(_('Cookies are not activated')
+	    +"\n"+_('Changes can not be saved'));
+	}
+    if (tst>0 && msg!="") debug(msg);
+    }
+
+function read_params () {
+    var query = self.location.search;
+    query = '&'+query.substr(1, query.length - 1)+'&';
+    query = query.replace(/%26/,'&');
+
+    if (query.match(/\&f\=([^\&]+)\&/i)) { csv_file=RegExp.$1; }
+    if (query.match(/\&t\=([^\&]+)\&/i)) { tst=parseInt(RegExp.$1); }
+    if (query.match(/\&l\=([^\&]+)\&/i)) { language=RegExp.$1; }
+    if (query.match(/\&s\=([^\&]+)\&/i)) { 
+	search_str=RegExp.$1; 
+	search_str=decodeURI(search_str); // replace(/\%20/g," ");
+	}
+    if (query.match(/\&m\=([^\&]+)\&/i)) { mobile=RegExp.$1; }
+    if (tst>0) debug("par: f="+csv_file+", t="+tst+", l="+language);
+
+} // read_params
+
+function import_file(idx,hgt) {
+    var file=import_files[idx]; var src_;
+    if (file==undefined || file == "")
+	{ if (tst>0) debug("no file #"+idx); return; }
+    var fr=import_frames[idx];
+    var docFr=document.getElementById(fr);
+    src_=docFr.src;
+    if (src_!=undefined && src_.indexOf(file)>=0) {
+	if (tst>0) debug("Import "+idx+" already done: "+file);
+	//return;
+	}
+    else {
+	//docFr.onLoad="check_load("+idx+")";
+	docFr.src=	    file+"?"+(new Date()).getTime();
+	debug("Import "+file); // if (tst>0) 
+	if (idx==iData) hint(12); // "Loading data"
+	check_load(idx); //-> onLoad
+	}
+    if (hgt) docFr.height=hgt;
+    } // import_file
+
+function csv_import () {
+    //if (csv_file==undefined || csv_file=="") {
+    csv_file=window.prompt(_('Please specify name of data file')
+                             +" (.txt) :","");
+    if (csv_file==undefined || csv_file=="") {
+	//alert(_('Maybe the security level is too high.')); 
+	csv_file=" ";
+	return;
+	}
+    if (csv_file==undefined) csv_file="";
+    if (csv_file!="") {
+	document.getElementById("acnt").src="../accessCnt.php?ref="+csv_file;
+	if (!csv_file.match(/\.\w+$/)) { csv_file=csv_file+".txt"; }
+	import_files[iData]=csv_file;
+	import_file(iData);
+	}
+    } // csv_import
+
+function start() {
+    var tmp, i, fields_, field;
+
+    if (navigator.appName!="Netscape" || tst>0) {
+	//tmp=/^(.*\/)[^\/]$/;
+	//if (tmp.exec(path)) { path=$1; }
+	tmp=path.lastIndexOf("/");
+	if (tmp>0) { path=path.substr(0,tmp+1); }
+	if (tst>0) debug("Browser="+navigator.userAgent);
+	}
+    if (tst>0) { debug("path="+path+", domain="+domain+", file="+csv_file); }
+    if (tst==9) {
+	document.getElementById(import_frames[0]).height=200;
+	document.getElementById(import_frames[0]).style.visibility="visible";
+	document.getElementById(import_frames[1]).height=200;
+	document.getElementById(import_frames[1]).style.visibility="visible";
+	}
+    document.name=_('Pedigree');
+    import_file(iHelp);
+    // Add native language field names to IdFields and dateFields
+    fields_=IdFields.splitX(",");
+    for (i=0; i<fields_.length; i++) {
+        field=fields_[i];
+        tmp=_(field);
+        if (field=="" || field==tmp) continue;
+        if (IdFields.indexOf(tmp)<0) IdFields+=","+tmp;
+        }
+    fields_=All_Fields.splitX(",");
+    for (i=0; i<fields_.length; i++) {
+        field=fields_[i];
+        tmp=_(field);
+        if (field=="" || field==tmp) continue;
+        if (field.match(/date/i) && dateFields.indexOf(tmp)<0) 
+            dateFields+=","+tmp+","+field;
+        }
+    if (tst!=0) debug("d="+dateFields+" id="+IdFields);
+    } // start
+
+function import_action(import_id, data_) {
+    var i, tmp;
+    if (tst>0) debug("Action "+import_id);
+    if (import_id==iTrans) { // translations
+	import_data(import_id);
+	tmp=_('male'); if (tmp!='male') trans['en-'+tmp]='male';
+	tmp=_('female'); if (tmp!='female') trans['en-'+tmp]='female';
+	// help strings with consecutive numbers will be concatinated
+	help_str[0]="";
+	help_str[2]=_('Person can be selected after clicking')+" -"
+		  +_('Save new data')+"-";
+	help_str[4]=_('To modify or insert new data');
+	help_str[5]=_('first create new data');
+	help_str[6]=" (+"+_('Individual')+")";
+	help_str[7]=_('then modify');
+	help_str[10]=_('Select person below');
+	help_str[12]=_('Loading data');
+	help_str[14]=_('Data import');
+	help_str[16]=_('searching');
+	navheader();
+	start();
+	}
+    else if (import_id==iData) { // data
+	hint(14);
+	if (import_data(import_id,data_)==0) return;
+	read_modifications();
+	hint(0,_('Rebuild list of surnames'));
+	rebuild_surnames();
+	hint(0,_('Show list of surnames'));
+	if (search_str!="") { show_surname(search_str,0,1); }
+	else { show_surnames(0); }
+	hint(0);
+	}
+    else if (import_id==iHelp) { // help
+	tmp=import_frames[import_id];
+	show_help();
+	}
+    } // import_action
+
+function import_data(import_id, data_) {
+  var src_, nl_, lines, i, line, n, pos, id_, ih, split_, split_t;
+  var src_; var n_dup=0; var iSect=-1;
+  var max_id=new Array("","","");
+  var fr=import_frames[import_id];
+  var docFr=document.getElementById(fr);
+  if (tst>0) debug("import_data "+import_id);
+  if (data_==undefined) {
+    if (import_files[import_id] == "") return 0;
+    try { src_=docFr.src; }
+    catch (e) { if (tst>0) debug("Import src "+import_id+" "+e); }
+    if (src_==undefined)
+	{ setTimeout("import_action("+import_id+")",min_wait); return 0; }
+    while (data_==undefined) { // !=undefined only when read via FileReader
+	try {
+	    data_=
+	      docFr.contentWindow.document.body.innerHTML;
+	    }
+	catch (e) {
+	    if (tst>0) debug("Import "+import_id+e);
+	    setTimeout("import_action("+import_id+")",min_wait);
+	    return 0;
+	    }
+	if (data_==undefined) debug('iframes not supported');
+	}
+    pos=0; data_header[import_id]="";
+    while (pos>=0 && data_.match(/^([\s\r\n]*)\</)) {
+	pos=data_.indexOf(">",RegExp.$1.length);
+	if (pos>=0) {
+	    data_header[import_id]+=data_.substr(0,pos+1);
+	    data_=data_.substr(pos+1);
+	    }
+	}
+    if (tst>0) debug("header="+data_header[import_id]
+		      +";data="+data_.substr(0,30)+"("+data_.length+")");
+    }
+  else { if (tst!=0) debug("data_="+data_.substr(0,200)+" ..."); }
+  // Extract lines of data_:
+    if (data_.match(/([\n\r])/)) { nl_=RegExp.$1; }
+    else {
+	if (tst!=0 && (import_id!=0 || language!=g_language)) {
+	    alert(import_id+" "+src_+" : No CR or LF separator for new lines");
+	    alert(data_.length+":"+data_.substr(0,100));
+	    }
+	return 0;
+	}
+    lines=data_.splitX(nl_);
+    //if (import_id==iData) tst=1; // !!
+    if (tst!=0) 
+        debug(import_id+" #"+lines.length+(nl_=="\n"?"n":(nl_=="\r"?"r":"nr")));
+    n=-1;
+    for (i=0; i<lines.length; i++) {
+	lines[i]=lines[i].replace(/[\n\r]/g,''); // remove cr/lf
+        }
+    for (i=0; i<lines.length; i++) {
+	    line=lines[i];
+	    if (tst>0) debug(line.substr(0,1));
+	    //line=line.replace(/[\n\r]+$/,''); // remove trailing cr/lf
+	    if (tst>0 && import_id==iData) {
+                if (line.length<5) { debug("Short: "+line+(-line.length)); }
+                else if (line.substr(0,1)!="[") debug("Section:"+line);
+                }
+            while (import_id==iData && !line.match(/^\s*$/) // line continues?
+                && i+1<lines.length && !lines[i+1].match(/^[\s]*$/)
+                && ((n<0 && lines[i+1].substr(0,1)!="[") ||
+                    (n>=0 && lines[i+1].substr(0,2)!=line.substr(0,2)))){
+                if (line.substr(-1)!=",") line+=" ";
+                line+=lines[i+1];
+                //if (tst==0) tst=25;
+                if (tst>1) { 
+                    debug("+line"+": "+line.substr(0,35)
+                          +(-line.length)); 
+                    tst--; 
+                    }
+                i++; // lines.splice(i+1,1); // remove next line from lines
+                }
+	    line=line.replace(/^\<\/?\w+\>/,''); // remove XML-like tags
+	    if (line=="") { // empty line separates sections
+		if (import_id==iData && n>=0) {
+                    n=-1; 
+                    }
+		continue;
+		}
+	    if (n<0 && import_id==iData) { // read section header
+                for (iSect=0; iSect<regExpTypes.length; iSect++)
+                    { if (lines[i+1].match(regExpTypes[iSect])) break; }
+                if (iSect>=Head_Lines.length) {
+                    debug("Skip section "+iSect+": "+line+"/"+lines[i+1]);
+                    n=0;
+                    continue;
+                    }
+                debug("Section "+iSect+"="+types_[iSect]); //+":"+line);
+                if (tst>0) tst=25; // testing!!
+		Head_Lines_Import[iSect]=line;
+		Head_Lines[iSect]=line; // ??x
+		if (language!=g_language) {
+		    split_=line.splitX(",");
+		    split_t=Head_Lines_Import[iSect].splitX(",");
+		    for (ih=0; ih<=split_.length; ih++) {
+			id_=split_t[ih];
+			if (!trans[language+'-'+id_]) {
+			    trans[language+'-'+id_]=split_[ih];
+			    if (tst>0) debug("Trans "+id_);
+			    }
+			}
+		    }
+		n++;
+		}
+	    else {
+                if (iSect>=all_.length) continue;
+		if (tst>0 && n==0)
+		    { debug("Import "+import_id+": "+language+"-"+i+line+"."); }
+		else if (iSect>=0 && line.substr(0,1) != "[")
+		    { if (tst!=0) debug("Incorrect line "+line); continue; }
+		pos=line.indexOf(",");
+		id_=line.substr(0,pos);
+		if (import_id==0) { // translations
+		    trans[language+'-'+id_]=line.substr(pos+1);
+		    if (tst>1) 
+			debug("trans "+language+'-'+id_+"="+line.substr(pos+1));
+		    }
+		else if (iSect>=0) {
+		    //if (import_id==3 && all_[iSect][id_]!=undefined)
+			//line=all_[iSect][id_]+line.substr(pos);
+		    if (all_[iSect][id_]!=undefined) {
+			if (iSect!=2 ||// 2=child
+			    all_[iSect][id_].indexOf(line.substr(pos))>0) {
+			    n_dup++;
+			    if (tst>0 && n_dup<10) 
+                                debug("Id is duplicate: "+line); 
+			    continue;
+			    }
+			line=all_[iSect][id_]+line.substr(pos);
+			}
+		    all_[iSect][id_]=line;
+		    if (max_id[iSect]<id_) max_id[iSect]=id_;
+		    n_all[iSect]++;
+		    }
+		}
+	    n++;
+	}
+    if (import_id==iData) { max_p=max_id[0]; max_f=max_id[1]; }
+    if (tst>0 && import_id==iData) {
+	line="Entries per section "; 
+	for (i=0; i<n_all.length; i++) line+=i+":"+n_all[i]+" ";
+	line+="# lines="+lines.length+" p="+max_p+" f="+max_f;
+	debug(line);
+	}
+    if (import_id==iHelp) init(); // ??x re-define symbols p_..., f_...
+    return 1;
+    } // import_data
+
+function debug(str,id) {
+    if (id==undefined) { id="debug"; str=debug_str+str+";"; }
+    document.getElementById(id).innerHTML=str;
+    if (id=="debug") debug_str=str;
+    }
+
+function changeStyle (styleId,attr,val) {
+    styleId=styleId.toLowerCase();
+    var i=0;
+    while (document.styleSheets[i]) {
+	var stylesheet=document.styleSheets[i], j=0;
+	i++;
+	while (j<stylesheet.cssRules.length) {
+	    var rule=stylesheet.cssRules[j];
+	    if (rule.selectorText.toLowerCase()==styleId) {
+		rule.style[attr]=val;
+		i=-1;
+		break;
+		}
+	    else j++;
+	    }
+	}
+    if (i>=0) debug("changeStyle: "+styleId+" not found");
+    else debug("changeStyle "+styleId);
+    }
+
+function mobile_ () {
+    if (mobile<0 && navigator.userAgent.match(/Android|Mobile/i)) mobile=1;
+    if (mobile>0) {
+	changeStyle("BODY","font-size","24pt");
+	}
+    }
+
+</script>
+</head>
+
+<body>
+<span id="debug" style="font-size:60%"></span>
+<div class="navbyline">
+    <img id="acnt" src="Gramps.ico"
+            width=15 height=15 border=0>
+    <span id="navby">Web page for CSV Export of</span>
+    <a href="http://gramps-project.org" target="_blank"><u>GRAMPS</u></a>
+    &nbsp; &copy; H. Ruprecht 2010-2021
+    <!-- src="../accessCnt.php"  --> 
+</div>
+<h1 class="navtitle"><span id="navtitle">Pedigree</span><span id="hint"></span></h1>
+<div class="nav"><span id="ImportButton"></span>
+    <span id="NamesButton"></span>
+    <span id="mod"></span>
+    <span id="newabort"></span>
+    <span id="mail"></span>
+    <span id="ExportButton"></span>
+    <span id="PrintButton"></span>
+    <input type="button" class="BUTTON" id="hlp"
+            onclick="show_help()" value="Help">
+</div>
+
+<span id="navheader2"></span>
+<!--- <input type="file" class="BUTTON" id="import"> --->
+
+<iframe width="100%" height="0" name="helpfile" id="helpfile" 
+type="text/plain">
+    <p>Ihr Browser kann leider keine eingebetteten Frames anzeigen.
+	Am besten Firefox verwenden.
+    <br>Your browser cannot work with embedded frames.
+	Use Firefox.
+    </p>
+
+</iframe>
+<div>
+<span id="content"></span>
+<span id="select"></span>
+</div>
+<iframe width="90%" height="2" name="Trans_Import" id="Trans_Import" 
+type="text/plain"  style="visibility:hidden">
+</iframe>
+<iframe width="90%" name="Data_Import" id="Data_Import" 
+type="text/plain" height="2" style="visibility:hidden"> <!--  -->
+Daten-Import
+</iframe>
+<script type="text/javascript">
+  read_params(); mobile_(); init(); import_file(iTrans);
+  </script>
+</body>
+</html>
