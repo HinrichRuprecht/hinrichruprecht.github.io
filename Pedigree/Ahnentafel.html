@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <!--  xml:lang="de-DE" lang="de-DE" -->
 <head>
@@ -107,7 +108,7 @@ import_frames[iData]="Data_Import";
 import_frames[iHelp]="helpfile";
 var check_string =new Array();
 check_string[iTrans]="Pedigree";
-check_string[iData]="\\[F\\d+\\]\\,\\[I"
+check_string[iData]="\\[F\\d+\\]\\,\\[I"; // "Longitude"; // 
 check_string[iHelp]='\<h4\>';
 var prev_len=(-1,-1,-1); // previous length of import (in progress)
 var max_wait=5000; var min_wait=100; // wait for files to load [msecs]
@@ -129,6 +130,7 @@ var dontFollow=new Array();
 var dontFollowIcon=new Array("&#9665;"," &#9654;"); 
 	//  Left-pointing Triangle,  Right-pointing Triangle
 	// "&#8854;","&#8853;"); // circled -/+
+var genderIcon=new Array('?','&#9794;','&#9792;'); // not set &#9675;/male/female
 var IdFields="Person,Marriage,Husband,Wife,Family,Child,Place"; // ,Place ??
 var idFieldsRegExp=/(Person|Marriage|Husband|Wife|Family|Child|Place|place)/;
 var dateFields="";
@@ -198,18 +200,22 @@ String.prototype.splitX =function (sep,del) {
     } // splitX
 
 function init() {
-    var i,j,tmp,spli_; 
+    var i,j,tmp,spli_,id; 
     var h_=new Array("p","f","c"); 
 
     import_files[iTrans]=language+"-trans.html";
     import_files[iHelp]=language+"-help.html";
 
-    email='Hinrich.Ruprecht@t-online.de';date='2021-03-08';
+    email='Hinrich.Ruprecht@t-online.de';date='2024-02-25';
 
+    if (tst>0) debug("init");
     for (i=0; i<Head_Lines.length; i++) {
+	if (tst>0) debug("H("+h_[i]+")="+Head_Lines[i]);
 	split_=Head_Lines[i].splitX(",");
 	for (j=0; j<split_.length; j++) {
-	    tmp=h_[i]+"_"+split_[j].replace(" ","").toLowerCase();
+	    id=split_[j].replace(" ","").toLowerCase();
+	    //?? id=_(id,"en");
+	    tmp=h_[i]+"_"+id;
 	    P_[tmp]=j;
 	    if (tst>0) debug("P["+tmp+"]="+j);
 	    }
@@ -446,7 +452,7 @@ function person_name(PId,ref_) { // also sets psplit for the person found !
     // ref_ : >0 : enclosed in <a href ...
     //	      &8 : add birth and death date
     //	      &16 : add link to (not) follow descendants/ancestors
-    var pi, res="", tmp, len_, surn, pos;
+    var pi, res="", tmp, len_, surn, pos, genIcon;
     pi=all_[0][PId];
     //debug(PId+"="+pi);
     if (pi==undefined) {
@@ -461,11 +467,17 @@ function person_name(PId,ref_) { // also sets psplit for the person found !
     if (psplit[P_['p_prefix']]!="") surn=psplit[P_['p_prefix']]+" "+surn;
     if (psplit[P_['p_suffix']]!="") surn+=" "+psplit[P_['p_suffix']];
     res=psplit[P_['p_given']]+" "+surn;
-    if (ref_>0) {
+    tmp=psplit[P_['p_gender']].charAt(0).toLowerCase();
+    // unknown/male/female
+    tmp=(tmp.match(/[m]/) ? 1 : (tmp.match(/[fw]/) ? 2 : 0)); 
+    genIcon=genderIcon[tmp];
+    if (ref_<=0) { res+=" "+genIcon; }
+    else {
 	len_=res.length;
 	res="<a href='javascript:Curr_PId="+'"'+PId+'";'
             +"Select_Person("+(ref_&8 ? 0 : ((ref_&7)-1))+")'>"
 	    +res+"</a>";
+	res+=" "+genIcon;
 	if (ref_&8) { // add birth/death date
 	    tmp=psplit[P_['p_birthdate']];
 	    if (tmp!=undefined && tmp!="")
@@ -519,13 +531,17 @@ function check_load(idx,cnt) {
     
     try {
 	//data_=docFr.contentWindow.document.body.innerHTML;
-	if (docFr.contentWindow.document.body.innerHTML)
-	    data_len=docFr.contentWindow.document.body.innerHTML.length;
-	    if (tst>0) debug("load"+idx+" l="+(-data_len));
+//?	if (docFr.contentWindow.document.body.innerHTML)
+//?	    data_len=docFr.contentWindow.document.body.innerHTML.length;
+	var innerDoc = docFr.contentDocument || docFr.contentWindow.document;
+	if (innerDoc) data_len=innerDoc.body.innerHTML.length;
+	    else data_len=999999;
+	if (tst>0) 
+	    debug("load-"+idx+" l="+(-data_len));
 	}
     catch (e) {
 	data_="";
-	if (tst>0) debug("Error loading frame "+fr+": "+e);
+	if (tst>0 && cnt<3) debug("Error loading frame "+fr+": "+e);
 	if (cnt>0) {
 	    if (idx==iTrans && cnt<3) {
 		if (language!=g_language) 
@@ -548,13 +564,14 @@ function check_load(idx,cnt) {
     cnt--;
     if (data_len>=0) data_=docFr.contentWindow.document.body.innerHTML;
     if (cnt<=0 || (str!="" && !data_.match(str))) {
-        if (tst!=0) debug("cnt<0?");
+        if (tst!=0) debug("cnt="+cnt);
 	if (cnt>0 && !data_.match(/\s404/)) {
 	    setTimeout("check_load("+idx+","+cnt+")",min_wait);
 	    return;
 	    }
 	if (idx>0 || import_files[idx].substr(0,2)!=g_language) {
-	    debug(import_files[idx]+" "+_('not available'));
+	    if (str!="" && !data_.match(str))
+		debug(import_files[idx]+" "+_('not available')+" #="+cnt);
 	    if (tst>0) debug("l="+data_.length+",cnt="+cnt+",str="+str);
 	    if (navigator.userAgent.match(/Chrome|Safari/)
 		&& src.match(/file\:/i)) {
@@ -769,7 +786,7 @@ function vline_(top_,left_,height_) {
 function show_tree(PId) {
     var str='<div id="tree"><h4>';
     var strE='</h4><div style="position: relative;">';
-    var buttons='<a href="javascript:toggle_dates()">'+_('Date')+'</a>';
+    var buttons='<a href="javascript:toggle_dates()"> '+_('Date')+'</a>';
     buttons+=' <a href="javascript:max_level++;show_tree(Curr_PId);">'
 		+' + </a>';
     if (max_level>2) buttons+='/'
@@ -918,14 +935,17 @@ function show_descendants(PId,level,tgt_spouse,tgt_child,cTop,cLeft) {
 	spouse=split_[P_['f_husband']];
 	if (spouse==PId) { spouse=split_[P_['f_wife']]; }
 	if (spouse=="") spouse=" ";
-	cline_top=(lev_n[level])*d_height-gap_height/2;
-	cline_left=level*d_width+box_width+gap_width/2;
+	children=all_[2][FamId];
+	if (children==undefined) children="";
+	if (children && lev_n[level]<lev_n[level+1]) lev_n[level]=lev_n[level+1]
 	if (tgt_spouse!="") {
 	    if (spouse!=tgt_spouse) { continue; }
 	    if (level>0) { str+=_show_par(tgt_spouse,level,cTop,cLeft); }
 	    }
 	else if (level==mid_level && level>0) 
 		{ str+=_show_par(spouse,level,cTop,cLeft); }
+	cline_top=(lev_n[level])*d_height-gap_height/2;
+	cline_left=level*d_width+box_width+gap_width/2;
 	tmp=d_height*(lev_n[level]-curr_n);
 	if (spouse==" ") { info="?"; }
 	else { info=person_name(spouse,box_info); }
@@ -935,8 +955,6 @@ function show_descendants(PId,level,tgt_spouse,tgt_child,cTop,cLeft) {
 	str+=vline_(curr_n*d_height+gap_height/2,
 		       level*d_width+box_width/2,tmp);
 	if (level<max_level-1) {
-	    children=all_[2][FamId];
-	    if (children==undefined) children="";
 	    if (tgt_child!="") {
 		tmp=all_[0][tgt_child];
 		if (tmp!=undefined) children+=","+tmp;
@@ -1106,10 +1124,9 @@ function export_family() {
       }
     if (Curr_PId!="") {
 	// find descendants of Curr_PId and ancestors+spouses+siblings
-	hint(0,'Data assembling started (descendants)');
-	export_children_ids(Curr_PId); // includes given PId
-	hint(0,'Data assembling started (ancestors)');
-	export_parent_ids(Curr_PId);
+	hint(0,'Data assembling started');
+	if (tst>0) debug("<br>");
+	export_families(Curr_PId);
 	hint(0,'Data export started');
 	}
     var ex_win=window.open("about:blank",_('Pedigree')+"_"+_('Export'));
@@ -1147,53 +1164,58 @@ function export_family() {
     return;
     }
 
+function export_families(PId) {
+    if (!PId) return;
+    var fam_ids=find_families(PId)+find_parents(PId);
+    var fsplit_=fam_ids.splitX(","); // 
+    var i, fi;
+    var ids=new Array(PId);
+
+    //add_export(0,PId);
+    var tmp=all_[0][PId];
+    if (!tmp) { debug("PID undefined "+PId); return; }
+    var split_=tmp.splitX(",");
+    for (i=1; i<split_.length; i++) {
+	var val=split_[i];
+	if (val.match(/\[.*\]/)) ids.push(val); // \w\d+
+	}
+    if (PId=="" || dontFollow[PId]) return;
+    for (fi=1; fi<fsplit_.length; fi++) {
+	var FamId=fsplit_[fi];
+	if (FamId=="") continue;
+	if (!add_export(1,FamId)) {
+	    continue; // already included
+	    }
+	//add_export(1,FamId); // Family id into which PId was born
+	ids.push(FamId);
+	var children=find_siblings(FamId,PId);
+	if (children!=undefined) {
+	    var split_=children.splitX(",");
+	    for (i=1; i<split_.length; i++) {
+		var id_=split_[i];
+		if (id_==PId) continue;
+		//add_export(0,id_);
+		ids.push(id_);
+		msg+=id_;
+		export_families(id_);
+		}
+	    }
+	var split_=all_[1][FamId].splitX(",");
+	var husband=split_[P_['f_husband']];
+	var wife=split_[P_['f_wife']];
+	ids.push(husband); ids.push(wife);
+	export_families(husband);
+	export_families(wife);
+	}
+    if (tst>0) debug("ex "+ids.length);
+    exportIds(ids);
+    } // export_families
+
 function add_export (type_, Id_) {
     //if (tst>0) debug("addex "+type_+":"+Id_); 
     if (Id_!=undefined && Id_!="" && export_ids[type_].indexOf(";"+Id_+";")<0)
 	{ export_ids[type_]=export_ids[type_]+Id_+";"; return true; }
     else return false;
-    }
-
-function export_parent_ids (PId) {
-    var fsplit_, fam_id, fam_ids, i, j, k, Id_, split_, csplit, tmp, split2;
-    
-    if (PId=="" || dontFollow[PId]) return;
-    fam_ids=find_parents(PId);
-    fsplit_=fam_ids.splitX(",");
-    for (i=1; i<fsplit_.length; i++) {
-	fam_id=fsplit_[i];
-	//add_export(1,fam_id); // Family id into which PId was born
-	split_=all_[1][fam_id].splitX(",");
-	exportIds(split_);
-	Id_=split_[P_['f_husband']];
-	if (Id_!="") {
-	    //add_export(0,Id_); // Person father
-	    export_parent_ids(Id_); // parents of father
-	    }
-	Id_=split_[P_['f_wife']];
-	if (Id_!="") {
-	    //add_export(0,Id_); // Person mother
-	    export_parent_ids(Id_); // parents of mother
-	    }
-	//add_export(2,fam_id);
-	tmp=find_siblings(fam_id,PId);
-	split_=tmp.splitX(",");
-	exportIds(split_);
-	for (j=1; j<split_.length; j++) {
-	    Id_=split_[j]; // next child of parents (sibling of PId)
-	    //add_export(0,Id_); // Person info of sibling
-	    if (dontFollow[Id_]) fam_ids="";
-	    else fam_ids=find_families(Id_);
-	    csplit=fam_ids.splitX(","); // Families of sibling
-	    for (k=1; k<csplit.length; k++) {
-	        if (!add_export(1,csplit[k])) continue; // already exported
-		split2=all_[1][csplit[k]].splitX(",");
-		exportIds(split2);
-		//add_export(0,split2[P_['f_husband']]); // Spouse 
-		//add_export(0,split2[P_['f_wife']]);
-		}
-	    }
-	}
     }
 
 function exportIds(infoArr) {
@@ -1209,30 +1231,6 @@ function exportIds(infoArr) {
                 { add_export(1,val); add_export(2,val); }
 //            }
         }
-    }
-
-function export_children_ids (PId) {
-    if (PId==undefined || PId=="") return;
-    add_export(0,PId);
-    var fam_ids=find_families(PId);
-    var fsplit_=fam_ids.splitX(",");
-    var i, fi, FamId, split_, children, id_;
-    for (fi=1; fi<fsplit_.length; fi++) {
-	FamId=fsplit_[fi];
-	if (!add_export(1,FamId)) continue; // already included
-	split_=all_[1][FamId].splitX(",");
-	exportIds(split_);
-	//add_export(0,split_[P_['f_husband']]);
-	//add_export(0,split_[P_['f_wife']]);
-	//add_export(2,FamId);
-	children=find_siblings(FamId,PId);
-	if (children==undefined) continue;
-	split_=children.splitX(",");
-	for (i=1; i<split_.length; i++) {
-	    id_=split_[i];
-	    export_children_ids(id_);
-	    }
-	}
     }
 
 function save_(type_,Id,vals_,new_) {
@@ -1449,7 +1447,8 @@ function show_surnames(ctxt_type,l0) {
 	str='<input type="button" class="BUTTON" '
 	+'value="+ '+_('Individual')+'"  onClick="show_person(1,0)">';
 	document.getElementById("newabort").innerHTML =str;
-	document.getElementById("surnames").value=_('Surnames');
+	if (document.getElementById("surnames"))
+	    document.getElementById("surnames").value=_('Surnames');
 	//document.getElementById("hint").innerHTML ="";
 	}
     } // show_surnames
@@ -1739,15 +1738,15 @@ function read_modifications() {
 	alert(_('Cookies are not activated')
 	    +"\n"+_('Changes can not be saved'));
 	}
-    if (tst>0 && msg!="") debug(msg);
+    if (tst>0 && msg!="") debug("readMod:"+msg);
     }
 
 function read_params () {
     var query = self.location.search;
     query = '&'+query.substr(1, query.length - 1)+'&';
     query = query.replace(/%26/,'&');
+    var tmp="";
 
-    if (query.match(/\&f\=([^\&]+)\&/i)) { csv_file=RegExp.$1; }
     if (query.match(/\&t\=([^\&]+)\&/i)) { tst=parseInt(RegExp.$1); }
     if (query.match(/\&l\=([^\&]+)\&/i)) { language=RegExp.$1; }
     if (query.match(/\&s\=([^\&]+)\&/i)) { 
@@ -1755,7 +1754,18 @@ function read_params () {
 	search_str=decodeURI(search_str); // replace(/\%20/g," ");
 	}
     if (query.match(/\&m\=([^\&]+)\&/i)) { mobile=RegExp.$1; }
-    if (tst>0) debug("par: f="+csv_file+", t="+tst+", l="+language);
+    if (query.match(/\&f\=([^\&]+)\&/i)) { // \=([^\&]+)
+	tmp=RegExp.$1;
+	csv_import(tmp);
+//	if (csv_file.match(/^[\w\d\.]+$/)) {
+//	    import_files[iData]=csv_file;
+//	    import_file(iData);
+//	    }
+//	else { csv_file=""; }
+	}
+    else document.getElementById("acnt").src="../accessCnt.php";
+
+    if (tst>0) debug("par: f="+tmp+", t="+tst+", l="+language+", q="+query);
 
 } // read_params
 
@@ -1780,22 +1790,22 @@ function import_file(idx,hgt) {
     if (hgt) docFr.height=hgt;
     } // import_file
 
-function csv_import () {
-    //if (csv_file==undefined || csv_file=="") {
-    csv_file=window.prompt(_('Please specify name of data file')
+function csv_import (par) {
+    if (par) {
+	csv_file=par;
+	if (!csv_file.match(/^[\w\d\.]+$/)) return; // illegal filename
+	}
+    else csv_file=window.prompt(_('Please specify name of data file')
                              +" (.txt) :","");
     if (csv_file==undefined || csv_file=="") {
 	//alert(_('Maybe the security level is too high.')); 
 	csv_file=" ";
 	return;
 	}
-    if (csv_file==undefined) csv_file="";
-    if (csv_file!="") {
-	document.getElementById("acnt").src="../accessCnt.php?ref="+csv_file;
-	if (!csv_file.match(/\.\w+$/)) { csv_file=csv_file+".txt"; }
-	import_files[iData]=csv_file;
-	import_file(iData);
-	}
+    if (!csv_file.match(/\.\w+$/)) { csv_file=csv_file+".txt"; }
+    import_files[iData]=csv_file;
+    import_file(iData);
+    document.getElementById("acnt").src="../accessCnt.php?ref="+csv_file;
     } // csv_import
 
 function start() {
@@ -1876,7 +1886,7 @@ function import_action(import_id, data_) {
     } // import_action
 
 function import_data(import_id, data_) {
-  var src_, nl_, lines, i, line, n, pos, id_, ih, split_, split_t;
+  var src_, nl_, lines, i, line, n, pos, id_, ih, split_, split_t, val;
   var src_; var n_dup=0; var iSect=-1;
   var max_id=new Array("","","");
   var fr=import_frames[import_id];
@@ -1931,7 +1941,7 @@ function import_data(import_id, data_) {
         }
     for (i=0; i<lines.length; i++) {
 	    line=lines[i];
-	    if (tst>0) debug(line.substr(0,1));
+	    //if (tst>0) debug(line.substr(0,1));
 	    //line=line.replace(/[\n\r]+$/,''); // remove trailing cr/lf
 	    if (tst>0 && import_id==iData) {
                 if (line.length<5) { debug("Short: "+line+(-line.length)); }
@@ -1974,10 +1984,19 @@ function import_data(import_id, data_) {
 		    split_=line.splitX(",");
 		    split_t=Head_Lines_Import[iSect].splitX(",");
 		    for (ih=0; ih<=split_.length; ih++) {
-			id_=split_t[ih];
+			id_=split_t[ih]; 
+			if (!id_) continue;
+			id_=id_.toLowerCase(); 
+			val=split_[ih];
 			if (!trans[language+'-'+id_]) {
-			    trans[language+'-'+id_]=split_[ih];
-			    if (tst>0) debug("Trans "+id_);
+			    trans[language+'-'+id_]=val;
+			    if (tst>0) debug("Trans "+id_+"="+val);
+			    }
+			id_=val.toLowerCase();
+			val=split_t[ih];
+			if (!trans[language+'-'+id_]) {
+			    trans['en-'+id_]=val;
+			    if (tst>0) debug("Trans "+id_+"="+val);
 			    }
 			}
 		    }
@@ -2023,7 +2042,8 @@ function import_data(import_id, data_) {
 	line+="# lines="+lines.length+" p="+max_p+" f="+max_f;
 	debug(line);
 	}
-    if (import_id==iHelp) init(); // ??x re-define symbols p_..., f_...
+    //if (import_id==iHelp) 
+	init(); // ??x re-define symbols p_..., f_...
     return 1;
     } // import_data
 
@@ -2066,11 +2086,13 @@ function mobile_ () {
 <body>
 <span id="debug" style="font-size:60%"></span>
 <div class="navbyline">
-    <img id="acnt" src="Gramps.ico"
+    <img id="acnt" src="../Drachenkopf.ico"
+            width=15 height=15 border=0>
+    <img id="ico" src="Gramps.ico"
             width=15 height=15 border=0>
     <span id="navby">Web page for CSV Export of</span>
     <a href="http://gramps-project.org" target="_blank"><u>GRAMPS</u></a>
-    &nbsp; &copy; H. Ruprecht 2010-2023
+    &nbsp; &copy; H. Ruprecht 2010-2024
     <!-- src="../accessCnt.php"  --> 
 </div>
 <h1 class="navtitle"><span id="navtitle">Pedigree</span><span id="hint"></span></h1>
@@ -2109,7 +2131,8 @@ type="text/plain" height="2" style="visibility:hidden"> <!--  -->
 Daten-Import
 </iframe>
 <script type="text/javascript">
-  read_params(); mobile_(); init(); import_file(iTrans);
+  init(); import_file(iTrans); mobile_(); 
+  setTimeout("read_params()",1000); 
   </script>
 </body>
 </html>
