@@ -1,0 +1,479 @@
+Person,Nachname,Vorname,Rufname,Suffix,Präfix,Titel,Geschlecht,Geburtsdatum,Geburtsort,Geburt Quelle,Taufdatum,Taufort,Taufe Quelle,Sterbedatum,Sterbeort,Tod Quelle,Beerdigungsdatum,Beerdigungsort,Beerdigung Quelle,Notiz
+[I0042],Limantara,Felix,李国隆 Lǐ Guó Lóng,,,,männlich,1988-09-05,,,,,,,,,,,,
+[I0017],Lie,Sun Jue,李存锐 Lǐ Cún Ruì,,,,männlich,1947-06-23,,,,,,,,,,,,
+[I0583],Joeng,Sin Tjhie,,,,,männlich,,,,,,,,,,,,,
+[I0584],Liong,Kwie Tjauw,,,,,weiblich,,,,,,,,,,,,,
+[I0038],Yoeng,Swie Joen,Silvie Marthamihardja,,,,weiblich,1944-12-19,[P0027],,,,,2005-08-20,[P0033],,,,,
+[I0043],Tanusaputra,Laurence,陳來順,,,,männlich,1978-09-18,,,,,,,,,,,,
+[I0521],Tanusaputra,Ethan James,陳 荣 强 Chén Róng Qiáng,,,,männlich,2011-10-27,[P0013],,,,,,,,,,,
+[I0044],Tanusaputra,Edwin,陳來昌,,,,männlich,1981-06-26,,,,,,,,,,,,
+[I0433],Tandani,Suwita,"Tan, Thjeng Swie",,,,männlich,,,,,,,,,,,,,
+[I0434],Yap,Foo Ay,,,,,weiblich,,,,,,,,,,,,,
+[I0384],Tandani,Jessy Julia,Jessy,,,,weiblich,1980-07-27,,,,,,,,,,,,
+[I0039],Tanusaputra,Eddy E.,陳彰德,,,,männlich,1946-07-15,,,,,,2010-04-05,[P0014],,,,,
+[I0034],Lie,Yung Hwa,李榮 /荣 華 /华 Lǐ Róng Huá,,,,weiblich,1948-11-30,,,,,,,,,,,,
+[I0035],Gerstenberg geb. Lie,Yung Yung,李 榮/荣 榮/荣 Lǐ Róng Róng,,,,weiblich,1950-10-21,,,,,,,,,,,,
+[I0040],Gerstenberg,Klaus,,,,,männlich,1950-06-01,,,,,,,,,,,,
+[I0390],Liewald,Joris Hàn,翰,,,,männlich,2009-08-08,[P0016],,,,,,,,,,,
+[I0531],Liewald,Elimar Zhé,哲,,,,männlich,2012-02-26,[P0023],,,,,,,,,,,
+[I0020],Ruprecht,Melanie Měi-Yīng,美英,,,,weiblich,1980-09-19,[P0015],,,,,,,,,,,
+[I0201],Liewald,Frank-Holger Carsten,Carsten,,,,männlich,1979-08-27,,,,,,,,,,,,
+[I0528],Ruprecht,Liam Tāo,韬,,,,männlich,2011-12-21,[P0049],,,,,,,,,,,
+[I0544],Ruprecht,Merlin Zhào,兆,,,,männlich,2013-10-14,[P0053],,,,,,,,,,,
+[I0568],Ruprecht,Kito Lěi,磊,,,,männlich,2017-06-01,[P0053],,,,,,,,,,,
+[I0581],Ruprecht,Sirpa Méi,梅,,,,weiblich,2019-03-27,[P0053],,,,,,,,,,,
+[I0021],Ruprecht,Colin Hàn-Míng,漢明 / 汉明,,,,männlich,1982-09-10,[P0015],,,,,,,,,,,
+[I0024],Krüger,Katarina Ragna,Katarina,,,,weiblich,1983-08-16,,,,,,,,,,,,
+[I0036],Lie,Jung Sun,李榮/荣 順/顺 Lǐ Róng Shùn,,,,weiblich,1953-08-16,[P0014],,,,,,,,,,,
+[I0022],Ruprecht,Hinrich Erwin,Hinrich,,,,männlich,1952-04-13,[P0018],,,,,,,,,,,
+[I0585],Lie,Aurelia Huì Lín,慧琳 Lǐ Huì Lín,,,,weiblich,2020-12-02,[P0013],,,,,,,,,,,
+[I0586],Lie,Esme Huì Měi,慧媺 Lǐ Huì Měi,,,,weiblich,2022-08-29,[P0013],,,,,,,,,,,
+[I0045],Lie,Kuo Ming,Andy 李国明 Lǐ Guó Míng,,,,männlich,1985-12-28,[P0013],,,,,,,,,,,
+[I0159],Zhou,EJ,,,,,weiblich,,,,,,,,,,,,,
+[I0046],Lie,Kuo Liang,Justin 李国亮 Lǐ Guó Liàng,,,,männlich,1988-01-06,[P0013],,,,,,,,,,,
+[I0037],Lie,Sun Li,李存铝 Lǐ Cún Lǚ,,,,männlich,1956-06-04,[P0014],,,,,,,,,,,
+[I0041],Budiman,Miranda,何婷美,,,,weiblich,1956-01-02,,,,,,,,,,,,
+[I0334],Tang,Hao,,,,,männlich,,,,,,,,,,,,,
+[I0335],Tang,Jian,,,,,weiblich,,,,,,,,,,,,,
+[I0333],Tang,Xin Cheng,,,,,männlich,,,,,,,,,,,,,
+[I0332],Lie,Zhiung Shiu,,,,,weiblich,,,,,,,,,,,,,
+[I0162],Li,Chéng Gài,李承概,,,,männlich,1941-12-27,[P0014],,,,,,,,,,,
+[I0227],Li,Ài Yù,李愛/爱玉,,,,weiblich,1943-01-02,[P0014],,,,,,,,,,,
+[I0370],Li,Ài Zhū,李愛/爱珠,,,,weiblich,1944-01-23,[P0014],,,,,,,,,,,
+[I0375],Li,Chéng Xù,李承訓/训,,,,männlich,1945-02-13,[P0014],,,,,,,,,,,
+[I0386],Li,Ài Jīn,李愛/爱金,,,,weiblich,1946-04-16,[P0014],,,,,,,,,,,
+[I0387],Li,Ài Yuè,李愛/爱月,,,,weiblich,1949-07-02,[P0014],,,,,,,,,,,
+[I0388],Li,Ài Fāng,李愛/爱芳,,,,weiblich,1952-04-09,[P0014],,,,,,,,,,,
+[I0389],Li,Ài Měi,李愛/爱美,,,,weiblich,1954-03-15,[P0014],,,,,,,,,,,
+[I0459],Li,Ài Huá,李愛/爱華/华,,,,weiblich,1955-04-07,[P0014],,,,,,,,,,,
+[I0460],Li,Chéng Jīn,李承金,,,,männlich,1956-06-02,[P0014],,,,,,,,,,,
+[I0463],Lie,Seng Tjhen,李承铮 Li Chéng Zhēng,,,Dr.,männlich,1956-06-02,[P0014],,,,,,,,,,,
+[I0604],Li,Chéng Qiān,李承 謙/谦,,,,männlich,1960-02-03,[P0014],,,,,,,,,,,
+[I0161],Lie,En Fen,李恩泓 Li Ēn Hóng,,,,männlich,1917,,,,,,,,,,,,
+[I0617],Lǐ,Jì Fēn,李季芬,,,,weiblich,,,,,,,,,,,,,
+[I0618],Lǐ,Qiū Xiāng,李秋香,,,,weiblich,,,,,,,,,,,,,
+[I0619],Lǐ,Lán Xiāng,李蘭/兰香,,,,weiblich,,,,,,,,,,,,,
+[I0620],Lǐ,Lán Fēn,李蘭/兰芬,,,,weiblich,,,,,,,,,,,,,
+[I0621],Lǐ,Qín Xiāng,李芹香,,,,weiblich,,,,,,,,,,,,,
+[I0622],Lǐ,Cún Jīn,李存襟,,,,männlich,,,,,,,,,,,,,
+[I0623],Lǐ,Cún Jī,李存基,,,,männlich,,,,,,,,,,,,,
+[I0624],Lǐ,Cún ??,李存 ??,,,,männlich,,,,,,,,,,,,,
+[I0616],Lie,En Jong,李恩楊/杨 Lǐ Ēn Yáng,,,,männlich,1912,,,,,,,,,,,,
+[I0626],Lǐ,Xiǎo Zī,李小兹,,,,weiblich,,,,,,,,,,,,,
+[I0627],Lǐ,Xiǎo Méi,李小梅,,,,weiblich,,,,,,,,,,,,,
+[I0628],Lǐ,Cún Yǒu,李存友,,,,männlich,,,,,,,,,,,,,
+[I0629],Lǐ,Cún ?,李存 ?,,,,männlich,,,,,,,,,,,,,
+[I0630],Lǐ,Cún Duān,李存端,,,,männlich,,,,,,,,,,,,,
+[I0625],Lie,En Fung,李恩洪 Lǐ Ēn Hóng,,,,männlich,1915,,,,,,,,,,,,
+[I0160],Li,Yù Míng,李毓銘,,,,männlich,,,,,,,,,,,,,
+[I0631],Li,Yù Chēn,李毓琛,,,,männlich,,,,,,,,,,,,,
+[I0632],Li,Yù Guì,李毓桂,,,,männlich,,,,,,,,,,,,,
+[I0199],Lǐ,Yún Gāo,李云皋,,,,männlich,,,,,,,,,,,,,
+[I0200],Zhou,Shi,,,,,weiblich,,,,,,,,,,,,,
+[I0197],Lǐ,Yù Chūn,李毓椿,,,,männlich,,,,,,,,,,,,,
+[I0198],Wang,Ji Niang,,,,,weiblich,,,,,,,,,,,,,
+[I0018],Lie,En Tjeuw,李恩照 Lǐ Ēn Zhào,,,,männlich,1917-09-07,[P0050],,,,,2008-06-04,[P0013],,,,,
+[I0173],Gunawan,Brilly A.,,,,,männlich,1978,,,,,,,,,,,,
+[I0393],Widjaja,Marvel Dylan,,,,,männlich,,,,,,,,,,,,,
+[I0392],Widjaja,Hendra,,,,,männlich,,,,,,,,,,,,,
+[I0174],Gunawan,Eva Virianty,,,,,weiblich,1981,,,,,,,,,,,,
+[I0394],Gunawan,Dante Razon,,,,,männlich,,,,,,,,,,,,,
+[I0175],Gunawan,Febrian Kurnia,,,,,männlich,1983,,,,,,2022,,,,,,
+[I0391],Lie,Windi,,,,,weiblich,,,,,,,,,,,,,
+[I0172],Gunawan,Mashuki,Giok Kie,,,,männlich,1948,,,,,,1999-06-25,,,,,,
+[I0171],Antono,Julianty,,,,,weiblich,1949,,,,,,,,,,,,
+[I0177],Thor,Jimmy Chin Koei,,,,,männlich,1955,,,,,,,,,,,,
+[I0176],Antono,Taty,Thong Qiuck Kwie,,,,weiblich,1954,,,,,,,,,,,,
+[I0407],Thong,Sin Thiam,,,,,männlich,,,,,,,,,,,,,
+[I0019],Antono,Sukiman,Sit Kim Thong,,,,männlich,1923,[P0014],,,,,,[P0014],,,,,
+[I0170],Gautama,Mariana,,,,,weiblich,1920,,,,,,1997-12-07,,,,,,
+[I0481],Haliman,Aurelia,,,,,weiblich,,,,,,,,,,,,,
+[I0410],Haliman,Martin,,,,,männlich,,,,,,,,,,,,,
+[I0480],Kosasih,Virginia,,,,,weiblich,,,,,,,,,,,,,
+[I0482],Haliman,Aloysius,,,,,männlich,,,,,,,,,,,,,
+[I0454],Haliman,Martha,,,,,weiblich,,,,,,,,,,,,,
+[I0179],Haliman,Muksin O.,Thong She Sin,,,,männlich,1948,,,,,,2023-04-04,,,,,,
+[I0409],Iskandar,Linda,,,,,weiblich,,,,,,,,,,,,,
+[I0412],Martjiono,Adrian,,,,,männlich,,,,,,,,,,,,,
+[I0486],Lum,Chesleigh,,,,,männlich,,,,,,,,,,,,,
+[I0413],Martjiono,Silke,,,,,weiblich,,,,,,,,,,,,,
+[I0411],Martjiono,Alan,,,,,männlich,,,,,,,,,,,,,
+[I0180],Haliman,Liliana,,,,,weiblich,1949,,,,,,,,,,,,
+[I0415],Haliman,Putra Pratana,,,,,männlich,,,,,,,,,,,,,
+[I0417],Hoetomo,Alex S.,,,,Dr. Med. Dent.,männlich,,,,,,,,,,,,,
+[I0418],Santoso,Ratna K.,,,,,weiblich,,,,,,,,,,,,,
+[I0416],Hoetomo,Katharina Stephanie,,,,,weiblich,,,,,,,,,,,,,
+[I0419],Haliman,Rosa Marie,,,,,weiblich,,,,,,,,,,,,,
+[I0181],Haliman,Trihatma Kusuma,,,,,männlich,1951,,,,,,,,,,,,
+[I0414],Chandra,Maria Kartika,,,,,weiblich,,,,,,,,,,,,,
+[I0421],Witarsa,Ian,,,,,männlich,1984-02-10,,,,,,2023-10-16,[P0048],,,,,
+[I0422],Witarsa,Petra Elora,,,,,weiblich,,,,,,,,,,,,,
+[I0420],Witarsa,Sutanto,,,,,männlich,,,,,,,,,,,,,
+[I0182],Haliman,Tursanti,,,,,weiblich,1954,,,,,,,,,,,,
+[I0424],Haliman,Henry,,,,,männlich,,,,,,,,,,,,,
+[I0425],Haliman,Sylvia,,,,,weiblich,,,,,,,,,,,,,
+[I0183],Haliman,Sinduarjo,,,,,männlich,1955,,,,,,,,,,,,
+[I0423],Soedjadi,Lindawati,,,,,weiblich,,,,,,,,,,,,,
+[I0427],Hennen,Jay Andrew,,,,,männlich,1990-09-28,,,,,,,,,,,,
+[I0428],Hennen,Dean Ross,,,,,männlich,,,,,,,,,,,,,
+[I0426],Hennen,Bruce,,,,,männlich,,,,,,,,,,,,,
+[I0184],Haliman,Mawar Sari,Marlien,,,,weiblich,1957,,,,,,,,,,,,
+[I0432],Rachman,Emily,,,,,weiblich,,,,,,,,,,,,,
+[I0431],Rachman,Abdul,,,,,männlich,,,,,,,,,,,,,
+[I0185],Haliman,Mamiadini,,,,,weiblich,1958,,,,,,,,,,,,
+[I0429],Haliman,Singgih,,,,,männlich,,,,,,,2021-04-08,,,,,,
+[I0430],Ng,Tiam Yin,,,,,weiblich,,,,,,,,,,,,,
+[I0056],Haliman,Anton,Sit Lim Thong,,,,männlich,1926-07-05,,,,,,1999-03-16,[P0052],,,,,
+[I0191],Antono,Sri Wulan,,,,,weiblich,,,,,,,2005-08-27,[P0014],,,,,
+[I0467],Sutrisno,Melissa Anastasia,,,,,weiblich,1988,,,,,,,,,,,,
+[I0468],Sutrisno,Kevin Johannes,,,,,männlich,,,,,,,,,,,,,
+[I0453],Nio,Bun Haw,,,,,männlich,,,,,,,,,,,,,
+[I0443],Antono,Juny,Hie Jun,,,,weiblich,,,,,,,,,,,,,
+[I0441],Thong,Shi Chun,,,,,männlich,,,,,,,,,,,,,
+[I0442],Thong,Shi Koi,,,,,männlich,,,,,,,,,,,,,
+[I0445],Thong,Shi Kwet,,,,,männlich,,,,,,,,,,,,,
+[I0448],Antono,Junior,,,,,männlich,,,,,,,,,,,,,
+[I0449],Antono,Julio,,,,,männlich,,,,,,,,,,,,,
+[I0446],Thong,Shi Kiong,,,,,männlich,,,,,,,,,,,,,
+[I0447],Antono,Mimi,,,,,weiblich,,,,,,,,,,,,,
+[I0451],Dornan,Clara,,,,,weiblich,,,,,,,,,,,,,
+[I0452],Dornan,Aldo,,,,,männlich,,,,,,,,,,,,,
+[I0466],Dornan,Ray,,,,,männlich,,,,,,,,,,,,,
+[I0450],Thong,Li Yun,,,,,weiblich,,,,,,,,,,,,,
+[I0057],Antono,Fandi,,,,,männlich,1929,,,,,,,[P0014],,,,,
+[I0444],Antono,Sianiwaty,,,,,weiblich,,,,,,,2012-01-18,[P0014],,,,,
+[I0440],Tjung,Kwi Mi,,,,,weiblich,,,,,,,,[P0014],,,,,
+[I0483],Lim,Roselyn Fiona,,,,,weiblich,1991-10-21,,,,,,,,,,,,
+[I0484],Lim,Fulgentius Willy,,,,,männlich,1998-06-22,,,,,,,,,,,,
+[I0485],Lim,Elfrida Lucia Fioletta,,,,,weiblich,1999-11-01,,,,,,,,,,,,
+[I0470],Lim,Aditya,,,,,männlich,,,,,,,,,,,,,
+[I0469],Antono,Melly,Ahie,,,,weiblich,,,,,,,,,,,,,
+[I0471],Gouw,Sun Chang,,,,,männlich,,,,,,,,[P0027],,,,,
+[I0163],Antono,Floriane Lanny,,,,,weiblich,1928,,,,,,,[P0027],,,,,
+[I0397],Effrien,Jason Rhys,Lie Jason,,,,männlich,2009-08-01,,,,,,,,,,,,
+[I0396],Effrien,Eric,Lie Eric,,,,männlich,1979-04-14,,,,,,,,,,,,
+[I0395],Yap,Jessica Leoviana,,,,,weiblich,1986-08-17,,,,,,,,,,,,
+[I0546],Susito,Miroslava Shelby,,,,,weiblich,2014-12-18,,,,,,,,,,,,
+[I0545],Susito,Refi,,,,,männlich,1982-09-18,,,,,,,,,,,,
+[I0398],Yap,Rosabella Apriana,Bella,,,,weiblich,1988-04-14,,,,,,,,,,,,
+[I0192],Jarmin,Meta Alex,,,,,männlich,,,,,,,,,,,,,
+[I0186],Antono,Purwarini,Thong Ju Kwie,,,,weiblich,1960-09-06,[P0014],,,,,2021-07-09,[P0014],,,,,
+[I0400],Antono,Gregory,Greg,,,,männlich,1993-03-10,,,,,,,,,,,,
+[I0401],Antono,Genevieve,,,,,weiblich,1988-11-18,,,,,,,,,,,,
+[I0187],Antono,Charles Dwi Hatma,,,,,männlich,1961-11-09,,,,,,,,,,,,
+[I0193],How,Yin Wai,,,,,weiblich,1961-07-02,,,,,,,,,,,,
+[I0402],Antono,Leonnie,,,,,weiblich,1995-08-07,,,,,,,,,,,,
+[I0188],Antono,Victor Sunu Dahana,,,,,männlich,1963-01-23,,,,,,,,,,,,
+[I0194],Budidjaja,Henny,,,,,weiblich,1965-06-27,,,,,,,,,,,,
+[I0405],Kwok,Airin Utami,,,,,weiblich,1990-08-28,,,,,,,,,,,,
+[I0406],Kwok,Dennis Putra,,,,,männlich,1992-09-25,,,,,,,,,,,,
+[I0195],Kwok,Kendy,,,,,männlich,1960-11-09,,,,,,,,,,,,
+[I0189],Antono,Hira Makarti,,,,,weiblich,1965-02-01,,,,,,,,,,,,
+[I0403],Antono,Vania Cheryl,,,,,weiblich,2002-02-10,,,,,,,,,,,,
+[I0404],Antono,Varrel,,,,,männlich,2007-12-10,,,,,,,,,,,,
+[I0190],Antono,Pamungkas,,,,,männlich,1972-04-29,,,,,,,,,,,,
+[I0196],Soehartana,Irene,,,,S.Comm,weiblich,1975-01-08,,,,,,,,,,,,
+[I0164],Antono,Dharma Wijaya,Thong Sit Fung 湯鍚洪,,,,männlich,1933-08-17,[P0014],,,,,,,,,,,
+[I0178],Antono,Wulan Sari,蕭蘭菊,,,,weiblich,1937-03-02,,,,,,,,,,,,
+[I0488],Zhang,Jun Shuo,,,,,männlich,,,,,,,,,,,,,
+[I0489],Zhang,Jun Bo,,,,,männlich,,,,,,,,,,,,,
+[I0487],Zhang,Mao Ping,,,,,männlich,,,,,,,,,,,,,
+[I0456],Huang,Xiu Xin,,,,,weiblich,,,,,,,,,,,,,
+[I0491],Tu,Zong Kai,,,,,männlich,,,,,,,,,,,,,
+[I0492],Tu,Bo Diao,,,,,männlich,,,,,,,,,,,,,
+[I0490],Tu,Jin Zhuang,,,,,männlich,,,,,,,,,,,,,
+[I0457],Huang,Ju Xin,,,,,weiblich,,,,,,,,,,,,,
+[I0494],Li,Meng Zhen,,,,,weiblich,,,,,,,,,,,,,
+[I0493],Li,Guang Chu,,,,,männlich,,,,,,,,,,,,,
+[I0458],Huang,Mei Xin,,,,,weiblich,,,,,,,,,,,,,
+[I0496],Lin,Jia Hui,,,,,weiblich,,,,,,,,,,,,,
+[I0497],Lin,Zi He,,,,,männlich,,,,,,,,,,,,,
+[I0495],Lin,Ji Sheng,,,,,männlich,,,,,,,,,,,,,
+[I0462],Huang,Feng Xin,,,,,weiblich,,,,,,,,,,,,,
+[I0499],Chen,Wen Lin,,,,,männlich,,,,,,,,,,,,,
+[I0500],Chen,Mei Li,,,,,weiblich,,,,,,,,,,,,,
+[I0498],Chen,Fu Lang,,,,,männlich,,,,,,,,,,,,,
+[I0464],Huang,Yu Xin,,,,,weiblich,,,,,,,,,,,,,
+[I0502],Chen,Guo En,,,,,männlich,,,,,,,,,,,,,
+[I0501],Chen,Yu Cai,,,,,männlich,,,,,,,,,,,,,
+[I0461],Huang,Qiu Xin,,,,,weiblich,,,,,,,,,,,,,
+[I0455],Huang,Xuan Li,,,,,männlich,,,,,,,,[P0026],,,,,
+[I0165],Thong,Lan Fong,湯蘭芳,,,,weiblich,1931,,,,,,2022-06-22,[P0026],,,,,
+[I0399],Tang,Louis,湯新生,,,,männlich,,,,,,,,,,,,,
+[I0166],Thong,Sit Ming,湯鍚明,,,,männlich,1937-05-01,[P0014],,,,,,,,,,,
+[I0435],Li,Lai Wing,李丽榮,,,,weiblich,,,,,,,,,,,,,
+[I0477],Li,Wen Jing,,,,,weiblich,,,,,,,,,,,,,
+[I0475],Tang,Guang Kwie,,,,,weiblich,,[P0033],,,,,,,,,,,
+[I0478],Tang,Xiu Qi,,,,,weiblich,,,,,,,,,,,,,
+[I0479],Tang,Xiu Shan,,,,,weiblich,,,,,,,,,,,,,
+[I0476],Tang,Sui Kwie,,,,,weiblich,,[P0033],,,,,,,,,,,
+[I0167],Thong,Sit Men,湯鍚名,,,,männlich,1938,[P0014],,,,,,,,,,,
+[I0439],Lie,Fi Zhi,,,,,weiblich,,,,,,,,,,,,,
+[I0437],Tang,Sin Lung,,,,,männlich,,,,,,,,,,,,,
+[I0438],Tang,Mei Kwie,Irene,,,,weiblich,,,,,,,,,,,,,
+[I0168],Thong,Sit Pang,James William 湯鍚鵬,,,,männlich,1939,[P0014],,,,,,,,,,,
+[I0436],Zhang,Man Ing,,,,,weiblich,,,,,,,,,,,,,
+[I0504],Ngo,Fa Hie,,,,,weiblich,1973,,,,,,2008,,,,,,
+[I0505],Ngo,Fa Ing,,,,,weiblich,,,,,,,,,,,,,
+[I0503],Ngo,Tai Chung,,,,,männlich,,,,,,,,,,,,,
+[I0169],Thong,Kiun Siu,,,,,weiblich,1940,,,,,,,,,,,,
+[I0506],Thong,Mei Mei,,,,,weiblich,1941,[P0014],,,,,1942,[P0014],,,,,
+[I0507],Thong,Sit Qiu,,,,,männlich,1930,[P0014],,,,,1931,[P0014],,,,,
+[I0368],Tang,Yuè Xiù,,,,,männlich,,,,,,,,,,,,,
+[I0369],Liào,Yà Chùn,,,,,weiblich,,,,,,,,,,,,,
+[I0054],Thong,A Njie,,,,,männlich,1898,,,,,,1976,,,,,,
+[I0055],Shiu,Hung Moon,,,,,weiblich,1904,,,,,,1989-02-07,,,,,,
+[I0053],Thong,Joen Tjeuw,湯運招,,,,weiblich,1925-09-19,[P0014],,,,,2007-06-30,[P0013],,,,,
+
+Hochzeit,Ehemann,Ehefrau,Datum,Ort,Quelle,Notiz
+[F0075],[I0018],[I0053],1946-09-15,[P0014],,
+[F0042],[I0017],[I0038],1978-09-00,[P0014],,
+[F0241],[I0583],[I0584],,,,
+[F0062],[I0039],[I0034],1977-05-22,[P0014],,
+[F0170],[I0044],[I0384],2010-06-26,[P0013],,
+[F0184],[I0433],[I0434],,,,
+[F0011],[I0040],[I0035],1977-10-21,[P0015],,
+[F0043],[I0022],[I0036],1978-11-10,[P0015],,
+[F0093],[I0201],[I0020],2007-08-11,[P0017],,
+[F0007],[I0021],[I0024],2002-07-04,[P0011],,
+[F0044],[I0037],[I0041],1985-02-24,[P0013],,
+[F0242],[I0045],[I0159],2020-02-08,[P0013],,
+[F0094],[I0197],[I0198],,,,
+[F0146],,[I0332],,,,
+[F0147],[I0333],,,,,
+[F0095],[I0199],[I0200],,,,
+[F0001],[I0160],,,,,
+[F0002],[I0161],,,,,
+[F0003],[I0616],,,,,
+[F0004],[I0625],,,,,
+[F0070],[I0054],[I0055],,,,
+[F0085],[I0019],[I0170],,,,
+[F0072],[I0172],[I0171],,,,
+[F0171],[I0392],[I0174],,,,
+[F0172],[I0175],[I0391],,,,
+[F0039],[I0177],[I0176],1975,,,
+[F0045],[I0056],[I0191],,,,
+[F0174],[I0179],[I0409],,,,
+[F0202],[I0410],[I0480],,,,
+[F0192],[I0179],,,,,
+[F0203],,[I0454],,,,
+[F0175],[I0411],[I0180],,,,
+[F0204],[I0486],[I0413],,,,
+[F0178],[I0181],[I0414],,,,
+[F0177],[I0415],[I0416],,,,
+[F0176],[I0417],[I0418],,,,
+[F0179],[I0420],[I0182],,,,
+[F0180],[I0183],[I0423],,,,
+[F0181],[I0426],[I0184],,,,
+[F0183],[I0431],[I0185],,,,
+[F0182],[I0429],[I0430],,,,
+[F0188],[I0057],[I0440],,,,
+[F0191],[I0453],[I0443],,,,
+[F0189],[I0057],[I0444],,,,
+[F0190],[I0446],[I0447],,,,
+[F0196],[I0466],[I0450],,,,
+[F0197],[I0471],[I0163],,,,
+[F0198],[I0470],[I0469],,,,
+[F0087],[I0164],[I0178],,,,
+[F0088],[I0192],[I0186],,,,
+[F0173],[I0396],[I0395],,,,
+[F0223],[I0545],[I0398],,,,
+[F0089],[I0187],[I0193],,,,
+[F0090],[I0188],[I0194],,,,
+[F0091],[I0195],[I0189],,,,
+[F0092],[I0190],[I0196],,,,
+[F0193],[I0455],[I0165],,,,
+[F0205],[I0487],[I0456],,,,
+[F0206],[I0490],[I0457],,,,
+[F0207],[I0493],[I0458],,,,
+[F0208],[I0495],[I0462],,,,
+[F0209],[I0498],[I0464],,,,
+[F0210],[I0501],[I0461],,,,
+[F0185],[I0166],[I0435],,,,
+[F0187],[I0167],[I0439],,,,
+[F0200],,[I0475],,,,
+[F0201],,[I0476],,,,
+[F0186],[I0168],[I0436],,,,
+[F0211],[I0503],[I0169],,,,
+[F0164],[I0368],[I0369],,,,
+
+Familie,Kind
+[F0075],[I0017]
+[F0075],[I0034]
+[F0075],[I0035]
+[F0075],[I0036]
+[F0075],[I0037]
+[F0042],[I0042]
+[F0241],[I0038]
+[F0062],[I0043]
+[F0062],[I0044]
+[F0170],[I0521]
+[F0184],[I0384]
+[F0043],[I0020]
+[F0043],[I0021]
+[F0093],[I0390]
+[F0093],[I0531]
+[F0007],[I0528]
+[F0007],[I0544]
+[F0007],[I0568]
+[F0007],[I0581]
+[F0044],[I0045]
+[F0044],[I0046]
+[F0242],[I0585]
+[F0242],[I0586]
+[F0094],[I0018]
+[F0094],[I0332]
+[F0146],[I0333]
+[F0147],[I0334]
+[F0147],[I0335]
+[F0095],[I0197]
+[F0095],[I0160]
+[F0095],[I0631]
+[F0095],[I0632]
+[F0001],[I0161]
+[F0001],[I0616]
+[F0001],[I0625]
+[F0002],[I0162]
+[F0002],[I0227]
+[F0002],[I0370]
+[F0002],[I0375]
+[F0002],[I0386]
+[F0002],[I0387]
+[F0002],[I0388]
+[F0002],[I0389]
+[F0002],[I0459]
+[F0002],[I0460]
+[F0002],[I0463]
+[F0002],[I0604]
+[F0003],[I0617]
+[F0003],[I0618]
+[F0003],[I0619]
+[F0003],[I0620]
+[F0003],[I0621]
+[F0003],[I0622]
+[F0003],[I0623]
+[F0003],[I0624]
+[F0004],[I0626]
+[F0004],[I0627]
+[F0004],[I0628]
+[F0004],[I0629]
+[F0004],[I0630]
+[F0070],[I0019]
+[F0070],[I0056]
+[F0070],[I0057]
+[F0070],[I0163]
+[F0070],[I0164]
+[F0070],[I0165]
+[F0070],[I0166]
+[F0070],[I0167]
+[F0070],[I0168]
+[F0070],[I0169]
+[F0070],[I0053]
+[F0070],[I0506]
+[F0070],[I0507]
+[F0085],[I0171]
+[F0085],[I0176]
+[F0085],[I0407]
+[F0072],[I0173]
+[F0072],[I0174]
+[F0072],[I0175]
+[F0171],[I0393]
+[F0172],[I0394]
+[F0045],[I0179]
+[F0045],[I0180]
+[F0045],[I0181]
+[F0045],[I0182]
+[F0045],[I0183]
+[F0045],[I0184]
+[F0045],[I0185]
+[F0045],[I0429]
+[F0174],[I0410]
+[F0202],[I0481]
+[F0192],[I0454]
+[F0203],[I0482]
+[F0175],[I0412]
+[F0175],[I0413]
+[F0178],[I0415]
+[F0178],[I0419]
+[F0176],[I0416]
+[F0179],[I0421]
+[F0179],[I0422]
+[F0180],[I0424]
+[F0180],[I0425]
+[F0181],[I0427]
+[F0181],[I0428]
+[F0183],[I0432]
+[F0188],[I0443]
+[F0188],[I0441]
+[F0188],[I0442]
+[F0191],[I0467]
+[F0191],[I0468]
+[F0189],[I0445]
+[F0189],[I0446]
+[F0189],[I0450]
+[F0190],[I0448]
+[F0190],[I0449]
+[F0196],[I0451]
+[F0196],[I0452]
+[F0197],[I0469]
+[F0198],[I0483]
+[F0198],[I0484]
+[F0198],[I0485]
+[F0087],[I0186]
+[F0087],[I0187]
+[F0087],[I0188]
+[F0087],[I0189]
+[F0087],[I0190]
+[F0088],[I0395]
+[F0088],[I0398]
+[F0173],[I0397]
+[F0223],[I0546]
+[F0089],[I0400]
+[F0089],[I0401]
+[F0090],[I0402]
+[F0091],[I0405]
+[F0091],[I0406]
+[F0092],[I0403]
+[F0092],[I0404]
+[F0193],[I0456]
+[F0193],[I0457]
+[F0193],[I0458]
+[F0193],[I0462]
+[F0193],[I0464]
+[F0193],[I0461]
+[F0205],[I0488]
+[F0205],[I0489]
+[F0206],[I0491]
+[F0206],[I0492]
+[F0207],[I0494]
+[F0208],[I0496]
+[F0208],[I0497]
+[F0209],[I0499]
+[F0209],[I0500]
+[F0210],[I0502]
+[F0185],[I0399]
+[F0187],[I0475]
+[F0187],[I0476]
+[F0200],[I0477]
+[F0201],[I0478]
+[F0201],[I0479]
+[F0186],[I0437]
+[F0186],[I0438]
+[F0211],[I0504]
+[F0211],[I0505]
+[F0164],[I0054]
+
+Ort,Titel,Name,Art,Breitengrad,Längengrad,Kennung,Teil_von,Datum
+[P0027],Bandung,Bandung,Stadt,,,,[P0056],
+[P0033],Guangzhou,Guangzhou,Unbekannt,,,,,
+[P0013],Sydney,Sydney,Stadt,,,,[P0057],
+[P0014],Jakarta,Jakarta,Stadt,,,,[P0056],
+[P0016],Stuttgart,Stuttgart,Unbekannt,,,,,
+[P0023],Dresden,Dresden,Unbekannt,,,,,
+[P0015],Braunschweig,Braunschweig,Stadt,,,,[P0039],
+[P0049],Berlin,Berlin,Unbekannt,,,,,
+[P0053],Potsdam,Potsdam,Unbekannt,,,,,
+[P0050],Lungwen,Lóngwén 隆文,Unbekannt,,,,,
+[P0048],,"San Gabriel, California",Unbekannt,,,,,
+[P0052],Singapur,Singapur,Unbekannt,,,,,
+[P0026],Taipeh,Taipeh,Unbekannt,,,,,
