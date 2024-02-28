@@ -100,6 +100,7 @@
 // ToDo:
 //   -	Translation file format like Gramps-Locale (.po file)
 
+"use strict";
 var iTrans=0, iHelp=1, iData=2; // iHelp must be >0 !
 var import_files=new Array("","","");
 var import_frames=new Array();
@@ -140,7 +141,7 @@ var send_str="";
 var cookies_handled=0;
 var csv_file="";
 var search_str="";
-var email="user@domain";
+var email="user@domain", date;
 var n_form;
 var total_changes=new Array();
 var export_ids=new Array();
@@ -171,7 +172,7 @@ var data_header=new Array();
 var all_ = new Array(); // 0=Person, 1=Family, 2=Child
 all_[0]=new Object(); all_[1]=new Object(); all_[2]=new Object(); 
 all_[3]=new Object();
-var n_all=(0, 0, 0); 
+var n_all=(0, 0, 0, 0); 
 var iType="";
 
 String.prototype.splitX =function (sep,del) { 
@@ -211,7 +212,7 @@ function init() {
     if (tst>0) debug("init");
     for (i=0; i<Head_Lines.length; i++) {
 	if (tst>0) debug("H("+h_[i]+")="+Head_Lines[i]);
-	split_=Head_Lines[i].splitX(",");
+	var split_=Head_Lines[i].splitX(",");
 	for (j=0; j<split_.length; j++) {
 	    id=split_[j].replace(" ","").toLowerCase();
 	    //?? id=_(id,"en");
@@ -975,8 +976,9 @@ function show_descendants(PId,level,tgt_spouse,tgt_child,cTop,cLeft) {
 				       (box_width+gap_width)/2);
 			}
 		    if (tgt_child=="") {
-			id_=split_[i];
-			str+=show_descendants(id_,level+1,"","",cline_top,cline_left);
+			var id_=split_[i];
+			str+=show_descendants(id_,level+1,"","",cline_top,
+						cline_left);
 			}
 		    else {
 			tmp=d_height*lev_n[level+1]+box_height/2;
@@ -1113,13 +1115,14 @@ function increment_(id_) {
     }
 
 function export_family() {
-    var type_, split_, csplit, line, i, j, tmp, Id_;
+    var split_, csplit, line, i, j, tmp, Id_;
+    var maxType=3;
     
     if (export_ids[0]==undefined) {
-      for (type_=0; type_<4; type_++) {
-	export_ids[type_]=";";
-	if (Curr_PId=="")
-	    for (Id_ in all_[type_]) { export_ids[type_]+=Id_+";"; }
+      for (type_=0; type_<=maxType; type_++) {
+	export_ids[type_]=new Array();
+	if (Curr_PId=="") // export all
+	    for (Id_ in all_[type_]) { export_ids[type_][Id_]=Id_; }
 	}
       }
     if (Curr_PId!="") {
@@ -1128,33 +1131,30 @@ function export_family() {
 	if (tst>0) debug("<br>");
 	export_families(Curr_PId);
 	hint(0,'Data export started');
+	debug("ex");
 	}
     var ex_win=window.open("about:blank",_('Pedigree')+"_"+_('Export'));
     if (data_header[1]!=undefined) 
         { ex_win.document.write(data_header[1]+"<br>"); }
-    export_ids[2]=export_ids[1]; //
-    for (type_=0; type_<export_ids.length; type_++) {
-	/*    switch (type_) {
-		case 1: line=_(Head_Lines[1]);
-			break;
-		case 2: line=_(Head_Lines[2]);
-			break;
-		default: line=_(Head_Lines[0]);
-		} */
-	split_=export_ids[type_].splitX(";");
-	if (split_.length<=2) continue;
-	line=Head_Lines[type_];
+//    export_ids[2]=export_ids[1]; //
+    for (let type=0; type<=maxType; type++) {
+	line=Head_Lines[type];
 	ex_win.document.write(line+"<br>");
-	for (i=1; i<split_.length; i++) {
-	    Id_=split_[i];
-	    line=all_[type_][Id_];
-	    if (line==undefined) continue;
-	    if (type_==2) { // child
+	var type_=(type==2 ? 1 : type);
+	for (let Id_ in export_ids[type_]) {
+//	Object.keys(export_ids[type_]).forEach(function (key) { 
+//	    var Id_=export_ids[type_][key]; 
+	    line=all_[type][Id_];
+	    if (line==undefined) 
+		continue;
+//		return;
+	    if (type==2) { // child
 		csplit=line.splitX(",");
 		for (j=1; j<csplit.length; j++)
 		    { ex_win.document.write(csplit[0]+","+csplit[j]+"<br>"); }
 		}
 	    else { ex_win.document.write(line+"<br>"); }
+//	    }); 
 	    }
 	ex_win.document.write("<br>");
 	}
@@ -1165,73 +1165,34 @@ function export_family() {
     }
 
 function export_families(PId) {
-    if (!PId) return;
+    if (export_ids[0][PId]) return;
+    export_ids[0][PId]=PId;
+    add_ids(all_[0][PId]);
     var fam_ids=find_families(PId)+find_parents(PId);
     var fsplit_=fam_ids.splitX(","); // 
-    var i, fi;
-    var ids=new Array(PId);
-
-    //add_export(0,PId);
-    var tmp=all_[0][PId];
-    if (!tmp) { debug("PID undefined "+PId); return; }
-    var split_=tmp.splitX(",");
-    for (i=1; i<split_.length; i++) {
-	var val=split_[i];
-	if (val.match(/\[.*\]/)) ids.push(val); // \w\d+
-	}
-    if (PId=="" || dontFollow[PId]) return;
-    for (fi=1; fi<fsplit_.length; fi++) {
+    for (let fi=1; fi<fsplit_.length; fi++) {
 	var FamId=fsplit_[fi];
-	if (FamId=="") continue;
-	if (!add_export(1,FamId)) {
-	    continue; // already included
-	    }
-	//add_export(1,FamId); // Family id into which PId was born
-	ids.push(FamId);
-	var children=find_siblings(FamId,PId);
-	if (children!=undefined) {
-	    var split_=children.splitX(",");
-	    for (i=1; i<split_.length; i++) {
-		var id_=split_[i];
-		if (id_==PId) continue;
-		//add_export(0,id_);
-		ids.push(id_);
-		msg+=id_;
-		export_families(id_);
-		}
-	    }
-	var split_=all_[1][FamId].splitX(",");
-	var husband=split_[P_['f_husband']];
-	var wife=split_[P_['f_wife']];
-	ids.push(husband); ids.push(wife);
-	export_families(husband);
-	export_families(wife);
+	if (FamId=="" || export_ids[1][FamId]) continue;
+	export_ids[1][FamId]=FamId;
+	add_ids(all_[1][FamId]);
+	add_ids(all_[2][FamId]);
 	}
-    if (tst>0) debug("ex "+ids.length);
-    exportIds(ids);
     } // export_families
 
-function add_export (type_, Id_) {
-    //if (tst>0) debug("addex "+type_+":"+Id_); 
-    if (Id_!=undefined && Id_!="" && export_ids[type_].indexOf(";"+Id_+";")<0)
-	{ export_ids[type_]=export_ids[type_]+Id_+";"; return true; }
-    else return false;
-    }
-
-function exportIds(infoArr) {
-    var i, j, split_, val;
-    for (i=0; i<infoArr.length; i++) {
-//        split_=infoArr[i].splitX(",");
-//        for (j=0; j<split_.length; j++) {
-//            val=split_[j];
-            val=infoArr[i];
-            if (val.substr(0,2)=="[P") { add_export(3,val); }
-            else if (val.substr(0,2)=="[I") { add_export(0,val); }
-            else if (val.substr(0,2)=="[F") 
-                { add_export(1,val); add_export(2,val); }
-//            }
-        }
-    }
+function add_ids(line) {
+    if (line==undefined) return;
+    var split_=line.splitX(",");
+    var typeCh="IFCP";
+    for (let i=0; i<split_.length; i++) {
+	var field=split_[i];
+	if (field.match(/\[(\w)\d+\]/)) {
+	    var type=typeCh.indexOf(RegExp.$1);
+	    if (export_ids[type][field]) continue; // already in export_ids
+	    if (type==0 && !dontFollow[field]) export_families(field);
+	    else export_ids[type][field]=field;
+	    }
+	}
+    } // add_ids
 
 function save_(type_,Id,vals_,new_) {
     var info, old_, tmp, id_=Id, msg;
@@ -1328,30 +1289,31 @@ function show_surname(Name,ctxt_type,wildcard) {
     } // show_surname
 
 function show_parents_and_siblings(PId) {
-    var parents, psplit_, pi, str, isplit, FamInd, FamId, siblings, tmp;
+    var parents, psplit_, pi, str, isplit, tmp;
     str="";
     parents=find_parents(PId);
     if (parents==undefined) { debug("Parents("+PId+") not found"); return ""; }
     psplit_=parents.splitX(",");
     for (pi=1; pi<psplit_.length; pi++) {
-	FamInd=psplit_[pi];
+	var FamInd=psplit_[pi];
 	if (FamInd=="") continue;
 	parents=all_[1][FamInd];
 	if (parents==undefined) 
 	    { debug("Parents("+PId+","+FamInd+") not found"); continue; }
 	str+=start_info('parents',_('Parents'),4,0);
 	isplit=parents.splitX(",");
-	FamId=isplit[P_['f_marriage']]; FathId=isplit[P_['f_husband']]; 
-	MothId=isplit[P_['f_wife']];
+	var FamId=isplit[P_['f_marriage']]; 
+	var FathId=isplit[P_['f_husband']]; 
+	var MothId=isplit[P_['f_wife']];
 	if (FathId != "")
 	    { str+=Field_Data(0,_('Father'),person_name(FathId,1),0); }
 	if (MothId != "")
 	    { str+=Field_Data(0,_('Mother'),person_name(MothId,1),0); }
-	siblings=find_siblings(FamId,PId);
+	var siblings=find_siblings(FamId,PId);
 	if (siblings != "") {
 	    isplit=siblings.splitX(",");
 	    tmp="";
-	    for (i=1; i< isplit.length; i++)
+	    for (let i=1; i< isplit.length; i++)
 		{ tmp=tmp+person_name(isplit[i],1)+"<br />"; }
 	    if (tmp!="") str+=Field_Data(0,_('Siblings'),tmp,0);
 	    }
@@ -1510,7 +1472,7 @@ function show_person(sms_,PId) { // sms_= -1:save, 1:modify, 0:show
 	    }
 	else if (new_>0) { show_surnames(0); return; }
 	}
-    if (new_==0) { fam_=find_families(PId); } else { fam_=""; }
+    var fam_=(new_==0 ? find_families(PId) : "");
     if (fam_ != "" || sms_!=0) {
       str+=section_(sms_,"families",_('Families'),4,split_,999,
 		    Head_Lines[1],0);
@@ -1519,7 +1481,7 @@ function show_person(sms_,PId) { // sms_= -1:save, 1:modify, 0:show
     for (fi=1; fi<fsplit_.length; fi++) {
 	    if (sms_<0) { str=""; n_errors=0; n_changes=0; }
 	    n_form=0;
-	    FamInd=fsplit_[fi];
+	    var FamInd=fsplit_[fi];
 	    Curr_FId=FamInd;
 	    split_=all_[1][FamInd].splitX(",");
 	    FamId=split_[P_['f_marriage']];
@@ -1891,6 +1853,7 @@ function import_data(import_id, data_) {
   var max_id=new Array("","","");
   var fr=import_frames[import_id];
   var docFr=document.getElementById(fr);
+  var n_all=new Array();
   if (tst>0) debug("import_data "+import_id);
   if (data_==undefined) {
     if (import_files[import_id] == "") return 0;
@@ -1977,6 +1940,7 @@ function import_data(import_id, data_) {
                     continue;
                     }
                 debug("Section "+iSect+"="+types_[iSect]); //+":"+line);
+                n_all[iSect]=0;
                 if (tst>0) tst=25; // testing!!
 		Head_Lines_Import[iSect]=line;
 		Head_Lines[iSect]=line; // ??x
