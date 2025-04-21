@@ -4,90 +4,81 @@
 <meta name="copyright" content="H. Ruprecht" />
 </head>
 <h4>Datenimport</h4>
-Diese Ahnentafel-Seite arbeitet mit Ahnendaten entsprechend dem csv-Exportformat des Programms <a href="http://gramps-project.org/">GRAMPS</a>.<br>
-Es muss zunächst eine Exportdatei ausgesucht werden. Bei neueren Browsern (z.B. Firefox) kann mit der 'Durchsuchen'-Funktion eine Datei auf dem Rechner des Benutzers ausgewählt werden. Bei älteren Browsern muss die Datei im selben Verzeichnis wie diese Web-Seite stehen und den Datentyp '.txt' haben.<br>
-Zum Test kann <a href='javascript:open("Dynasties.txt","help");stop()'> Dynasties.txt</a>, ein nicht ganz aktueller Datenbestand des europäischen Hochadels, auf dem eigenen Rechner gespeichert und dann ausgewählt werden.
+Diese Ahnentafel-Seite arbeitet mit Ahnendaten entsprechend dem 
+<a href="https://wiki.genealogy.net/GEDCOM">GEDCOM</a> Format, die von 
+entsprechenden Programmen 
+(z.B. <a href="https://gramps-project.org/">GRAMPS</a>)
+erzeugt (exportiert) werden. <br>
+Es muss zunächst eine GEDCOM-Datei ausgesucht werden, entweder durch Klick auf
+die Dateiauswahl oben links auf der Seite oder durch Anhängen von 
+<br>?f=DATEINAME an den Link (die Datei muss dann im selben Verzeichnis wie diese Web-Seite stehen). <br>
+Zum Test kann mit ?f=Dynasties, ein nicht ganz aktueller Datenbestand des europäischen Hochadels, ausgewählt werden. Wegen der großen Datenmenge braucht es etwas Geduld.
 <br>
 <h4>Auswahl und Anzeige</h4>
-Mit Hilfe des Suchfeldes (für irgendeine Information über Personen), über den 
-Anfangsbuchstaben des Familiennamens oder über die Liste der Familiennamen kann eine 
+Mit Hilfe des Suchfeldes (für Teile des Namens), über den Anfangsbuchstaben 
+des Familiennamens oder über die Liste der Familiennamen kann eine 
 Person ausgewählt werden, zu der dann alle verfügbaren Informationen inkl. 
 Partner, Kinder, Eltern und Geschwister angezeigt werden.
-<br>Außerdem werden im unteren Bereich wahlweise die Vorfahren oder die 
-Vorfahren und Nachkommen dargestellt. Bei letzterer Darstellung kann die 
+<br>Außerdem werden im unteren Bereich wahlweise die Vorfahren und Nachkommen
+oder nur die Vorfahren dargestellt. Bei ersterer Darstellung kann die 
 Position der ausgewählten Person in der Darstellung mit Klick auf '<' bzw. '>' 
-nach links bzw. rechts verschoben werden, so dass mehr oder weniger Vorfahren- 
-oder Nachkommengenerationen angezeigt werden.  Mit Klick auf '+/- Datum' 
-werden, falls vorhanden, die Geburts- und Todestage der Personen eingeblendet.
+nach links bzw. rechts verschoben werden, mit '+/-Generation' werden mehr 
+oder weniger Vorfahren bzw. Nachkommengenerationen angezeigt. 
+<br>Mit Klick auf 'Datum' werden, falls vorhanden, die Geburts- und Todestage
+der Personen eingeblendet.
 <br>Durch Klick auf eine Person wird diese zur ausgewählten Person, und es 
 werden alle verfügbaren Informationen zu dieser Person angezeigt.
+<br>Ein &#9665; als letztes Zeichen im Rahmen zeigt an, dass es zu der
+Person noch andere verbundene Personen gibt. Mit Klick darauf werden diese Personen nicht mehr berücksichtigt. Ein Klick auf &#9654; macht das rückgängig.
 <br>
-<h4>Hinweis zu Datenänderungen</h4>
-Alles was an Daten geändert oder ergänzt wird, ist zunächst nur lokal im 
-Browser (z.B. Firefox oder Internet Explorer) gespeichert, genauer in so 
-genannten Cookies, die je nach Einstellung eventuell beim Verlassen des 
-Browsers gelöscht werden.  Für eine dauerhafte Übernahme in den Datenbestand 
-müssen die Änderungen an jemanden geschickt werden, der sie in die 
-Familiendatenbank übernimmt.  Dazu Klick auf 'Mail'.  Siehe auch Datenexport.
+Objekte, die als Datei einer Person zugeordnet werden, müssen im Unterverzeichnis obj/ des Server-Verzeichnises dieser Web-Seite stehen.
 <br>
-<h4>Datenänderungen</h4>
-Mit Klick auf 'Person bearbeiten' werden alle möglichen Informationsfelder 
-angezeigt, und es können zur ausgewählten Person neue oder geänderte Daten 
-eingegeben werden.  Außerdem können der Person Partner oder Kinder zugeordnet 
-werden.  
-<br>Dazu muss für Partner hinter '+ Ehepartner' geklickt werden.
-Danach muss dann eine Person als Partner gewählt werden.
-<br>Ähnlich muss für ein neues Kind im Zusammenhang mit dem vorher zugeordneten 
-Partner (oder zur Familie ohne Partner) bei '+ Kind' geklickt werden und dann 
-das Kind ausgesucht werden.
-<br><u>Wichtig:</u> Die zuzuordnenden Partner und Kinder müssen im Datenbestand 
-bereits existieren.  Es empfiehlt sich also, zunächst neue Personen mit 
-'+ Person' anzulegen.
-<br>Falsch zugeordnete Partner zu ändern ist möglich indem man den Haken hinter
-dem Namen wegnimmt bzw. bei leerem Feld einen neuen Partner auswählt.
-<br>Weitergehende Änderungen, z.B. entfernen von Kind-Beziehungen, von 
-Personen oder Familien, sollten in Gramps oder in der Datendatei vorgenommen 
-werden.
-<br>
-<h4>Neue Personen</h4>
-Mit Klick auf '+ Person' wird eine neue Person angelegt.  Alles andere ist dann 
-wie bei Datenänderungen.
+<h4>Drucken</h4>
+Bei Klick auf 'Drucken' wird gefragt, ob nur der Stammbaum im unteren Bereich gedruckt werden soll. Bei den Druckoptionen sollte 'Hintergrundbilder' angehakt sein.
 <br>
 <h4>Datenexport</h4>
-Statt der Übermittelung geänderter Daten per E-Mail an jemanden, der die 
-Datenpflege übernimmt, ist auch eine lokale Datenspeicherung möglich, so dass 
-jeder unabhängig einen eigenen Datenbestand aufbauen und pflegen kann.
-<br>Mit Klick auf 'Export' werden die Daten aller Vorfahren und Nachfahren 
-einschließlich Geschwistern und Partnern der ausgewählten Person in ein neues 
-Browser-Fenster geschrieben.  Wenn keine Person ausgewählt ist, also z.B. nach 
-Klick auf 'Familiennamen', wird der gesamte Datenbestand exportiert. 
-<br>Der Inhalt dieses Fensters muss in einer Datei gespeichert werden.  
-Dazu ins Fenster klicken, dann mit Strg+A alles ausgewählen, 
-mit Strg+C kopieren, mit Strg+V in eine leere Datei einfügen (Notepad oder Editor)
-und als reine Textdatei (mit Endung .txt) speichern.
-<br>Im Firefox-Browser geht es einfacher mit der Funktion speichern 
-(Strg+S).  Über der 'Speichern'-Schaltfläche ist Text-Datei auszuwählen und 
-eine Datei mit Endung .txt anzugeben. 
-<br>Die erzeugte Datei kann in eine Gramps-Datenbank importiert werden.  Sie kann aber 
-auch mit der gleichen Browser-Datei Ahnentafel.html, die hier benutzt wird, 
-angezeigt und weiter bearbeitet werden. 
-<br>Dazu muss auch diese Browser-Datei (per Strg+S) als Webseite 
-(nur HTML) in den selben Ordner wie der exportierte Datenbestand gespeichert werden. 
-Beim Aufruf der Browser-Datei (mit Doppelklick) kann nun die lokale Datei 
-mit dem Datenbestand angegeben werden.
-<br>Außerdem sollte die 
-<a href='javascript:open("de-trans.html","help");stop()'>
-Übersetzungsdatei</a> (unter de-trans.html) und eventuelle diese 
-<a href='javascript:open("de-help.html","help");stop()'>Hilfedatei</a> 
-(unter de-help.html) im selben Ordner lokal gespeichert werden.
-<br>Tipp: Wenn man mehrfach Personen auswählt und dann exportiert, wird jeweils die 
-Ausgabe im Export-Fenster durch die Verwandten der weiteren Person ergänzt. 
-Man kann so zum Beispiel erst die Verwandten einer Person und dann die Verwandten 
-des Ehepartners exportieren.
+Mit Klick auf 'Export' werden die Daten aller Vorfahren und Nachfahren 
+einschließlich Geschwistern und Partnern der ausgewählten Person in eine zu
+wählende Datei geschrieben.
+<br>Wird eine weitere Person ausgesucht und erneut exportiert, werden die vorher
+exportieren Daten ergänzt. Personen "hinter" &#9654; (s.o.) werden nicht
+exportiert.
 <br>
 <h4>Browser</h4>
-Diese Web-Seite wurde mit neuerem Firefox, Internet Explorer und Chrome getestet. 
-<br>Mit Firefox sollte es keine Probleme geben.
-<br>Mit Internet Explorer geht es grundsätzlich auch. Es gibt aber kleine 
-Unschönheiten, z.B. dass die Speicherfunktion beim Export nicht 
-die Daten speichert, und dass gefragt wird, ob Script aktiviert werden soll.
+Diese Web-Seite wurde mit neuerem Firefox, Chrome, Internet Explorer und Edge getestet. Auf Smartphones passen im unteren Bereich die Daten häufig nicht in
+die kleinen Rahmen.
+<br>
+<h4>Weitere Hinweise</h4>
+Zur Webseite gehören außerdem
+<br>&nbsp;Hilfe-Seiten : <i>Sprache</i>-help.html (z.B. de-help.html)
+<br>&nbsp;Übersetzungsdateien : <i>Sprache</i>-trans.txt (z.B. de-trans.txt)
+<br>&nbsp;Pedigree.conf : eine "GEDCOM-Attribut"-Datei, mit der die Umsetzung
+der GEDCOM-Begriffe in englische Begriffe vorgenommen wird, und die auch
+steuert, was überhaupt angezeigt wird.
+<br>Diese Dateien werden, falls vorhanden, aus demselben Verzeichnis wie diese
+Web-Seite geladen. Man kann aber auch bei der Dateiauswahl (links oben) 
+eigene lokal gespeicherte Dateien dafür aussuchen, bevor man die eigentliche
+GEDCOM-Datei lädt. Die Dateien werden nach ihrer Endung zugeordnet:
+<br>&nbsp;-help.html (Hilfetext, html-formatiert), 
+<br>&nbsp;-trans.txt (Übersetzungen, <i>englisch KOMMA Übersetzung)</i>, 
+<br>&nbsp;.conf (Attribut-Datei, s.u.), 
+<br>&nbsp;.ged (GEDCOM-Daten)
+<br>Mehrere GEDCOM-Dateien können im Prinzip parallel geladen werden. 
+Resultat ??
+<br><br>Wenn keine Datei für die im Browser eingestellte Sprache gefunden wird,
+bleibt es bei englischen Bezeichnungen. Dasgleiche gilt, wenn für einzelne 
+Begriffe keine Übersetzung gefunden wird.
+<br>Die Steuerdatei für die anzuzeigenden GEDCOM-Attribute (Pedigree.conf)
+kann bei Bedarf an die eigenen Bedürfnisse angepasst werden. 
+Das gilt auch für die Übersetzungsdatei:
+<br>Bei Aufruf mit Parameter ?ATT werden alle Attribute der bisherigen 
+Attribut-Datei plus zusätzliche Attribute der aktuellen Daten im Hilfe-Bereich
+angezeigt. 
+<br>Aufruf mit ?TRA zeigt die Übersetzungen. (Ggfls. auch ?ATT&amp;TRA)
+<br>Beispielzeile (ATT): <pre>INDI.BIRT.DATE	Birth date</pre> 
+(Format: <i>tag.tag... TABULATOR englischer Begriff)</i><br>
+Außerdem werden jetzt auch die Daten ohne englischen Begriff angezeigt.
+<br>Wenn Änderungen gewünscht werden, kann der Bereich kopiert
+und in eine neue Datei übernommen werden. Diese kann auch ohne
+Zugriff auf das Server-Verzeichnis geladen werden (siehe oben).
+<br>

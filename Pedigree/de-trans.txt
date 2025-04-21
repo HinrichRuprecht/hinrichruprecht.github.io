@@ -1,0 +1,87 @@
+A...Z,
+Abort,Abbruch
+Adopted,adoptiert
+Alternate Marriage,alternative Partnerschaft
+Ancestors,Vorfahren
+Banns,Aufgebot
+Baptism date,Taufdatum
+Baptism place,Taufort
+Baptism source,Taufe Quellenangabe
+Birth,Geburt
+Birth date,Geburtsdatum
+Birth place,Geburtsort
+Birth source,Geburt Quellenangabe
+Burial date,Beerdigungsdatum
+Burial place,Beerdigungsort
+Burial source,Beerdigungsquelle
+Call,Rufname
+Child,Kind
+Children,Kinder
+Click Abort if unsure,Abbruch klicken falls unsicher
+Continue,Weiter
+Country,Land
+Date,Datum
+Death date,Sterbedatum
+Death place,Sterbeort
+Death source,Sterbequelle
+Descendants,Nachkommen
+Divorce,Scheidung
+Event,Ereignis
+Export,Exportieren
+Families,Familien
+Family,Familie
+Family tree only,Nur Baumansicht
+Family without spouse,Familie ohne Partner
+Father,Vater
+Gender,Geschlecht
+Given,Vorname
+Help,Hilfe
+Husband,Ehemann
+If the data contains special characters,Wenn die Daten Sonderzeichen (Umlaute) enthalten
+Illegal characters,Unzulässige Zeichen
+Individual,Person
+Individuals,Personen
+Mail,
+Marriage,Hochzeit
+Marriage Banns,Heiratsaufgebot
+Marriage date,Datum
+Marriage place,Ort
+Modify,Bearbeiten
+Mother,Mutter
+Name prefix,Präfix
+Nickname,Spitzname
+Note,Notiz
+Parents,Eltern
+Pedigree,Ahnentafel
+Person,
+Person can be selected after clicking,Person kann gewählt werden nach Klick auf
+Person is already child of another family,Person ist bereits Kind einer anderen Familie
+Place,Ort
+Please specify name of data file,Bitte Namen der Datendatei eingeben
+Prefix,Präfix
+Print,Drucken
+Residence,Wohnort
+Select,Auswählen
+Select person below,Person unten auswählen
+Siblings,Geschwister
+Source,Quelle
+Spouse,Partner
+Suffix,
+Surname,Nachname
+Surnames,Nachnamen
+Title,Titel
+Type,Typ
+Web page for GEDCOM data,Webseite für GEDCOM-Daten
+Wife,Ehefrau
+YYYY,JJJJ
+aka,auch bekannt als
+birth,geboren
+do not,nicht
+female,weiblich
+follow,einbeziehen
+male,männlich
+married,verheiratet
+not available,nicht verfügbar
+or,oder
+search,suchen
+unknown,unbekannt

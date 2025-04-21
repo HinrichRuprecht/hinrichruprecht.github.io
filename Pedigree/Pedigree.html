@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<!--  xml:lang="de-DE" lang="de-DE" -->
+<head>
+<title>Family Tree</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="copyright" content="H. Ruprecht" />
+<meta name="license" content="GNU General Public License v2 or later"/>
+<link href="Pedigree2.ico" rel="Shortcut Icon" />
+<style type="text/css">
+
+ BODY { font-family: "Verdana", "Bitstream Vera Sans", "Arial", "Helvetica", 
+	sans-serif; background-color: #ffffff; font-size: 14px; }
+ A:link { color: #000; text-decoration: underline; }
+ A:hover { background-color: #eee; color: #000; text-decoration: underline; }
+ A:active { background-color: #eee; color: #000; text-decoration: none; }
+ A:visited { color: #333; text-decoration: underline; }
+ DIV { margin: 2px; padding: 2px; }
+ P { }
+ H1 { font-weight: bolder; font-size: 160%; margin: 2px; }
+ H2 { font-weight: bolder; font-style: italic; font-size: 150%; }
+ H3 { font-weight: bold; margin: 0; padding: 10px 0px 10px 0px; }
+ H4 { margin: 1em 0em 0.3em 0em; padding-left: 4px; 
+      border-bottom: 1px solid #999; }
+ H5 { margin-bottom: 0.5em; }
+ H6 { font-style: italic; font-size: 100%; margin: 1.3em 0em 1em 0.8em; }
+ IMG { border: none; }
+ SUP { line-height: 1px; }
+ TABLE { border: none; border-collapse: collapse; }
+ TH { padding: 1px 3em 1px 1px; font-weight: bold; text-align: left; }
+ TD { vertical-align: top; padding: 0; }
+ /*BUTTON { font-size: 50%; } */
+
+/* main data table */
+ TABLE.infolist { border: 0; /*width: 100%;*/ font-size: 100%; 
+		  margin: 0em 2em 0em 2em; }
+ TABLE.infolist TH { border-bottom: 1px solid #999; }
+ TABLE.infolist TH A { text-decoration: none; }
+ TABLE.infolist TR > TD:first-child { min-width: 6em; }
+ TD.category { padding: 1px 3em 1px 1px; /* Defines spacing between rows */  
+	      /*width: 10%;*/ font-weight: bold; }
+ TD.data { padding: 1px 3em 1px 1px; /* Defines spacing between rows */ 
+	   font-weight: bold; }
+ TD.field { padding: 1px 3em 1px 1px; /* Defines spacing between rows */ 
+	    /*width: 15%;*/ }
+ div#fixedheader {
+	position:fixed;
+	top:0px;
+	left:0px;
+	width:100%;
+	/* padding:10px; */
+	}
+  div#fixedfooter {
+	position:fixed;
+	bottom:0px;
+	left:0px;
+	width:100%;
+	padding:8px;
+	}
+
+/* float left and right */
+ .leftwrap { float: left; margin: 2px 10px 2px 2px; }
+ .rightwrap { float: right; margin: 2px 2px 10px 2px; }
+ .centered { text-align: center; }
+/* navigation links */
+ #navheader { padding: 2px; margin: 2px; border-bottom: 1px solid #999; }
+ .navtitle { font-size:	130%; color: #999; margin: 3px; }
+ .navbyline { float: right; font-size: 100%; margin: 2px; 
+	      padding: 2px 10px 2px 2px; }
+ .nav { margin: 0px 0px 2px 0px; padding: 1px; font-size: 200%; 
+	font-weight: bold; word-spacing: 0.5em; }
+ .BUTTON { font-size: 60%; }
+ .INPUT { font-size: 120%; }
+
+ .box { font-size: 75%; height: 48px; padding-left: 5px; 
+	vertical-align: middle; }
+ .bhline { position: absolute; background-color: #000000; font-size: 0pt; 
+	   z-index: 3; height: 1px; }
+ .bvline { position: absolute; background-color: #000000; font-size: 0pt; 
+	   z-index: 3; width: 1px; }
+ .border { position: absolute; background-color: #000000; font-size: 0pt; 
+	   z-index: 4; width: 160px; height: 50px; }
+ .boxbg  { position: absolute; background-color: #eeeeee; 
+	   z-index: 5; width: 158px; height: 48px; }
+ .shadow { position: absolute; background-color: #999999; 
+	   z-index: 1; width: 158px; height: 48px; }
+ .gvline { position: absolute; background-color: #999999; font-size: 0pt; 
+	   z-index: 1; width: 1px;}
+ .ghline { position: absolute; background-color: #999999; font-size: 0pt; 
+	   z-index: 1; height: 1px;}
+
+</style>
+<script type="text/javascript">
+
+"use strict";
+const useConsole=0;
+const months="01JAN02FEB03MAR03MÄR04APR05MAY05MAI06JUN07JUL08AUG09SEP"
+	    +"10OCT10OKT11NOV12DEC12DEZ";
+const brOC="@@", brO="@", brC="@"; // empty entry, bracket open/close
+const sepN="%"; // separator for name list (,; are used in names)
+var DATA=initDATA();
+var ATTR = {
+	gedAttr: new Array(), // combined ged attribute (INDI.NAME.TYPE)
+	attributeNum: new Array(), // attributeNum[gedAttr]=number
+	lenAttrNum: 3, // # of digits in attribute numbers
+	attrDisplay: new Object(), 
+	    // attrDisplay[number]=english name for display 
+	lastAttrNum: 0,
+	showAttr: 0, // show attributes w/o attrDisplay when set (&ATT)
+	attrComment: new Object(), // attribute comment from .conf file
+	};
+
+
+var trans=new Array();
+var dontFollow=new Array(); 
+var dontFollowIcon=new Array("&#9665;"," &#9654;"); 
+	//  Left-pointing Triangle,  Right-pointing Triangle
+	// "&#8854;","&#8853;"); // circled -/+
+var genderIcon=new Array('?','&#9794;','&#9792;'); // not set &#9675;/male/female
+var tst=0; // >0 : debug, =10 : import local file
+var showTrans=0; // set to 1 in read_params (&TRA)
+var msg="", showFam=1, box_info=17, debug_str="";
+var ged_file="";
+var search_str="";
+var export_ids=new Array();
+var surnames=new Array();
+var surnames_l=new Array();
+var Curr_PId=""; var Curr_FId=""; var nam_1st="";
+var lev_n=new Array(); var max_level=5, mid_level=2;
+var box_height=48, box_width=158, gap_height=28, gap_width=42;
+var path=document.location.pathname;
+var domain=document.domain;
+var language=
+    (navigator["language"])?navigator["language"]:navigator["userLanguage"];
+var g_language="en";
+language=(language)? language.substr(0,2).toLowerCase() : g_language;
+var mobile=-1;
+var help_str=new Array();
+var help_idx=1; // >0: show help frame
+
+class DataSource {
+  filename;
+  result;
+  slice;
+  nextSlice;
+  pos;
+  check;
+  verbose;
+
+  constructor(source,types,callFunc,verbose) {
+    this.slice="";
+    this.pos=0;
+    this.nextSlice=0;
+    this.verbose=(verbose || 0);
+    let objThis=this;
+    if (verbose>1) 
+	console.log("Source type="+source.type+" : "+source);
+    if (source==undefined) return undefined;
+    if (tst && navigator.serviceWorker.controller) {
+	navigator.serviceWorker.controller.postMessage('clearCache');
+	console.log("Cache cleared");
+	}
+    try {
+	const timeStamp=performance.now();
+	if (source.type=="file") {
+	    const file=Array.from(source.files)[0];
+	    this.filename=file.name;
+	    if (!file.name.match(types)) {
+		    alert('File type not supported! '
+			+file.name+" ("+file.type+")"); 
+		    return false;
+		}
+	    var reader = new FileReader();
+	    reader.onerror = (evt) => fileErrorHandler(evt);
+	    reader.onload = (evt) =>  { 
+		    callFunc(objThis,evt.target.result);
+		    }
+	    reader.readAsArrayBuffer(file);
+	    }
+	else { // source is filename as string 
+	    if (!source.match(/\.[\w\d]+$/)) source+=".ged";
+	    this.filename=source;
+	    this.check=true;
+	    //const myRequest = new Request(source);
+	    fetch(source)
+		.then((response) => response.blob())
+		.then((myBlob) => { 
+		    var reader = new FileReader();
+		    reader.onerror = (evt) => fileErrorHandler(evt);
+		    reader.onload = (evt) =>  { 
+			callFunc(this,evt.target.result);
+			}
+		    reader.readAsArrayBuffer(myBlob);
+		    })
+		.catch((error) => {
+		    console.error(error);
+		    })
+		;
+	    }
+	if (this.verbose!=0) 
+	    console.log(`${this.filename} fetched`
+		+" Elapsed msec="+(performance.now()-timeStamp));
+	}
+    catch (err) {
+        console.log(`Error creating DataSource ${this.filename}\n`+err);
+        }
+    return false;
+    }
+
+  restart() { this.nextSlice=0; }
+  
+  readLine() {
+    const chunk=100000; 
+    let line="";
+    while (1) {
+	if (this.verbose>9) 
+	    console.log(`Read ${this.filename} at ${this.pos}`);
+	let posNl=this.slice.indexOf("\n",this.pos);
+	if (posNl<0) {
+	    line=this.slice.substr(this.pos);
+	    this.slice=new TextDecoder('utf-8')
+		.decode(this.result.slice(this.nextSlice,this.nextSlice+chunk));
+	    if (this.verbose>9) 
+		console.log(`Next slice(${this.filename}) at ${this.nextSlice}`
+			+` len=${this.slice.length}`);
+	    if (this.check) {
+		if (this.verbose>1) console.log("Check "+this.filename);
+		if (this.slice.substr(0,9)=='<!DOCTYPE'
+			&& this.slice.match(/404 Not Found/)) {
+		    if (this.verbose>=3) console.log(this.slice);
+		    alert(`File ${this.filename} not found`); 
+		    return undefined; 
+		    }
+		this.check=false;
+		}
+	    this.nextSlice+=chunk; // this.slice.length;
+	    this.pos=0;
+	    if (this.slice.length==0) 
+		{ if (line=="") return undefined; else break; }
+	    }
+	else { 
+	    line+=this.slice.substr(this.pos,posNl-this.pos); 
+	    this.pos=posNl+1; 
+	    break;
+	    }
+	}
+    line=line.replace(/\r/,"");
+    return line;
+    } // readLine
+  } // DataSource
+
+class dataSink {
+  file;
+  chunk;
+  verbose;
+  maxChunk;
+  writer;
+  hint;
+  types;
+  timeStamp;
+
+  constructor(hint,types,verbose) {
+    this.chunk="";
+    this.verbose=(verbose || 0);
+    this.maxChunk=100000;
+    this.writer=undefined;
+    this.hint=hint; this.types=types;
+    if ('showOpenFilePicker' in self) { }
+    else {
+	alert(
+	    'The `showOpenFilePicker()` method of the File System Access API '
+	    +'is not supported.\nNo export to file!\nUse Chrome browser.');
+	throw new Error();
+	}
+    } // constructor
+
+  async open() {
+    try {
+	const options = { 
+	    types: [ { description: this.hint, 
+		    accept: { 'text/plain': this.types, },
+		    },
+		    ],
+	    };
+	this.file=await window.showSaveFilePicker(options); // await
+	const writable = await this.file.createWritable(); // await
+	    // defaultWriter is of type WritableStreamDefaultWriter
+	this.writer = await writable.getWriter();
+	console.log("Output file: "+this.file.name);
+	this.timeStamp=performance.now();
+        }
+    catch (err) { console.log("Error in dataSink:", err); }
+    }
+  async writeChunk() {
+    try {
+	if (this.writer==undefined) {
+	    await this.open();
+	    }
+	await this.writer.ready;
+	await this.writer.write(this.chunk);
+	}
+    catch (err) { console.log("Error in dataSink.writeLine:", err); }
+    }
+    
+  async writeLine(line) {
+    try {
+	this.chunk+=line;
+	if (this.chunk.length<this.maxChunk) return;
+	await this.writeChunk();
+	this.chunk="";
+	}
+    catch (err) { console.log("Error in dataSink.writeLine:", err); }
+    }
+  async close() {
+    try {
+	if (this.chunk.length>0) {
+	    await this.writer.ready;
+	    await this.writer.write(this.chunk);
+	    }
+	await this.writer.ready;
+	await this.writer.close();
+	console.log(this.file.name+" closed after "
+		+" "+(performance.now()-this.timeStamp)+" msec");
+	}
+    catch (err) { console.log("Error in dataSink.close:", err); }
+    }
+  } // dataSink
+
+function fileErrorHandler(evt) {
+    switch(evt.target.error.code) {
+      case evt.target.error.NOT_FOUND_ERR:
+        alert('File Not Found!');
+        break;
+      case evt.target.error.NOT_READABLE_ERR:
+        alert('File is not readable');
+        break;
+      case evt.target.error.ABORT_ERR:
+	alert('abort reading file');
+        break; // noop
+      default:
+        alert('An error occurred reading this file.');
+    };
+  }
+
+String.prototype.splitX =function (sep,del) { 
+    // like split but recognizes ...,"xxx,yyy",... parts
+    if (del==undefined) del='"';
+    var p0=0, p1, part="", l=this.length;
+    var res=new Array();
+    while (p0<l) {
+        while (this.substr(p0,1)==del) { 
+            if (part.length>0) part+=del; // only with DELDEL within DELs
+            p0++;
+            p1=this.indexOf(del,p0);
+            if (p1<0) { part+=this.substr(p0); p0=l; break; } // p1=l;
+            part+=this.substr(p0,p1-p0);
+            p0=p1+1;
+            }
+        p1=this.indexOf(sep,p0);
+        if (p1<0) { part+=this.substr(p0); p0=l; break; } // p1=l;
+        part+=this.substr(p0,p1-p0);
+        res.push(part);
+        p0=p1+1;
+        part="";
+        }
+    res.push(part);
+    return res;
+    } // splitX
+
+function initDATA() {
+    const DATA = {
+	data: new Array(),
+	nItems:new Array(),
+	current: undefined,	// array for current person
+	reserved: {INDI: 5, FAM: 4}, 
+	    // number of reserved elements in entries
+	    // 0=INDI, 1=full name, 2=own families, 3=parent families, 4:sex
+	    // 0=FAM, 1=husband, 2=wife, 3:children
+	SourceObj: undefined,
+	}
+    // 
+    return DATA;
+    } // initDATA
+
+function init() {
+    if (!showTrans) {
+	document.getElementById("helpfile").src=language+"-help.html";
+	show_help();
+	}
+
+    let tmp=_('male'); if (tmp!='male') trans['en-'+tmp]='male';
+    tmp=_('female'); if (tmp!='female') trans['en-'+tmp]='female';
+    // help strings with consecutive numbers will be concatinated
+    help_str[0]="";
+    help_str[10]=_('Select person below');
+    help_str[12]=_('Loading data');
+    help_str[14]=_('Data import');
+    help_str[16]=_('searching');
+
+    if (language!="en")
+	new DataSource(language+"-trans.txt",new RegExp('\.txt','i'),readTrans);
+
+    navheader();
+    start();
+    new DataSource("Pedigree.conf",new RegExp('\.conf','i'),readConf); 
+	// readConf starts import of ged file when finished
+
+//    email='Hinrich.Ruprecht@t-online.de';date='2025-02-13';
+
+    if (tst>0) console.log("init");
+    } // init
+
+function _(words,lang) { // translate
+    var str, tmp, hsplit,i;
+    if (words== undefined) { return ""; }
+    if (lang==undefined) lang=language;
+    var res="";
+    words=words.replace(/^\s+/,"").replace(/\s+$/,"");
+    var word_=words.split(",");
+    for (let i=0; i<word_.length; i++) {
+	let word=word_[i]; let br=0;
+	if (word.substr(0,1)=="(" && word.substr(-1)==")") 
+	    { br=1; word=word.substr(1,word.length-2); }
+	str=trans[lang+"-"+word];
+	if (str == undefined || str == "") { str=word; }
+	if (br>0) str="("+str+")";
+	hsplit=str.split("|");
+	str=hsplit[hsplit.length-1];
+	res+=","+str;
+	}
+    if (!res) res=word; else res=res.substr(1);
+    return res;
+    }
+
+function navheader(ctxt_type) {
+    var str, tmp;
+    if (ctxt_type==undefined) ctxt_type=0;
+    //if (tst>0) console.log("navheader");
+    document.getElementById("navby").innerHTML
+        =_(document.getElementById("navby").innerHTML);
+    document.getElementById("navtitle").innerHTML
+        =_(document.getElementById("navtitle").innerHTML);
+    if (ged_file=="" || tst>=10) {
+        // Check for File API support.
+	if (window.FileReader && window.File && window.FileList && window.Blob )
+	    { } //Supported
+	else {
+	    alert("File operations are not supported with this browser");       
+	    return false;
+	    }
+	}
+    str='<input type="file" class="BUTTON" id="import"'
+        +' value="'+_("Import")+'" onchange="return importFile(this)">';
+    //if (tst!=0) console.log("Import(nav)="+str);
+    if (ged_file=="") {
+        document.getElementById("ImportButton").innerHTML=str;
+        //???ged_file=" ";
+        }
+    else {
+        str='<input type="button" class="BUTTON" id="surnames"'
+           +' value="'+_('Surnames')+'" onClick="return show_surnames(0)">'
+        document.getElementById("NamesButton").innerHTML=_(str);
+        str='<input type="button" class="BUTTON" id="prt" '
+            +'onclick="print_()" value="'+_('Print')+'">';
+	tmp=document.getElementById("PrintButton");
+	if (tmp) tmp.innerHTML=str;
+	else console.log("No print button; "+str);
+        document.getElementById("hlp").value=_("Help");
+        }
+    } // navheader
+
+function navheader2() {
+    var str="";
+    document.getElementById("content").innerHTML="";
+    document.getElementById("select").innerHTML="";
+    navheader();
+    show_surnames(0);
+    document.getElementById("search").focus(); // ???
+    }
+
+function print_() {
+    var tmp="";
+    if (confirm(_('Family tree only'))) {
+	tmp=document.getElementById("content").innerHTML;
+	document.getElementById("content").innerHTML ="";
+	}
+    if (document.getElementById("navheader"))
+	document.getElementById("navheader").innerHTML ="";
+    document.getElementById("hint").innerHTML ="";
+    document.getElementById("debug").innerHTML ="";
+    window.print();
+    if (tmp!="") document.getElementById("content").innerHTML =tmp;
+    navheader();
+    }
+
+function Select_Person(PId) {
+    if (PId==undefined) PId=Curr_PId;
+    navheader2();
+    show_person(PId);
+    }
+
+function person_name(PId,ref_) { // also sets DATA.current for the person found !
+    // result is given name and surname
+    // ref_ : >0 : enclosed in <a href ...
+    //	      &8 : add birth and death date
+    //	      &16 : add link to (not) follow descendants/ancestors
+    var res="", len_, surn, pos, genIcon;
+    DATA.current=DATA.data[PId];
+    if (tst==9) { 
+	console.log("pn: "+PId+"="+DATA.current); 
+	if (ref_==0) console.log("\n"); 
+	}
+    if (DATA.current==undefined) {
+      if (tst>0 && PId!=brOC) 
+	console.log("Person "+PId+" not found ("+ref_+")");
+      return "";
+      }
+    let fullName=DATA.current[1]; 
+    let name=(fullName.match(/\/(.*)\//) ? RegExp.$1 : fullName);
+    fullName=fullName.replace(/\//g,"");
+    //DATA.current[2]=fullName;
+    res=fullName;
+    let gender=DATA.current[4]; 
+    let birthDate=""; let deathDate=""; 
+    for (let i=DATA.reserved['INDI']; i<DATA.current.length; i++) {
+	let attrNum=DATA.current[i].substr(0,ATTR.lenAttrNum);
+	let attrLong=ATTR.gedAttr[attrNum];
+	if (!attrLong) 
+	    { console.log("pn("+i+"):"+attrNum+" not in long"); continue; }
+	else if (attrLong.search("BIRT.DATE")>=0)
+	    birthDate=DATA.current[i].substr(ATTR.lenAttrNum+1);
+	else if (attrLong.search("DEAT.DATE")>=0)
+	    deathDate=DATA.current[i].substr(ATTR.lenAttrNum+1);
+	}
+    let tmp=(gender.match(/[M]/i) ? 1 : (gender.match(/[FW]/i) ? 2 : 0)); 
+    genIcon=genderIcon[tmp];
+    if (ref_<=0) { res+=" "+genIcon; }
+    else {
+	len_=res.length;
+	res="<a href='javascript:Curr_PId="+'"'+PId+'";'
+            +"Select_Person()'>"
+	    +res+"</a>";
+	res+=" "+genIcon;
+	if (ref_&8) { // add birth/death date
+	    if (birthDate)
+		{ res+=" *"+birthDate; len_+=birthDate.length+2; }
+	    if (deathDate)
+		{ res+=" +"+deathDate; len_+=deathDate.length+2; }
+	    if (len_>50) { res="<small>"+res+"</small>"; }
+	    }
+	if (ref_&16 && (DATA.current[2]!="" || DATA.current[2]!="")) {
+	    // add +/- to (not) follow to descendants/ancestors
+	    res+=" <a href='javascript:setDontFollow("+'"'+PId+'"'+")'"
+		+" title='"+(dontFollow[PId]?"":_("do not"))+" "+_("follow")+"'"
+		+' style="text-decoration: none">'
+		+dontFollowIcon[(dontFollow[PId] ? 1 : 0)]+"</a>";
+	    }
+	}
+    return res;
+    } // person_name
+
+function setDontFollow(PId) { 
+    // reverse dontFollow[PId] to (not) follow descendants/ancestors
+    dontFollow[PId]=(dontFollow[PId] ? 0 : 1);
+    show_tree(Curr_PId);
+    }
+
+function show_help(opt) {
+    if (!document.getElementById("hlp")) return;
+    var str;
+    help_idx=(opt ? opt : -help_idx);
+    if (help_idx>0) { 
+	document.getElementById("helpfile").height=200;
+	str="- ";
+	}
+    else {
+	document.getElementById("helpfile").height=0;
+	str="+ ";
+	}
+    document.getElementById("hlp").value=str+_('Help');
+    } // show_help
+
+function hint(help_id,hstr) {
+    // Some (or all?) brwosers show the hints only after the code following
+    // the call to hint has finished, 
+    // therefor hint() is usefull only for permenant messages
+    
+    var str=" "; var hsep="<br />&nbsp;";
+    var msg="";
+    if (hstr!=undefined) { str=hsep+hstr; msg+=hstr; }
+    var i=parseInt(help_id) || 0;
+    while (help_str[i] != undefined && i<help_str.length) {
+	str+=hsep+help_str[i];
+	msg+=" "+help_str[i];
+	i++;
+	}
+    //if (tst>0) str="Test: "+str;
+    if (document.getElementById("hint")!=undefined)
+        document.getElementById("hint").innerHTML=
+            "<font color='red'>"+str+"</font>";
+    if (tst>0) console.log("hint("+help_id+"):"+msg);
+    }
+
+function Field_Data(field_,val) {
+    if (field_==undefined)
+	{ console.log("FD-F/V:"+field_+" "+val); return "*"; }
+    let val_=val;
+    if (field_.toLowerCase()=="gender") val_=_(val_); 
+    let fld=_(field_); 
+    let str='<tr><td class="field">'+fld+'</td>'
+	    +'<td class="data">'+val_+'</td>'
+	    +'</tr>';
+    return str;
+    } // Field_Data
+
+function start_info(id_,title_,size_) {
+    var str='<div id="content"><h'+size_+'>'+title_+'</h'+size_+'>';
+    str+='<table class="infolist">';
+    return str;
+    }
+
+function end_info() {
+    var str;
+    str='</table></div>';
+    return str;
+    }
+
+function Category_Data_Field(cat,dat,fie) {
+    var str;
+    str='<tr><td class="category">'+cat+'</td>'
+	+'<td class="data">'+dat+'</td>'
+	+'<td class="field">'+fie+'</td></tr>';
+    return str;
+    }
+
+function box_(info,top_,left_) {
+    var str;
+    str='<div class="boxbg" style="top: '+top_+'px; left: '+left_+'px;">'
+	+'<table><tr><td class="box">'+info+'</td></tr></table></div>'
+	+'<div class="shadow" style="top: '+(top_+5)+'px; left: '
+	    +left_+'px;"></div>'
+	+'<div class="border" style="top: '+(top_-1)+'px; left: '
+	    +(left_-1)+'px;"></div>';
+    return str;
+    }
+
+function hline_(top_,left_,gleft_,width_) {
+    var str;
+    str='<div class="bhline" style="top: '+(top_)+'px; '
+	  +'left: '+(left_)+'px; width: '+width_+'px;"></div>'
+	+'<div class="ghline" style="top: '+(top_+5) +'px; '
+	  +'left: '+(left_+gleft_)+'px; width: '+(width_+5-gleft_)
+	  +'px;"></div>';
+    return str;
+    }
+
+function vline_(top_,left_,height_) {
+    var str;
+    if (height_<0) { height_=-height_; top_=top_-height_; }
+    str='<div class="bvline" style="top: '+top_+'px; left: '+left_+'px; '
+	  +'height: '+height_+'px;"></div>'
+	+'<div class="gvline" style="top: '+(top_+5)+'px; '
+	  +'left: '+(left_+5)+'px; height: '+height_+'px;"></div>';
+    return str;
+    }
+
+function show_tree(PId) {
+    document.getElementById("select").innerHTML="";
+    var str='<div id="tree"><h4>';
+    var strE='</h4><div style="position: relative;">';
+    var buttons='<a href="javascript:toggle_dates()"> '+_('Date')+'</a>';
+    buttons+=' <a href="javascript:max_level++;show_tree(Curr_PId);">'
+		+' + </a>';
+    if (max_level>2) buttons+='/'
+	    +'<a href="javascript:max_level--;'
+	      +'if (max_level-1<mid_level)mid_level--; '
+	      +'show_tree(Curr_PId);"> - </a>';
+	buttons+=_('Generation');
+    var toggleDesc=" (<a id='ansdes' href='"
+		  +"javascript:showFam=1-showFam;show_tree(Curr_PId);"
+		  +"'>";
+    if (showFam==0) { 
+	str+=_('Ancestors')
+	    +toggleDesc
+	    +_('Families')+"</a>)";
+	str+=buttons+strE;
+	str+=show_ancestors(PId); 
+	}
+    else { 
+	str+=_('Families');
+	if (mid_level>0) {
+	    str+=" <a id='ansdes' href='javascript:mid_level--;"
+		+"show_tree(Curr_PId);'><</a> ";
+	    }
+	if (mid_level<max_level-1) { // -1
+	    str+=" <a id='ansdes' href='javascript:mid_level++;"
+		+"show_tree(Curr_PId);'>></a> ";
+	    }
+	str+=toggleDesc
+	    +_('Ancestors')+'</a>)'
+	    +buttons+strE;
+	str+=show_descendants(PId,mid_level); 
+	}
+    document.getElementById("select").innerHTML=str;
+    }
+
+function toggle_dates() {
+    box_info^=8;
+    show_tree(Curr_PId); 
+    }
+
+function toggle_clickAction() {
+    box_info^=16;
+    show_tree(Curr_PId); 
+    }
+    
+function show_ancestors(PId) {
+    var str, pi, i, i2, par, PId_, split_, tmp, top_, left_, level_, top_d;
+    var info, str2, famArr;
+    var ancestors=new Array();
+
+    str="";
+    ancestors[1]=PId; i2=2;
+    var maxI=Math.pow(2,max_level), maxI2=maxI/2, maxTop=15*maxI;
+    for (let i=1; i<maxI; i++) {
+	PId_=ancestors[i];
+	if (PId_) {
+	    let arr=DATA.data[PId_];
+	    if (arr==undefined) {
+		console.log("anc-"+PId_+" undefined");
+		info=""; PId_=""; 
+		}
+	    else {
+		info=person_name(PId_,box_info);
+		}
+	    left_=6; top_d=maxTop; top_=top_d-20; // top_d=480; 
+	    tmp=1; while (i>=tmp*2) {
+		tmp=tmp*2;
+		left_=left_+190;
+		top_d=top_d/2; top_=top_-top_d;
+		}
+	    let tmp2=i % tmp;
+	    top_=top_+tmp2*2*top_d;
+	    str2=box_(info,top_,left_);
+	    if (PId_=="" || dontFollow[PId_]) par="";
+	    else par=arr[3] || ""; // parents
+	    if (par) { // ????parIds!="") {
+		let par1=par.split(",")[1].split("\n")[0];
+		famArr=DATA.data[par1]; // only 1st parents
+		if (tst) console.log("anc-"+PId_+": "+par
+				+" fam:"+par1);
+		if (famArr!=undefined && i<maxI2) {
+		    let husband=famArr[1]; let wife=famArr[2];
+		    ancestors[i2]=husband || ""; 
+		    ancestors[i2+1]=wife || "";
+		    str2=str2+hline_(top_+25,left_+159,0,15);
+		    if (husband!= "") {
+			tmp=top_-(top_d/2)+23; tmp2=left_+174;
+			str2=str2+hline_(tmp,tmp2,5,15);
+			str2=str2+vline_(tmp,tmp2,top_d/2);
+			}
+		    if (wife!= "") {
+			tmp=top_+26; tmp2=left_+174;
+			str2=str2+vline_(tmp,tmp2,top_d/2);
+			tmp=tmp+(top_d/2);
+			str2=str2+hline_(tmp,tmp2,5,15);
+			}
+		    }
+		}
+	    str+=str2;
+	    }
+	else { ancestors[i2]=""; ancestors[i2+1]=""; }
+	i2=i2+2;
+	}
+    str+='</div>';
+    str+='<table style="height: 970px; width: 940px;">'
+	    +'<tr><td></td></tr></table>';
+    str+=end_info();
+    return str;
+    } // show_ancestors
+
+function show_descendants(PId,level,tgt_spouse,tgt_child,cTop,cLeft) {
+    var info, str, fam_, fi, i, split_, curr_n;
+    var famId, spouse, children, tmp, cline_top, cline_left, prev_lev;
+    var d_height=box_height+gap_height, d_width=box_width+gap_width;
+    var famIds;
+
+    if (PId=="") { return ""; }
+    if (tgt_spouse==undefined) { tgt_spouse=""; }
+    if (tgt_child==undefined) { tgt_child=""; }
+    if (dontFollow[PId]) fam_="";
+    else if (!DATA.data[PId]) {
+	if (tst) console.log("ShowDesc PId not found: "+PId);
+	return "";
+	}
+    else fam_=DATA.data[PId][2];
+    str="";
+    if (level==mid_level) {
+	for (let i=0; i<=max_level; i++) { lev_n[i]=0; }
+	}
+    if (fam_) {
+	famIds=fam_.split(",");
+	famId=famIds[1];
+	if (DATA.data[famId]) {
+		if (lev_n[level+1]>lev_n[level])
+		    { lev_n[level]=lev_n[level+1]; }
+		}
+	}
+    else famIds=[];
+    if (cTop!=undefined) {
+	tmp=d_height*lev_n[level]+box_height/2;
+	str+=vline_(cTop,cLeft,tmp-cTop);
+	str+=hline_(tmp,cLeft,5,gap_width);
+	}
+
+    if (level<=mid_level && level>0) { str+=_show_par(PId,level,cTop,cLeft); }
+    curr_n=lev_n[level];
+    info=person_name(PId,box_info);
+    str+=box_(info,lev_n[level]*d_height,level*d_width);
+    //if (tst>0) console.log(PId+" at "+curr_n);
+    lev_n[level]++;
+    for (fi=1; fi<famIds.length; fi++) {
+	famId=famIds[fi];
+	let famArr=DATA.data[famId];
+	let spouse=famArr[1];
+	if (spouse==PId) spouse=famArr[2];
+	if (spouse=="") spouse=" ";
+	let children=famArr[3];
+	if (children && lev_n[level]<lev_n[level+1]) lev_n[level]=lev_n[level+1]
+	if (tgt_spouse!="") {
+	    if (spouse!=tgt_spouse) { continue; }
+	    if (level>0) { str+=_show_par(tgt_spouse,level,cTop,cLeft); }
+	    }
+	else if (level==mid_level && level>0) 
+		{ str+=_show_par(spouse,level,cTop,cLeft); }
+	cline_top=(lev_n[level])*d_height-gap_height/2;
+	cline_left=level*d_width+box_width+gap_width/2;
+	tmp=d_height*(lev_n[level]-curr_n);
+	if (spouse==" ") { info="?"; }
+	else { info=person_name(spouse,box_info); }
+	str+=box_(info,lev_n[level]*d_height,level*d_width);
+	//if (tst>0) console.log("+"+spouse);
+	lev_n[level]++;
+	str+=vline_(curr_n*d_height+gap_height/2,
+		       level*d_width+box_width/2,tmp);
+	if (level<max_level-1) {
+	    if (tgt_child!="") {
+		tmp=DATA.data[tgt_child];
+		if (tmp) children+=","+tmp;
+		}
+	    if (children != "") {
+		let childArr=children.split(",");
+		if (spouse=="") { tmp=0; } else { tmp=1; }
+		if (level<mid_level && 
+		    lev_n[level+1]<lev_n[level]-1 && childArr.length-1<=1+tmp) {
+		    lev_n[level+1]=lev_n[level]-tmp-1;
+		    }
+		else if (lev_n[level+1]<curr_n) lev_n[level+1]=curr_n;
+		prev_lev=lev_n[level+1];
+		for (let i=1; i< childArr.length; i++) {
+		    if (i==1) {
+			str+=hline_(cline_top,
+				       level*d_width+box_width/2,5,
+				       (box_width+gap_width)/2);
+			}
+		    if (tgt_child=="") {
+			var id_=childArr[i];
+			str+=show_descendants(id_,level+1,"","",cline_top,
+						cline_left);
+			}
+		    else {
+			tmp=d_height*lev_n[level+1]+box_height/2;
+			str+=vline_(cline_top,cline_left,tmp-cline_top);
+			str+=hline_(tmp,cline_left,5,gap_width);
+			}
+		    }
+		}
+	    }
+	}
+    if (level==mid_level) {
+	str+='</div>';
+	str+='<table style="height: 970px; width: 925px;">'
+		+'<tr><td></td></tr></table>';
+	str+=end_info();
+	}
+    return str;
+    } // show_descendants
+
+function _show_par(PId,level,cTop,cLeft) {
+
+    if (dontFollow[PId] || !PId) return "";
+    let str="";
+    if (!DATA.data[PId])
+	{ console.log("ShowParents("+PId+"): no data"); return ""; }
+    let parIds=DATA.data[PId][3];
+    if (parIds) { // ????parIds!="") {
+	let par1=parIds.split(",")[1].split("\n")[0];
+	let famArr=DATA.data[par1]; // only 1st parents
+	if (!famArr) { 
+	    if (tst) console.log(PId+" no fam,l="+level+" ids="+parIds);
+	    return ""; 
+	    }
+	let spouse=famArr[2];
+	if (spouse=="") spouse=" ";
+	let i=1; // husband
+	if (famArr[1]=="") { i=2; spouse=""; }
+	str+=show_descendants(famArr[i],level-1,spouse,PId,cTop,cLeft);
+	//curr_n=lev_n[level]-1;
+	}
+    return str;
+    }
+
+function section_(sect_,name_,size_,entries,start_,end_) {
+    var res=""; var NEXTVAL="";
+    if (size_>0)
+	{ res=start_info(sect_,name_,size_); }
+    if (entries==undefined || entries==0) entries=[];
+    if (tst==9) { 
+	console.log(sect_+": "+entries.join("&")); 
+	}
+    let prevField="";
+    let preSpace="";
+    var finalEntries=new Array();
+    if (size_<0) for (let i=0; i>size_; i--) preSpace+="&nbsp;"; 
+    for (let i=start_; i<entries.length; i++) {
+	if (!entries[i]) continue;
+	let val=entries[i].substr(ATTR.lenAttrNum+1);
+	val=_(val);
+	let fieldName=entries[i].substr(0,ATTR.lenAttrNum);
+	if (tst>0) console.log(sect_+i+" "+fieldName+"="+val);
+	if (fieldName==prevField) fieldName=""; else prevField=fieldName;
+	if (fieldName && ATTR.gedAttr[fieldName]) {
+	    fieldName=ATTR.gedAttr[fieldName];
+	    if (ATTR.attrDisplay[fieldName]) {
+		fieldName=ATTR.attrDisplay[fieldName];
+		if (fieldName=="NEXTVAL") { NEXTVAL=val; continue; }
+		else if (fieldName=="PREVATT") {
+		    if (finalEntries.length>0) {
+			finalEntries[finalEntries.length-1][0]=val; 
+			continue;
+			}
+		    else fieldName="";
+		    }
+		else if (fieldName=="ATT") {
+		    fieldName=val; val=NEXTVAL; NEXTVAL="";
+		    if (i>start_ && val=="") continue;
+		    }
+		if (val=="") val=" "; // show empty value with attrDisplay
+		}
+	    else if (fieldName.substr(-4)=="TYPE") { fieldName=""; val=_(val); }
+	    else if (!ATTR.showAttr) continue;
+	    }
+	else console.log("unknown attribute in "+entries[i]);
+	if (val!=undefined && val!="") finalEntries.push([fieldName,val]);
+	else if (tst) console.log(fieldName+" empty value");
+	}
+    for (let i=0; i<finalEntries.length; i++) {
+	let fieldName=finalEntries[i][0];
+	let val=finalEntries[i][1] || "";
+	if (i<finalEntries.length-1 // val AND next fieldName empty ? 
+	    && val==" " 
+	    && (finalEntries[i+1][0]=="" || finalEntries[i+1][0]=="Type")) {
+	    finalEntries[i+1][0]=fieldName;
+	    continue;
+	    }
+	if (val.charAt(0)==brO) {
+	    if (val==Curr_PId) continue;
+		let tmpArr=DATA.data[val];
+		if (tst>0) console.log(val);
+		if (tmpArr && tmpArr[0]=="INDI") // Person
+		    { val=person_name(val,9); }
+		else { 
+		    if (tst) console.log("Link:"+fieldName+"="+val);
+		    res+=evaluateLink(_(fieldName),val,(size_>=0 ? 0 : size_));
+		    continue;
+		    }
+	    }
+	let val_=Field_Data(preSpace+_(fieldName),val);
+	if (tst && sect_=="Link") console.log(sect_+name_+":"+val_);
+	res+=val_;
+	}
+    if (end_>0) res+=end_info();
+    //if (tst==9) console.log("->"+res.substr(0,20));
+    return res;
+    } // section_
+
+function evaluateLink(fieldName,linkId,sizePre_) { // @ID@
+    const objArr=DATA.data[linkId];
+    if (objArr==undefined) return "";
+    const objType=objArr[0] || "";
+    if (objType.match(/^(OBJE|NOTE)/)) 
+	return getNoteObj(linkId,"P"+fieldName.substr(1,1));
+    if (fieldName.indexOf("_XREF")>=0) return ""; // ignore _XREF
+    var res="";
+    if (tst) console.log(linkId+"="+objArr.join("&"));
+    let sizePre=(fieldName.substr(0,4)=="FAM." && objArr[0].substr(0,4)=="Marr"
+	    ? 0 : sizePre_-3);
+    if (sizePre<0) res+=Field_Data(_(fieldName)," ");
+    res+=section_("Link",objArr[0].substr(0,ATTR.lenAttrNum),sizePre,objArr,1,0);
+    return res;
+    } // evaluateLink
+
+function getNoteObj(objId,sect) {
+    let res="";
+    const objArr=DATA.data[objId];
+    if (objArr[0].match(/^(O|N)/)) {
+	let iON=(RegExp.$1=="O" ? 2 : 3);
+	if (tst) console.log("objArr/Note: "+objArr);
+	if (iON==2) { // Objects
+	    let file=objArr[1].substr(ATTR.lenAttrNum+1);
+	    if (file.match(/^[\\\/].*[\\\/]([^\\\/]+)$/)) file=RegExp.$1;
+	    let form=objArr[2].substr(ATTR.lenAttrNum+1);
+	    let title=objArr[3].substr(ATTR.lenAttrNum+1);
+	    let id=sect+objId.substr(1,objId.length-2);;
+	    if (tst==0 && form.match(/(jp.?g|png|gif)/i)) {
+		res+='<img id="'+id+'" src="obj/'+file+'" title="'+title+'" '
+		    +' style="max-height:100px;height:auto;'
+			+'position:absolute;right:30px;z-index:0;"'
+		    +'onclick="showObj(this,'+"'"+objId+"'"+')"/>';
+		}
+	    else if (file) {
+		let link='<a href="obj/'+file+'" target="_blank">'+file+'</a>';
+		res+=Field_Data(title,link);
+		}
+	    }
+	else { // NOTE
+	    res+=Field_Data("Note",objArr[1]);
+	    }
+	}
+    return res;
+    } // getNoteObj
+
+function showObj(elem,objId) {
+    if (elem.src=="" || elem.src.match(/face\.ico/)) {
+	let file=DATA.data[objId][1];
+	if (tst) console.log(elem.id+" "+file);
+	if (file.match(/^[\\\/].*[\\\/]([^\\\/]+)$/)) file="obj/"+RegExp.$1;
+	elem.src=file;
+	}
+    else elem.src="face.ico";
+    } // showObj
+
+function show_surname(Name,ctxt_type,wildcard) {
+    const htmlElem=document.getElementById((ctxt_type ? "select" : "content"));     htmlElem.innerHTML="<b><i>---</i></b>";
+
+    var str, info, i, isplit, tmp,pi;
+    var persons=new Array();
+    if (Name==undefined || Name=="") { alert("show: no name"); return; }
+    var name_=Name.toLowerCase(); 
+    if (wildcard==undefined) { wildcard=0; }
+    hint(16);
+    for (let PId_ in DATA.data) {
+	let arr=DATA.data[PId_];
+	if (arr[0]!="INDI") continue; 
+	let nam=arr[1].toLowerCase(); // .substr(ATTR.lenAttrNum+1)
+	if (nam.match(/\/(.*)\//)) nam=RegExp.$1;
+	if (nam=="") nam="_"; // no name
+	if (wildcard==1) { 
+	    let tmp=arr.join(" ").toLowerCase(); 
+	    if (tmp.search(name_)<0) { continue; }
+	    }
+	else {
+	    if (name_!=nam) { continue; }
+	    }
+	if (tst || nam.match(/[\@\/]/)) console.log(PId_+": surname: "+nam)
+	persons.push(nam+"\t"+PId_);
+	}
+    hint(0);
+    if (tst>0) { console.log(name_+" found:"+persons.join(sepN)); }
+    str=show_letter(ctxt_type);
+    str+=start_info("surname",Name+" ("+persons.length+")",3);
+    str+='<thead><tr><th>'+_('Name')+'</th>'
+		+'</tr></thead>'
+	+'<tbody>';
+    if (persons.length==1) {
+	let split_=persons[0].split("\t");
+	let PId_=split_[1];
+	Select_Person(PId_); // ctxt_type,
+	return;
+	}
+    persons.sort();
+    for (let i=0; i<persons.length; i++) {
+	let split_=persons[i].split("\t");
+	let PId_=split_[1];
+	info=person_name(PId_,9);
+	if (tst==9) console.log(PId_+":"+info+"\n\t"+DATA.current.join("&"));
+	str+=Field_Data(info,""); // gender
+	}
+    str+='</tbody>'+end_info();
+    htmlElem.innerHTML =str;
+    } // show_surname
+
+function show_letter(ctxt_type) {
+    var str="";
+    for (let i=0; i<surnames_l.length; i++) {
+	let l=surnames_l[i].substr(0,1);
+	//if (l.length==1) { // avoid strange errors (with pl i sta com)
+	    str+="&nbsp;&nbsp;"
+		+"<a href='javascript:show_surnames("+ctxt_type+',"'+l+'");'
+		+"'>"+l+"</a>";
+	  //  }
+	}
+    str+='&nbsp;&nbsp;<form name="fsearch" '
+	    +'onsubmit="return search_('+ctxt_type+')">';
+    str+='<input class="INPUT" type="text" size="20" name="search" id="search" ';
+    str+='value="'+_('search')+'" ';
+    str+='onclick="this.value=search_str;this.select();true" '; // ?form.search.
+    str+='onsubmit="return search_('+ctxt_type+');">';
+    str+='<input type="submit" name="a" value="'+_("search")+'")>';
+    str+='</form>';
+    if (tst!=0) console.log("search="+ctxt_type);
+    return str;
+    }
+
+function search_ (ctxt_type) {
+    search_str=document.getElementById("search").value;
+    document.getElementById("select").innerHTML="";
+    if (search_str!="") { show_surname(search_str,ctxt_type,1); }
+    return false;
+    }
+
+function show_surnames(ctxt_type,l0) {
+    const htmlElem=document.getElementById((ctxt_type ? "select" : "content"));
+    htmlElem.innerHTML="<b><i>...</i></b>";
+    var str, str2, nam, ns, split_, split2, l, l_, tmp;
+    
+    if (ctxt_type!=0) { 
+	hint(10); 
+	if (tst!=0) console.log("ShowSurnames:"+ctxt_type); 
+	}
+    else { Curr_PId=""; hint(0); } // clear current PId and hint section
+    let cnt_fnam=0; let cnt_indv=0;
+    str2='<tbody>';
+    for (l=0; l<surnames_l.length; l++) {
+	if ((l0==undefined || l0==surnames_l[l].substr(0,1))) { 
+	    split_=surnames_l[l].split(sepN);
+	    for (ns=1; ns<split_.length; ns++) {
+		if (ns==1) { l_=split_[0]; } else { l_="&nbsp;"; }
+		nam=split_[ns];
+		//if (nam=="") nam="_";
+		tmp=surnames[nam];
+		if (tmp==undefined) {
+		    console.log("Name "+nam+" not found");
+		    continue;
+		    }
+		split2=tmp.split(sepN);
+		tmp="<a href='javascript:"
+		      +"show_surname("+'"'+nam+'",'+ctxt_type+")'>"
+		    +nam+"</a>";
+		str2=str2+Category_Data_Field(l_,tmp,split2.length-2);
+		cnt_fnam++; cnt_indv+=split2.length-2;
+		}
+	    }
+	}
+    str=show_letter(ctxt_type);
+    if (ctxt_type==1 || ctxt_type>2) { tmp=_('Spouse'); }
+    else if (ctxt_type==2) { tmp=_('Child'); }
+    else { tmp=_('Surnames'); }
+    str+=start_info("surnames",tmp,3);
+    str+='<thead><tr><th>'+_('A...Z')+'</th>'
+		+'<th>'+_('Surname')+' ('+cnt_fnam+')'+'</a></th>'
+		+'<th>'+_('Individuals')+' ('+cnt_indv+')'+'</a></th>'
+		+'</tr></thead>';
+    str+=str2+'</tbody>'+end_info();
+    htmlElem.innerHTML=str;
+    if (ctxt_type==0) {
+	document.getElementById("select").innerHTML ="";
+	str='<input type="button" class="BUTTON" '
+	+'value="+ '+_('Individual')+'"  onClick="show_person(0)">';
+	if (document.getElementById("surnames"))
+	    document.getElementById("surnames").value=_('Surnames');
+	//document.getElementById("hint").innerHTML ="";
+	}
+    } // show_surnames
+
+function show_person(PId) {
+    document.getElementById("content").innerHTML ="...";
+    var info, str, tmp, i;
+    nam_1st="";
+    info=person_name(PId,-1); // also sets DATA.current
+    if (info == "") {
+	document.getElementById("content").innerHTML =_('unknown');
+	return;
+	}
+    str=""; Curr_PId=PId;
+    var currParents=["",""];
+    const famPar=[DATA.current[2],DATA.current[3],""];
+    if (tst==9) console.log("FamPar: "+famPar.join("-"));
+    const famStrs=["Families,Husband,Wife,Children",
+		  "Parents,Father,Mother,Siblings",
+		  ",Father,Mother,(Siblings)"];
+    str+=section_("person",info,4,DATA.current,DATA.reserved['INDI'],1);
+    if (str=="") { if (tst!=0) console.log(PId+" not found"); return false; }
+    document.getElementById("surnames").value=_('Surnames');
+    document.getElementById("select").innerHTML="";
+    document.getElementById("hint").innerHTML="";
+    let famHandled=new Array();
+    for (let iFP=0; iFP<=2; iFP++) {
+	if (tst==9) console.log("Fam:"+famStrs[iFP]+" "+famPar[iFP]);
+	let famIds=famPar[iFP].split(",");
+	if (famIds=="") continue;
+	let famStr=famStrs[iFP].split(",");
+	str+=section_(famStr[0],_(famStr[0]),4,0,999,0); // section header
+	for (let iF=1; iF<famIds.length; iF++) {
+	    if (iF>1) str+=Field_Data("","&nbsp;"); // empty line before next
+	    let famId=famIds[iF];
+	    let famAdditional="";
+	    let pCR=famId.indexOf("\n");
+	    if (pCR>0) { 
+		famAdditional=famId.substr(pCR+1); 
+		famId=famId.substr(0,pCR); 
+		}
+	    if (tst==9) console.log("Fam-"+iF+famId+" add:"+famAdditional);
+	    if (famHandled[famId]) continue;
+	    Curr_FId=famId;
+	    famHandled[famId]=1;
+	    let famArr=DATA.data[famId];
+	    if (tst==9) console.log("Fam "+famId+"="+famArr);
+	    if (famArr==undefined) continue;
+	    if (famAdditional) 
+		famAdditional=famAdditional.replace(/HUSB/g,famArr[1])
+		    .replace(/WIFE/g,famArr[2]);
+	    if (iFP<3) { // show parents, not for other siblings?
+	      for (let iP=1; iP<=2; iP++) { // 1=father 2=mother
+		let PId_=famArr[iP];
+		if (PId_) {
+		    let spouseStr=famStr[iP];
+		    if (iFP==1) {
+			currParents[iP-1]=PId_;
+			// other families of every parent for further (siblings)
+			let otherFam=DATA.data[PId_][2].split(",");
+			for (let iO=1; iO<otherFam.length; iO++) {
+			    let otherFamId=otherFam[iO];
+			    if (otherFamId.indexOf("\n")>0) 
+				otherFamId=otherFamId.substr(0,
+					otherFamId.indexOf("\n"));
+			    if (!famHandled[otherFamId]) {
+				famPar[2]+=","+otherFamId;
+				if (tst==9) console.log("othFam: "+otherFamId);
+				}
+			    }
+			}
+		    else if (iFP==2 && PId_!=currParents[iP-1]) spouseStr="";
+		    let tmpFullName=person_name(PId_,9);
+		    let tmpGender=DATA.current[4];
+		    if (iP==1 && tmpGender!="M") 
+			spouseStr=spouseStr.replace(/Husband/i,"Spouse")
+			    .replace(/Father/i,"Parent");
+		    if (iP==2 && tmpGender!="F") 
+			spouseStr=spouseStr.replace(/Wife/i,"Spouse")
+			    .replace(/Mother/i,"Parent");
+		    str+=Field_Data(spouseStr,tmpFullName);
+		    }
+		}
+	      if (famAdditional!="") { // with FAMC
+		let tmpArr=famAdditional.split("\n");
+		str+=section_('addInfo','',0,tmpArr,0,0);
+		}
+	      }
+	    if (iFP==0) // show rest of family information, not for parents
+		str+=section_("family",info,0,famArr,DATA.reserved['FAM'],0);
+	    if (tst==9) console.log("fam: "+famArr.join("&"));
+	    let children=famArr[3].split(",");
+	    let attr=famStr[3];
+	    for (let iC=1; iC<children.length; iC++) {
+		let PId_=children[iC];
+		if (PId_.indexOf("\n")>0) PId_=PId_.substr(0,indexOf("\n"));
+		if (iFP==1 && PId_==PId) continue;
+		tmp=person_name(PId_,9);
+		str+=Field_Data(attr,tmp);
+		attr="";
+		}
+	    }
+	str+=end_info();
+	}
+    show_tree(PId);
+    document.getElementById("content").innerHTML =str;
+    if (nam_1st!="") document.getElementById(nam_1st).focus();
+    return true;
+    } // show_person
+
+function rebuild_surnames() {
+    var nam, l, tmp;
+
+    hint(0,_('Rebuilding list of surnames'));
+    surnames_l=new Array();
+    surnames=new Object();
+    l="-"; nam="---";
+    let i=0; let nPers=0;
+    for (let PId_ in DATA.data) {
+	let arr=DATA.data[PId_];
+	if (tst && i<5) {
+	    console.log("data("+PId_+")="+arr.join("&"));
+	    i++;
+	    }
+	if (arr[0]!="INDI") continue;
+	nPers++;
+	let fullName=arr[1];
+	if (fullName == undefined) { continue; }
+	let nam_=(fullName.match(/\/(.*)\//) ? RegExp.$1 : fullName);
+	if (tst && (i<3 || nam_=="")) { console.log(PId_+"="+nam_); i++; }
+	if (nam_=="") nam_="_"; 
+	if (nam_ != nam) {
+	    nam=nam_;
+	    l=nam.charAt(0).toUpperCase();
+	    let j=0;
+	    while (j<surnames_l.length && surnames_l[j].substr(0,1)!=l) { j++; }
+	    if (j==surnames_l.length) { surnames_l[j]=l+sepN; }
+	    if (surnames_l[j].indexOf(sepN+nam+sepN)<0) surnames_l[j]+=nam+sepN;
+	    }
+	if (surnames[nam]==undefined) { surnames[nam]=sepN; }
+	else if (surnames[nam].indexOf(sepN+PId_+sepN)>=0) continue;
+	surnames[nam]+=PId_+sepN;
+	}
+     surnames_l.sort();
+    msg="";
+    for (let i=0; i<surnames_l.length; i++) {
+	tmp=surnames_l[i]; tmp=tmp.substr(0,tmp.length-1);
+	if (tst && i<10) msg+=" / "+tmp;
+	let split_=tmp.split(sepN);
+	split_.sort();
+	surnames_l[i]=split_.join(sepN);
+	}
+    //if (tst) console.log("RebuildSurn #Pers "+nPers+msg);
+    } // rebuild_surnames
+
+function read_params () {
+    var query = self.location.search;
+    query = '&'+query.substr(1, query.length - 1)+'&';
+    query = query.replace(/%26/g,'&');
+    var tmp="";
+
+    if (query.match(/\&t\=([^\&]+)\&/i)) tst=parseInt(RegExp.$1);
+    if (query.match(/\&l\=([^\&]+)\&/i)) language=RegExp.$1;
+    if (query.match(/\&s\=([^\&]+)\&/i)) { // search
+	search_str=RegExp.$1; 
+	search_str=decodeURI(search_str); // replace(/\%20/g," ");
+	}
+    if (query.match(/\&m\=([^\&]+)\&/i)) mobile=RegExp.$1;
+    if (query.match(/\&ATT([^\&]*)\&/i)) ATTR.showAttr=1;
+	// if set, show all attributes (in help frame), and show every info
+	// default: show only with english name for display
+    if (query.match(/\&TRA([^\&]*)\&/i)) showTrans=1;
+	// show translations in help section
+    if (query.match(/\&f\=([^\&]+)\&/i)) ged_file=RegExp.$1;
+    if (query.match(/\&exp([^\&]*)\&/i)) 
+	document.getElementById("Export").style.visibility='visible';
+    else document.getElementById("acnt").src="../accessCnt.php";
+
+    if (tst>0) 
+	console.log("par: f="+tmp+", t="+tst+", l="+language+", q="+query);
+
+    } // read_params
+
+function importFile(source) {
+    if (source && source.type=="file") {
+	const file=Array.from(source.files)[0];
+	if (file.name.match(/\.ged$/)) {
+	    new DataSource(source,new RegExp('\.ged','i'),readData,tst);
+	    ged_file=file.name;
+	    navheader2();
+	    }
+	else if (file.name.match(/\.conf$/))
+	    new DataSource(source,new RegExp('\.conf','i'),readConf,tst);
+	else if (file.name.match(/trans\.txt$/))
+	    new DataSource(source,new RegExp('\.txt','i'),readTrans,tst);
+	else if (file.name.match(/help\.html$/))
+	    document.getElementById("helpfile").src=URL.createObjectURL(file);
+	else alert("Unknown file purpose\n"+file.name+"\t"+file.type);
+	}
+    else {
+	if (!source) {
+	    source=window.prompt(_('Please specify name of data file:'),"");
+	    if (source==undefined || source=="") {
+		return;
+		}
+	    }
+	ged_file=source;
+	new DataSource(source,new RegExp('\.ged','i'),readData,tst);
+	}
+    } // importFile
+
+function export_families(PId) {
+    if (!PId) { alert(_("No person selected")); return; }
+    if (export_ids[PId]) return;
+    export_ids[PId]=PId;
+    add_ids(DATA.data[PId],DATA.reserved['INDI']);
+    if (dontFollow[PId]) return;
+    var fam_ids=DATA.data[PId][2]+DATA.data[PId][3]; // own families, parents
+    fam_ids=fam_ids.replace(/\n/g,""); // ??? why: otherwise ignored behind \n
+    var msg="ex-"+PId+" famIds= "+fam_ids;
+    while (fam_ids.match(/^(.*)(\@[\w\d]+\@)(.*)$/)) { // @@@@
+	fam_ids=RegExp.$1+RegExp.$3;
+	let famId=RegExp.$2;
+	msg+=" +"+famId;
+	if (export_ids[famId]) continue;
+	add_ids(DATA.data[famId],1);
+	export_ids[famId]=famId;
+	}
+    if (tst==9) console.log(msg);
+    if (PId==Curr_PId) {
+	console.log("Export done "+Object.keys(export_ids).length);
+	if (tst) console.log(Object.keys(export_ids).join(";"));
+	exportData();
+	}
+    } // export_families
+
+function add_ids(pArr,startI) {
+    if (pArr==undefined) return;
+    for (let i=startI; i<pArr.length; i++) {
+	var field=pArr[i];
+	while (field.match(/^(.*)(\@[\w\d]+\@)(.*)$/)) { // @@@@
+	    field=RegExp.$1+RegExp.$3;
+	    let id=RegExp.$2;
+	    if (export_ids[id]) continue; // already in export_ids
+	    const arr=DATA.data[id];
+	    if (!arr) return;
+	    if (arr[0]=="INDI") export_families(id);
+	    else export_ids[id]=id;
+	    }
+	}
+    } // add_ids
+
+async function exportData() {
+    let SourceObj=DATA.SourceObj;
+    if (SourceObj==undefined) { alert("Choose import file first!"); return; }
+    SourceObj.restart();
+    var sink=new dataSink("Text output",[".ged"],1);
+	await sink.open();
+	console.log("Sink opened");
+    let skip=0; const newline="\n";
+    while (1) {
+	let line=SourceObj.readLine();
+	if (line==undefined) break;
+	if (line.match(/^0 (\@.+\@)/)) {
+	    let id=RegExp.$1;
+	    if (export_ids[id]) skip=0; else skip=1;
+	    }
+	if (skip) continue;
+	await sink.writeLine(line+newline);
+	}
+    await sink.close();
+    console.log("All ids written");
+    } // exportData
+
+function start() {
+    if (navigator.appName!="Netscape" || tst>0) {
+	//tmp=/^(.*\/)[^\/]$/;
+	//if (tmp.exec(path)) { path=$1; }
+	let tmp=path.lastIndexOf("/");
+	if (tmp>0) { path=path.substr(0,tmp+1); }
+	if (tst>0) console.log("Browser="+navigator.userAgent);
+	}
+    if (tst>0) console.log("path="+path+", domain="+domain+", file="+ged_file);
+    document.name=_('Pedigree');
+    } // start
+
+function readData(SourceObj,result) {
+    SourceObj.result=result;
+    var current=new Array(), itemId="", arrAttr=new Array();
+    let nLines=0; let prevLine=""; let iCurr=0;
+    const timeStamp=performance.now();
+    hint(12);
+    while (1) {
+	let line=SourceObj.readLine();
+	if (line==undefined) break;
+	nLines++;
+	if (line.match(/^(\d+) ([^ ]+)(.*)$/)) {
+	    let level=parseInt(RegExp.$1); 
+	    let attr=RegExp.$2;
+	    let val=RegExp.$3; 
+	    if (val) { 
+		val=val.substr(1); // 1st char = blank 
+		if (attr=="DATE") val=dateISO(val);
+//		else if (attr!="NAME") 
+//		    val=val.replace(/\%/g," "); // ";" ?? sepN=
+		}
+	    else val="";
+	    if (level==0) {
+		if (itemId!="") {
+		    DATA.data[itemId]=current;
+		    current=[];
+		    if (current.length>0) 
+			console.log("L(current)>0 at "+nLines); // error !!
+		    }
+		itemId=attr; 
+		if (val.match(/^(\w+) (.*)$/)) { // 1-line id+value
+		    //DATA.data[attr]=[RegExp.$1,RegExp.$2]; 
+		    if (tst) console.log(RegExp.$1+"="+RegExp.$2);
+		    attr=RegExp.$1;;
+		    val=RegExp.$2;
+		    current.push(attr,val); // 0:type
+		    iCurr=1;
+		    }
+		else {
+		    if (val==undefined || val=="") continue; // HEAD,TRLR
+		    arrAttr[0]=val;
+		    current.push(val); // 0:type
+		    if (DATA.reserved[val]) 
+			for (iCurr=1; iCurr<DATA.reserved[val]; iCurr++)
+			    current.push(""); 
+			// place holders for 1:full name, 2:family, 3:parents
+		    else iCurr=1;
+		    if (!DATA.nItems[val]) DATA.nItems[val]=1;
+		    else DATA.nItems[val]++;
+		    }
+		}
+	    else {
+		if (attr=="CONC" || attr=="CONT") { // continuation line
+		    current[iCurr]+=" "+val;
+		    continue;
+		    }
+		if (itemId=="") continue;
+		let fullAttr=arrAttr[level-1]+"."+attr; 
+		arrAttr[level]=fullAttr;
+		if (val || ATTR.attrDisplay[fullAttr]) {
+		    if (val==undefined) val="";
+		    if (!ATTR.attributeNum[fullAttr]) {
+			ATTR.lastAttrNum++;
+			let attrNum=
+			    ("000"+ATTR.lastAttrNum).substr(-ATTR.lenAttrNum);
+			ATTR.attributeNum[fullAttr]=attrNum;
+			ATTR.gedAttr[attrNum]=fullAttr;
+			if (!ATTR.attrDisplay[fullAttr])
+			    ATTR.attrDisplay[fullAttr]="";
+			}
+		    if (level==1 || attr=="FAMC") {
+			if (fullAttr=="INDI.NAME" && current[1]=="") iCurr=1;
+			else if (fullAttr=="INDI.FAMS") iCurr=-2;
+			else if (fullAttr=="INDI.SEX") iCurr=4;
+			else if (fullAttr=="FAM.HUSB") iCurr=1;
+			else if (fullAttr=="FAM.WIFE") iCurr=2;
+			else if (attr=="FAMC") iCurr=-3;
+			else if (fullAttr=="FAM.CHIL") iCurr=-3;
+			else iCurr=0;
+			if (iCurr<0) { current[-iCurr]+=","+val; continue; }
+			else if (iCurr>0) { current[iCurr]=val; continue; }
+			}
+		    else if (iCurr==-3 && fullAttr.match(/^INDI.*FAMC/)) { 
+			// additional information about parent-child relation
+			current[-iCurr]+=
+			    "\n"+ATTR.attributeNum[fullAttr]+"\t"+val; 
+			continue; 
+			}
+		    iCurr=current.length;
+		    current.push(ATTR.attributeNum[fullAttr]+"\t"+val);
+		    }
+		}
+	    }
+	else {
+	    console.log("Illegal line at "+nLines+": "+line);
+	    if (tst) {
+		let len=100; let pos=SourceObj.pos-len; 
+		if (pos<0) { len+=pos; pos=0; }
+		console.log(line+" illegal\nprev="+prevLine
+			    +"\nnext:"+SourceObj.slice.substr(pos,len));
+		}
+	    }
+	prevLine=line;
+	}
+    if (tst) {
+	let msg="# items: ";
+	for (let type in DATA.nItems) msg+=type+"="+DATA.nItems[type]+" ";
+	console.log(msg+"#lines="+nLines+" "
+	    +"Elapsed msec="+(performance.now()-timeStamp)); 
+	}
+    if (ATTR.showAttr || tst==9) {
+	let attrList="";
+	let attKeys = Object.keys(ATTR.attrDisplay).sort();
+	for (let i=0; i<attKeys.length; i++) {
+	    let attr=attKeys[i];
+	    attrList+=attr+"\t"+(ATTR.attrDisplay[attr] || "")
+		+"\t"+(ATTR.attrComment[attr] || "")+"<br>";
+	    }
+	window["helpfile"].document.body.innerHTML="<pre>"+attrList+"</pre>";
+	show_help(1);
+	}
+    DATA.SourceObj=SourceObj;
+    hint(0,_('Rebuild list of surnames'));
+    rebuild_surnames();
+    hint(0,_('Show list of surnames'));
+    if (search_str!="") { show_surname(search_str,0,1); }
+    else { show_surnames(0); }
+    hint(0);
+    } // readData
+
+function readTrans(SourceObj,result) {
+    SourceObj.result=result;
+    let nLines=0; const transSep=",";
+    const langPrefix=language+'-';
+    while (1) {
+	let line=SourceObj.readLine();
+	if (line==undefined) break;
+	nLines++;
+	let pos=line.indexOf(transSep);
+	let term=line.substr(0,pos);
+	trans[langPrefix+term]=line.substr(pos+1);
+	}
+    //if (tst) 
+	console.log("Show Trans="+showTrans);
+    if (showTrans || tst==9) {
+	const prefixLen=langPrefix.length;
+	let transList="";
+	let terms = Object.keys(trans).sort();
+	for (let i=0; i<terms.length; i++) {
+	    let term=terms[i].substr(prefixLen);
+	    transList+=term+transSep+(trans[langPrefix+term] || "")+"<br>";
+	    }
+	window["helpfile"].document.body.innerHTML="<pre>"+transList+"</pre>";
+	show_help(1);
+	}
+    } // readTrans
+
+function readConf(SourceObj,result) {
+    SourceObj.result=result;
+    // gedAttribute TAB englishAttribute [attrComment]
+    let nLines=0;
+    while (1) {
+	let line=SourceObj.readLine();
+	if (line==undefined || line.match(/^\-+EOF/i)) break;
+	nLines++;
+	if (line=="" || line.match(/^\s*\#/)) continue;
+	let arr=line.split("\t");
+	if (arr[1]==undefined) {
+	    alert(SourceObj.filename+" : no TAB in "+nLines+": "+line);
+	    continue;
+	    }
+	ATTR.attrDisplay[arr[0]]=arr[1];
+	if (arr[2]) ATTR.attrComment[arr[0]]=arr[2];
+	if (tst==2) console.log(arr[0]+"="+ATTR.attrDisplay[arr[0]]);
+	//ATTR.attributeNum ?
+	}
+    if (tst) console.log(SourceObj.filename+" # lines="+nLines);
+    if (ged_file) importFile(ged_file);
+    } // readConf
+
+function dateISO(date) {
+    if (!date.match(/^(\d+)[\s\.]([\w\d]+)[\s\.](\d+)$/)) return date;
+    let d=parseInt(RegExp.$1);
+    let m=RegExp.$2;
+    let y=parseInt(RegExp.$3);
+    if (d>1000) { let tmp=d; d=y; y=d; }
+    if (!m.match(/\d+/)) {
+	m=m.toUpperCase();
+	let p=months.indexOf(m); 
+	if (p<0) return date;
+	m=months.substr(p-2,2);
+	}
+    try {
+	var date_=new Date(y,m-1,d+1);
+	//date_.setDate(date_.dateISO() + 1); // add 1 day
+	return date_.toISOString().substr(0,10); 
+	} 
+    catch (err) { return err+" "+date; } // err+" "+
+    }
+
+function debug(str,id) {
+    if (useConsole>0) { console.log(str); }
+    else {
+	if (id==undefined) { id="debug"; str=debug_str+str+";"; }
+	document.getElementById(id).innerHTML=str;
+	if (id=="debug") debug_str=str;
+	}
+    }
+
+function changeStyle (styleId,attr,val) {
+    styleId=styleId.toLowerCase();
+    var i=0;
+    while (document.styleSheets[i]) {
+	var stylesheet=document.styleSheets[i], j=0;
+	i++;
+	while (j<stylesheet.cssRules.length) {
+	    var rule=stylesheet.cssRules[j];
+	    if (rule.selectorText.toLowerCase()==styleId) {
+		rule.style[attr]=val;
+		i=-1;
+		break;
+		}
+	    else j++;
+	    }
+	}
+    if (i>=0) console.log("changeStyle: "+styleId+" not found");
+    else console.log("changeStyle "+styleId);
+    }
+
+function mobile_ () {
+    if (mobile<0 && navigator.userAgent.match(/Android|Mobile/i)) mobile=1;
+    if (mobile>0) {
+	changeStyle("BODY","font-size","24pt");
+	}
+    }
+
+</script>
+</head>
+
+<body>
+<span id="debug" style="font-size:60%"></span>
+<div class="navbyline">
+    <img id="acnt" src="../empty.ico"
+            width=15 height=15 border=0>
+    <span id="navby">
+	<img id="ico" src="Pedigree2.ico"
+            width=15 height=15 border=0>
+	Web page for GEDCOM data
+	</span>
+    &nbsp; &copy; H. Ruprecht 2010-2025
+    <img id="face" src="../Drachenkopf.ico"
+            width=15 height=15 border=0>
+    <!-- src="../accessCnt.php"  --> 
+</div>
+<h1 class="navtitle"><span id="navtitle">Pedigree</span></h1>
+    <span id="hint"></span>
+<div class="nav"><span id="ImportButton"></span>
+    <span id="NamesButton"></span>
+<!--    <span id="ExportButton"></span>	--> 
+    <span id="PrintButton"></span>
+    <input type="button" class="BUTTON" id="hlp"
+            onclick="show_help()" value="Help">
+    <input type="button" class="BUTTON" id="Export" style="visibility:hidden"
+            onclick="export_families(Curr_PId)" value="Export">
+</div>
+
+<iframe width="100%" height="0" name="helpfile" id="helpfile" 
+type="text/plain">
+    <p>Ihr Browser kann leider keine eingebetteten Frames anzeigen.
+	Am besten Firefox oder Chrome verwenden.
+    <br>Your browser cannot work with embedded frames.
+	Use Firefox or Chrome.
+    </p>
+
+</iframe>
+<div>
+<span id="content"></span>
+<span id="select"></span>
+</div>
+<script type="text/javascript">
+  read_params(); 
+  init(); mobile_(); 
+  </script>
+</body>
+</html>

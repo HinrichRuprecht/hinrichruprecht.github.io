@@ -3,85 +3,54 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="copyright" content="H. Ruprecht" />
 </head>
+<h4>Data import</h4>
+This family tree page uses ancestral data in the <a href="https://wiki.genealogy.net/GEDCOM">GEDCOM</a> format, which is generated (exported) by appropriate programs (e.g. <a href="https://gramps-project.org/">GRAMPS</a>).
+<br>You must first select a GEDCOM file, either by clicking the file selector in the top left corner of the page or by appending ?f=FILENAME to the link (the file must then be located in the same directory as this website).
+<br>For testing, you can select ?f=Dynasties, a not entirely up-to-date database of European aristocracy. Due to the large amount of data, some patience is required.
+<br>
 <h4>Select and display</h4>
-With the help of the search field (for any information about people), the
-first letter of the family name or the list of family names, a
-person will be selected. With click on the person, all available information
-about the person, the spouses, children, parents and siblings are shown.
-<br>In addition, either the ancestors or ancestors and descendants 
-are shown at the bottom. In the latter representation, the
-position of the selected person in the presentation can be moved 
-by clicking '<' or '>', so that more or less ancestor
-or progeny generations are displayed. By clicking on '+ / - Date'
-the birth and death dates of the persons are displayed, if available.
-<br>Clicking on a person sets it as the selected person, and all available 
-information on this person is displayed.
+Using the search field (for parts of the name), the initial letter of the surname, or the list of surnames, a person can be selected, for which all available information, including partners, children, parents, and siblings, will be displayed.
+<br>In addition, the lower section can optionally display the ancestors and descendants, or only the ancestors. In the former view, the position of the selected person in the display can be moved left or right by clicking '<' or '>'. '+/-Generation' displays more or fewer generations of ancestors or descendants.
+<br>Clicking on 'Date' displays the birth and death dates of the people, if available.
+<br>Clicking on a person makes it the selected person, and all available information about it is displayed.
+<br>A &#9665; as the last character in the frame indicates that there are other people connected to the person. Clicking on this character will no longer include these people. Clicking on &#9654; will undo this.
 <br>
-<h4>Note on data changes</h4>
-All data that is changed or added is at first only stored locally in
-the browser (e.g. Firefox or Internet Explorer), more precisely in so
-called cookies. These cookies may be deleted, when closing the
-browser depending on browser setting. For a permanent transfer into the database
-the changes must be sent to someone who puts the changed data into the
-family database. Click on 'Mail' to send. See also export data.
+Objects assigned to a person as a file must be located in the obj/ subdirectory of the server directory of this website.
 <br>
-<h4>Data changes</h4>
-By clicking on 'Edit Person' all possible information fields are
-displayed, and new or changed data for the selected person can be 
-entered. In addition, spouses or children can be assigned. 
-<br>To do so, for a spouse first click behind '+ spouse' and then
-select the spouse.
-<br>Similarly for a child click '+ child' in the section behind the 
-previously assigned spouse (or family without a partner), and select the
-child.
-<br><u>Important:</u> Assigned partners and children have to exist in the 
-dataset. It is therefore advisable to first add new persons with '+ Person'.
-<br>The assignment of spouses can be changed by unchecking behind the
-spouse's name, or by selecting a new spouse if the spouse field is empty.
-<br>Further changes, e.g. removing of child-assignments, of persons or 
-families should be made in Gramps or by editing the data file.
-<br>
-<h4>New persons</h4>
-By clicking on '+ person' a new person is created. Everything else is like 
-data changes.
+<h4>Print</h4>
+When you click 'Print,' you'll be asked whether you want to print only the family tree at the bottom. 'Background images' should be checked in the print options.
 <br>
 <h4>Data export</h4>
-Instead of sending changed data by e-mail to someone who is maintaining the
-data it is also possible to store the data locally so one can independently 
-build and maintain your own database.
-<br>By clicking 'Export' the data of all ancestors and descendants
-including siblings and partners of the selected person is  written in a new
-browser window. If no person is selected, e.g. after clicking
-'family names', the entire database is exported.
-<br>The contents of this window must be saved to a file.
-Select the window, then click Ctrl + A to select,
-copy with Ctrl + C, then paste with Ctrl + V to an empty file (Notepad or Edit)
-as a text file (with extension .txt).
-<br>In Firefox it's easier to use the save function
-(Ctrl + S). Above the 'Save' button select "text file" and specify 
-a file with extension txt. 
-<br>The created file can be imported into a Gramps database. But it can
-also be displayed and edited with the same browser file Ahnentafel.html which
-is used here.
-<br>Store this browser file (using Ctrl + S) as a Web page
-(HTML only) in the same folder as the exported database.
-When you start the file browser (double click), the local data file must
-be specified.
-<br>Also this 
-  <a href='javascript:open("en-help.html","help");stop()'>help file</a> 
-(as Web page in en-help.html) and maybe the 
-  <a href='javascript:l=navigator.language.substr(0,2);open(l+"-trans.html","trans");stop()'>
-    translation file</a> 
-(as ..-trans.html) should be stored locally in the same folder.
-<br>Tip: If you select and export multiple people, the latest
-output in the export window will be complemented by the relatives of the other person.
-Thus one can export all the relatives of the person and its spouse.
+Clicking 'Export' will save the data of all ancestors and descendants, including siblings and partners, of the selected person to a file of your choice.
+<br>If another person is selected and exported again, the previously exported data will be added. People "after" &#9654; (see above) will not be exported.
 <br>
 <h4>Browser</h4>
-This website has been tested with new Firefox and Internet Explorer versions. 
-<br>With Firefox, there should be no problems.
-<br>Internet Explorer basically works well. However, there are minor disadvantages,
-e.g. when exporting data, save file does not 
-store the data, and you are asked whether you want to enable scripts.
-<br>With Chrome (Google) one can only work with data on the Internet.
-This is probably also true for Safari.
+This website has been tested with the latest Firefox, Chrome, Internet Explorer, and Edge. On smartphones, the data at the bottom often doesn't fit into the small frames.
+<br>
+<h4>Further Information</h4>
+The website also includes
+<br>&nbsp;Help pages: <i>Language</i>-help.html (e.g., de-help.html)
+<br>&nbsp;Translation files: <i>Language</i>-trans.txt (e.g., de-trans.txt)
+<br>&nbsp;Pedigree.conf: a "GEDCOM attribute" file that translates GEDCOM terms into English and also controls what is displayed.
+<br>These files, if available, are loaded from the same directory as this website. You can also select your own locally stored files using the file selection (top left) before loading the actual GEDCOM file. The files are assigned according to their extension:
+<br>&nbsp;-help.html (help text, HTML formatted),
+<br>&nbsp;-trans.txt (translations, <i>English COMMA translation)</i>,
+<br>&nbsp;.conf (attribute file, see below),
+<br>&nbsp;.ged (GEDCOM data)
+<br>Multiple GEDCOM files can, in principle, be loaded in parallel.
+Result??
+<br><br>If no file is found for the language set in the browser,
+English names will be used. The same applies if no translation is found for individual terms.
+<br>The control file for the GEDCOM attributes to be displayed (Pedigree.conf)
+can be adapted to your own needs if necessary.
+This also applies to the translation file:
+<br>When called with the ?ATT parameter, all attributes of the previous attribute file plus additional attributes of the current data are displayed in the help section.
+
+<br>Calling with ?TRA displays the translations. (If necessary, also 
+?ATT&amp;TRA)
+<br>Example line (ATT): <pre>INDI.BIRT.DATE Birth date</pre>
+(Format: <i>tag.tag... TAB English term)</i><br>
+In addition, data without English terms is now also displayed.
+<br>If changes are desired, the section can be copied
+and transferred to a new file. This can also be loaded without access to the server directory (see above).
+<br>
